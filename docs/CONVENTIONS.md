@@ -35,3 +35,9 @@ T02 also implements the corrected fifth-order analytical two-particle formula of
 T03 provides a dense coupled solver at `Lmax=1`, with four modes and therefore `4N` complex field coefficients for `N` particles. The operator is oriented target <- source: rows are target modes, columns are source modes, and `R = source_position - target_position`. It solves `A = I - D_g U` with `numpy.linalg.solve`, thereby resumming all permitted rescattering orders. It produces field coefficients and diagnostics only; no multibody force is implemented.
 
 SciPy provides spherical functions and complex Condon--Shortley harmonics; SymPy provides cached 3j-based Gaunt coefficients. The solver accepts nodal-plane centers only, while the low-level translation API is fully three-dimensional for reexpansion validation.
+
+## T04 nodal interaction force
+
+T04 implements the Model C Rayleigh interaction force specialized to the nodal plane: the external--scattered cross terms of Eqs. (22)/(27), not the unrestricted total force of Eq. (21), and without scattered--scattered quadratic terms. The T03 solver remains `Lmax_scatter=1`; reexpansion to `Lmax_evaluation=2` supplies only local regular field coefficients for force evaluation and never feeds back into the solver.
+
+For each target, the self field is excluded. With `b_{2,-1}` and `b_{2,1}` the local coefficients, `F_x = sqrt(30*pi)/15 * k*a^3*E0 * Re[f1* (b_2,-1-b_2,1)]` and `F_y = sqrt(30*pi)/15 * k*a^3*E0 * Re[-i*f1* (b_2,1+b_2,-1)]`. The public result is a 2D SI force (N); it is not a force prediction outside the nodal plane.

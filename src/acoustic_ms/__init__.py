@@ -7,8 +7,10 @@ field-coefficient solver.
 
 from .contrasts import dipole_contrast, monopole_contrast
 from .incident import nodal_standing_wave_coefficients
+from .force import RayleighNodalInteractionResult, solve_rayleigh_nodal_interaction_forces
 from .multipoles import mode_count, mode_from_index, mode_index, modes
 from .scattering import rayleigh_scattering_coefficients
+from .special import spherical_hankel1
 from .solver import RayleighNodalSolution, solve_rayleigh_nodal
 from .translation import separation_coefficient, translation_matrix
 from .corrected_pair import (
@@ -34,6 +36,8 @@ __all__ = [
     "nodal_pair_force_on_probe",
     "nodal_pair_forces",
     "RayleighNodalSolution",
+    "RayleighNodalInteractionResult",
+    "solve_rayleigh_nodal_interaction_forces",
     "mode_count",
     "mode_from_index",
     "mode_index",
@@ -42,5 +46,6 @@ __all__ = [
     "rayleigh_scattering_coefficients",
     "separation_coefficient",
     "solve_rayleigh_nodal",
+    "spherical_hankel1",
     "translation_matrix",
 ]

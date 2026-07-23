@@ -26,3 +26,11 @@ The Rayleigh `Lmax=1` field solver is available through `solve_rayleigh_nodal`. 
 ```bash
 .venv/bin/python scripts/validate_t03_solver.py
 ```
+
+## T04 interaction force
+
+T04 adds `solve_rayleigh_nodal_interaction_forces`, which returns the coupled T03 field solution, local scattered coefficients through `ell=2`, and nodal-plane interaction forces in newtons for one or two particles. It is the Rayleigh Model C cross-term force; it does not add off-nodal total force or multibody force results.
+
+```bash
+.venv/bin/python scripts/validate_t04_force.py
+```

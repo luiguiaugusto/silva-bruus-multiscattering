@@ -4,4 +4,5 @@
 - [x] T02 -- corrected two-body formula and reproduction benchmark.
 - [x] T03 -- multipolar Rayleigh core and coupled Lmax=1 solver.
 
-T03 adds the validated Rayleigh field-coefficient solver at Lmax=1; it does not calculate radiation force.
+T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particle interaction-force observable.
+- [x] T04 -- Rayleigh Lmax=1 nodal interaction force for one and two particles.
