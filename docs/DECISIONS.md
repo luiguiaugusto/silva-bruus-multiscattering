@@ -5,3 +5,5 @@
 - Notebooks, when introduced, are demonstrations only and will never contain
   the sole version of a scientific routine.
 - T01 depends only on NumPy at runtime and pytest for development.
+- Matplotlib is an optional `plot` dependency, used only by the reproducible Figure 2 script; the scientific package does not import it.
+- The T02 corrected formula is a published two-particle benchmark, not a general multiple-scattering solution.

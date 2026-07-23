@@ -27,3 +27,5 @@ two-body benchmark context recorded in Silva, *Brazilian Journal of Physics*
 (2026), DOI: 10.1007/s13538-026-02102-x.  It does not apply to an antinodal
 plane: that case has different incident-field physics and is not represented
 by this API.
+
+T02 also implements the corrected fifth-order analytical two-particle formula of the 2026 reference. Its signed radial component follows the same source-to-probe direction and non-overlap condition. Figure 2 uses \(100|F^{\mathrm{corr}}-F^{\mathrm{SB}}|/|F^{\mathrm{corr}}|\); it is undefined where the corrected force is zero.
