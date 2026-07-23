@@ -18,3 +18,11 @@ See [the conventions](docs/CONVENTIONS.md) for the time and energy
 normalizations used by the code.
 
 The Figure 2 reproduction uses `ka = 0.1`, `radius = 1 m`, and `energy_density = 1 J m^-3`; the reported relative error is independent of this shared SI scale. Its contact-limit sample at `kd = 0.2 = 2ka` is included as the non-overlap boundary, not as a positive surface gap.
+
+## T03 solver
+
+The Rayleigh `Lmax=1` field solver is available through `solve_rayleigh_nodal`. It computes four multipole coefficients per particle and resums rescattering in a dense linear solve; it does not compute a radiation force. Generate validation data with:
+
+```bash
+.venv/bin/python scripts/validate_t03_solver.py
+```

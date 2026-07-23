@@ -29,3 +29,9 @@ plane: that case has different incident-field physics and is not represented
 by this API.
 
 T02 also implements the corrected fifth-order analytical two-particle formula of the 2026 reference. Its signed radial component follows the same source-to-probe direction and non-overlap condition. Figure 2 uses \(100|F^{\mathrm{corr}}-F^{\mathrm{SB}}|/|F^{\mathrm{corr}}|\); it is undefined where the corrected force is zero.
+
+## T03: Rayleigh multipolar solver
+
+T03 provides a dense coupled solver at `Lmax=1`, with four modes and therefore `4N` complex field coefficients for `N` particles. The operator is oriented target <- source: rows are target modes, columns are source modes, and `R = source_position - target_position`. It solves `A = I - D_g U` with `numpy.linalg.solve`, thereby resumming all permitted rescattering orders. It produces field coefficients and diagnostics only; no multibody force is implemented.
+
+SciPy provides spherical functions and complex Condon--Shortley harmonics; SymPy provides cached 3j-based Gaunt coefficients. The solver accepts nodal-plane centers only, while the low-level translation API is fully three-dimensional for reexpansion validation.
