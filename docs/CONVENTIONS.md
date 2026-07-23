@@ -40,4 +40,20 @@ SciPy provides spherical functions and complex Condon--Shortley harmonics; SymPy
 
 T04 implements the Model C Rayleigh interaction force specialized to the nodal plane: the external--scattered cross terms of Eqs. (22)/(27), not the unrestricted total force of Eq. (21), and without scattered--scattered quadratic terms. The T03 solver remains `Lmax_scatter=1`; reexpansion to `Lmax_evaluation=2` supplies only local regular field coefficients for force evaluation and never feeds back into the solver.
 
-For each target, the self field is excluded. The documented Cartesian combinations preserve the derivation conjugation: (F_x=rac{sqrt{30pi}}{15}ka^3E_0operatorname{Re}[f_1^*(b_{2,-1}-b_{2,1})]) and (F_y=rac{sqrt{30pi}}{15}ka^3E_0operatorname{Re}[-i f_1^*(b_{2,1}+b_{2,-1})]). The API currently accepts real scalar (f_1), while production keeps `np.conj(f1)`.
+For each target, the self field is excluded. The documented Cartesian combinations preserve the derivation conjugation:
+
+\[
+F_x=\frac{\sqrt{30\pi}}{15}\,k a^3E_0
+\operatorname{Re}\!\left[
+f_1^*(b_{2,-1}-b_{2,1})
+\right],
+\]
+
+\[
+F_y=\frac{\sqrt{30\pi}}{15}\,k a^3E_0
+\operatorname{Re}\!\left[
+-i f_1^*(b_{2,1}+b_{2,-1})
+\right].
+\]
+
+The API currently accepts real scalar (f_1), while production keeps `np.conj(f1)`.
