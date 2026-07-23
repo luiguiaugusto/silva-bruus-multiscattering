@@ -442,4 +442,3 @@ Depois, faça o push para a mesma branch remota atualmente utilizada.
 
 Se o push exigir trocar o remote, sobrescrever histórico, usar `--force` ou
 resolver divergência não relacionada à T04.1, pare e informe o problema.
-
