@@ -57,3 +57,16 @@ def test_three_particle_rotation_and_permutation_preserve_s10_up_to_relabeling()
     permuted = solve_rayleigh_nodal(positions[order], .08, 1., -.5, .8).coefficients[:, 2]
     assert np.allclose(rotated, base, rtol=1e-12, atol=1e-14)
     assert np.allclose(permuted, base[order], rtol=1e-12, atol=1e-14)
+
+
+def test_small_kd_rescattering_asymptotics():
+    radius, separation, ka, f1 = 1.0, 2.0, 1e-3, .8
+    k = ka / radius
+    s1 = rayleigh_scattering_coefficients(ka, 0.0, f1)[1]
+    coupling = s1 * (spherical_hankel1(0, k * separation) + spherical_hankel1(2, k * separation))
+    expected_coupling = f1 / 2 * (radius / separation) ** 3
+    assert np.isclose(coupling, expected_coupling, rtol=3e-6)
+    single = solve_rayleigh_nodal([[0., 0., 0.]], k, radius, 0.0, f1).coefficients[0, 2]
+    pair = solve_rayleigh_nodal([[-separation / 2, 0., 0.], [separation / 2, 0., 0.]], k, radius, 0.0, f1).coefficients[0, 2]
+    expected_ratio = 1 / (1 - expected_coupling)
+    assert np.isclose(pair / single, expected_ratio, rtol=2e-7)

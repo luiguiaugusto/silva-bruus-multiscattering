@@ -1,6 +1,8 @@
 """Acoustic multiple-scattering research tools.
 
-T01 exposes material contrasts and the nodal Silva--Bruus pairwise force.
+T01 provides the original nodal Silva--Bruus pair force; T02 provides the
+corrected two-particle benchmark; T03 provides an Lmax=1 coupled Rayleigh
+field-coefficient solver.
 """
 
 from .contrasts import dipole_contrast, monopole_contrast

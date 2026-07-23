@@ -35,3 +35,11 @@ def test_direct_reexpansion_theorem(source_mode):
 def test_translation_shape_and_coincident_rejection():
     assert translation_matrix(.4, [0, 0, 0], [1, 0, 0], 1, 2).shape == (4, 9)
     with pytest.raises(ValueError): translation_matrix(.4, [0, 0, 0], [0, 0, 0], 1)
+
+
+def test_reexpansion_error_converges_with_test_truncation():
+    target = np.array([.2, -.1, .3]); source = np.array([2.1, .7, 1.4]); point = np.array([.31, -.04, .38]); k = .8
+    expected = _outgoing(1, 1, k, point, source)
+    errors = [abs(_regular_sum(1, 1, k, point, target, source, lmax) - expected) / abs(expected) for lmax in (2, 4, 6, 8, 10)]
+    assert all(later < earlier for earlier, later in zip(errors, errors[1:]))
+    assert errors[-1] < 1e-9
