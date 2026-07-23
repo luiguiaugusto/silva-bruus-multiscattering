@@ -7,6 +7,7 @@ from acoustic_ms import (
     nodal_pair_force_magnitude,
     corrected_nodal_pair_force_magnitude,
     solve_rayleigh_nodal_interaction_forces,
+    mode_index,
 )
 from acoustic_ms.scattering import rayleigh_scattering_coefficients
 from acoustic_ms.special import spherical_hankel1
@@ -127,3 +128,43 @@ def test_silva_bruus_recovery_limits_and_attraction():
 def test_force_api_reuses_solver_domain_validation(positions, k, radius, energy, f1):
     with pytest.raises(ValueError):
         solve_rayleigh_nodal_interaction_forces(positions, k, radius, energy, 0., f1)
+
+
+def test_oblique_pair_particle_permutation_preserves_all_particle_observables():
+    positions = _pair_positions(3.7, .53)
+    original = solve_rayleigh_nodal_interaction_forces(positions, .08, 1., 1.2, -.4, .7)
+    order = np.array([1, 0])
+    permuted = solve_rayleigh_nodal_interaction_forces(positions[order], .08, 1., 1.2, -.4, .7)
+    assert np.allclose(permuted.forces_xy, original.forces_xy[order], rtol=2e-12, atol=2e-14)
+    assert np.allclose(permuted.local_scattered_coefficients, original.local_scattered_coefficients[order], rtol=2e-12, atol=2e-14)
+    assert np.allclose(permuted.solution.coefficients, original.solution.coefficients[order], rtol=2e-12, atol=2e-14)
+
+
+def test_planar_aligned_pair_has_only_allowed_local_modes():
+    result = solve_rayleigh_nodal_interaction_forces(_pair_positions(2.), .1, 1., 1., 0., .8)
+    forbidden = tuple(mode_index(ell, m) for ell, m in ((0, 0), (1, -1), (1, 1), (2, -2), (2, 0), (2, 2)))
+    assert np.max(abs(result.local_scattered_coefficients[:, forbidden])) < 2e-13
+    assert np.allclose(result.local_scattered_coefficients[:, mode_index(2, -1)], -result.local_scattered_coefficients[:, mode_index(2, 1)], rtol=2e-12, atol=2e-14)
+
+
+@pytest.mark.parametrize("energy", (np.nan, np.inf, -np.inf))
+def test_nonfinite_energy_density_is_rejected_early(energy):
+    with pytest.raises(ValueError):
+        solve_rayleigh_nodal_interaction_forces(_pair_positions(2.), .1, 1., energy, 0., .8)
+
+
+def test_lower_f1_domain_limit_is_rejected():
+    with pytest.raises(ValueError):
+        solve_rayleigh_nodal_interaction_forces(_pair_positions(2.), .1, 1., 1., 0., -2.01)
+
+
+@pytest.mark.parametrize("lmax", (0, 2))
+def test_force_api_rejects_unsupported_scattering_lmax(lmax):
+    with pytest.raises(ValueError):
+        solve_rayleigh_nodal_interaction_forces(_pair_positions(2.), .1, 1., 1., 0., .8, lmax=lmax)
+
+
+@pytest.mark.parametrize("positions", ([0., 0., 0.], [[0., 0.]]))
+def test_force_api_rejects_invalid_position_shape(positions):
+    with pytest.raises(ValueError):
+        solve_rayleigh_nodal_interaction_forces(positions, .1, 1., 1., 0., .8)

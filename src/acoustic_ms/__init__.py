@@ -1,8 +1,9 @@
 """Acoustic multiple-scattering research tools.
 
-T01 provides the original nodal Silva--Bruus pair force; T02 provides the
-corrected two-particle benchmark; T03 provides an Lmax=1 coupled Rayleigh
-field-coefficient solver.
+T01 provides the original Silva--Bruus pair force; T02 provides the corrected
+two-particle analytical benchmark; T03 provides the coupled Rayleigh solver at
+Lmax=1; T04 provides the Model C nodal interaction force with scattering
+Lmax=1 and local evaluation through ell=2.
 """
 
 from .contrasts import dipole_contrast, monopole_contrast
