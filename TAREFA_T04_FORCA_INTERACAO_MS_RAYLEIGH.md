@@ -1021,4 +1021,3 @@ Depois, faca o push para a mesma branch remota atualmente utilizada.
 
 Se o push exigir trocar o remote, sobrescrever historico, usar `--force` ou
 resolver uma divergencia nao relacionada a T04, pare e informe o problema.
-
