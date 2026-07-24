@@ -1,11 +1,13 @@
 """T05 independent scalar-oracle and trimer Model A/B/C validation."""
 
+import pytest
+
 import numpy as np
 from scipy.special import spherical_jn, spherical_yn
 
 from acoustic_ms import (
     angular_errors_degrees, compare_nodal_force_models, equilateral_trimer,
-    linear_trimer, rms_relative_error, scalene_trimer, symmetric_particle_errors,
+    linear_trimer, rms_relative_error, rms_vector_magnitude, scalene_trimer, symmetric_particle_errors,
 )
 
 
@@ -93,3 +95,90 @@ def test_energy_contrast_f0_and_weak_coupling_limits():
     weak=compare_nodal_force_models(scalene_trimer(8),.05,1,1,0,.1)
     assert rms_relative_error(weak.model_b_forces_xy,weak.model_a_forces_xy) < .01
     assert rms_relative_error(weak.model_c_forces_xy,weak.model_b_forces_xy) < .01
+
+
+FIELDS = (
+    "model_a_forces_xy",
+    "model_b_forces_xy",
+    "model_c_forces_xy",
+    "two_body_correction_xy",
+    "irreducible_multibody_xy",
+)
+
+
+def test_metrics_share_a_global_scale_without_an_absolute_floor():
+    reference = np.array([[1.0, 0.0], [-9.2e-17, 8.1e-17], [-1.0, 0.0]])
+    model = np.array([[0.9, 0.0], [0.0, 8.0e-17], [-0.9, 0.0]])
+    symmetric = symmetric_particle_errors(reference, model)
+    angles = angular_errors_degrees(reference, model)
+    assert np.isclose(symmetric[0], 2 / 19)
+    assert symmetric[1] == 0.0
+    assert np.isnan(angles[1])
+    assert np.isclose(angles[0], 0.0)
+
+    zeros = np.zeros((1, 2))
+    assert symmetric_particle_errors(zeros, zeros)[0] == 0.0
+    assert np.isnan(angular_errors_degrees(zeros, zeros)[0])
+    assert np.isclose(symmetric_particle_errors([[1.0, 0.0]], zeros)[0], 2.0)
+    assert np.isnan(angular_errors_degrees([[1.0, 0.0]], zeros)[0])
+    assert np.isclose(angular_errors_degrees([[1.0, 0.0]], [[0.0, 1.0]])[0], 90.0)
+
+    tiny_reference = np.array([[1e-20, 0.0]])
+    tiny_model = np.array([[-1e-20, 0.0]])
+    assert symmetric_particle_errors(tiny_reference, tiny_model)[0] == 2.0
+    assert np.isclose(angular_errors_degrees(tiny_reference, tiny_model)[0], 180.0)
+    assert np.isclose(rms_vector_magnitude([[3.0, 4.0], [0.0, 0.0]]), np.sqrt(25 / 2))
+
+
+def test_all_fields_obey_permutation_scaling_energy_and_contrast_invariances():
+    positions = scalene_trimer(2.2)
+    base = compare_nodal_force_models(positions, .1, 1, 1, 0, .8)
+    for order in (np.array([2, 0, 1]), np.array([1, 2, 0])):
+        permuted = compare_nodal_force_models(positions[order], .1, 1, 1, 0, .8)
+        for name in FIELDS:
+            assert np.allclose(getattr(permuted, name), getattr(base, name)[order], rtol=2e-12, atol=2e-13)
+        assert np.allclose(permuted.global_result.solution.coefficients, base.global_result.solution.coefficients[order], rtol=2e-12, atol=2e-13)
+
+    scale = 2.3
+    scaled = compare_nodal_force_models(positions * scale, .1 / scale, scale, 1, 0, .8)
+    doubled_energy = compare_nodal_force_models(positions, .1, 1, 2, 0, .8)
+    f0_changed = compare_nodal_force_models(positions, .1, 1, 1, 5, .8)
+    zero_energy = compare_nodal_force_models(positions, .1, 1, 0, 0, .8)
+    zero_f1 = compare_nodal_force_models(positions, .1, 1, 1, 0, 0)
+    for name in FIELDS:
+        field = getattr(base, name)
+        assert np.allclose(getattr(scaled, name), scale**2 * field, rtol=2e-12, atol=2e-13)
+        assert np.allclose(getattr(doubled_energy, name), 2 * field, rtol=2e-12, atol=2e-13)
+        assert np.allclose(getattr(f0_changed, name), field, rtol=2e-12, atol=2e-13)
+        assert np.allclose(getattr(zero_energy, name), 0, atol=2e-13)
+        assert np.allclose(getattr(zero_f1, name), 0, atol=2e-13)
+    with pytest.raises(ValueError):
+        compare_nodal_force_models(positions, .1, 1, 1, 0, .8, lmax=2)
+
+
+def test_chain_and_equilateral_symmetries_hold_for_every_force_field():
+    chain = compare_nodal_force_models(linear_trimer(2.1), .1, 1, 1, 0, .8)
+    for name in FIELDS:
+        field = getattr(chain, name)
+        scale = max(np.linalg.norm(field, axis=1).max(), 1e-300)
+        tolerance = 3e-12 * scale
+        assert np.linalg.norm(field[1]) <= tolerance
+        assert np.allclose(field[0], -field[2], atol=tolerance, rtol=0)
+        assert np.max(np.abs(field[:, 1])) <= tolerance
+        assert np.linalg.norm(field.sum(axis=0)) <= tolerance
+
+    positions = equilateral_trimer(2.1)
+    equilateral = compare_nodal_force_models(positions, .1, 1, 1, 0, .8)
+    angle = 2 * np.pi / 3
+    rotation = np.array([[np.cos(angle), -np.sin(angle), 0.0], [np.sin(angle), np.cos(angle), 0.0], [0.0, 0.0, 1.0]])
+    rotated = compare_nodal_force_models(positions @ rotation.T, .1, 1, 1, 0, .8)
+    order = np.array([1, 2, 0])
+    for name in FIELDS:
+        field = getattr(equilateral, name)
+        scale = max(np.linalg.norm(field, axis=1).max(), 1e-300)
+        tolerance = 3e-12 * scale
+        assert np.allclose(np.linalg.norm(field, axis=1), np.linalg.norm(field[0]), rtol=3e-12, atol=tolerance)
+        assert np.max(np.abs(positions[:, 0] * field[:, 1] - positions[:, 1] * field[:, 0])) <= tolerance
+        assert np.linalg.norm(field.sum(axis=0)) <= tolerance
+        assert np.allclose(getattr(rotated, name), field @ rotation[:2, :2].T, rtol=3e-12, atol=tolerance)
+        assert np.allclose(getattr(rotated, name), field[order], rtol=3e-12, atol=tolerance)

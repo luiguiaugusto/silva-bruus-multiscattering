@@ -13,3 +13,5 @@
 - The T03 production solver remains at `Lmax=1`; T04 uses local evaluation through `ell=2` only and reports no three-particle force results.
 - T05 is restricted to canonical N=3 trimers. Model B and C deliberately share the T04 solver and observable, so C-B isolates multibody rescattering at Lmax=1.
 - The scalar nodal-plane oracle is test-only. No zero-total-force constraint is imposed on the global scalene interaction observable, and T05 does not measure multipolar correction or introduce Model D.
+
+- T05.1 defines numerical nullity relative to the global configuration scale, (128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}), without an absolute `1.0` floor. Correction amplitudes are RMS vector magnitudes per particle, not component RMS; this changes metrics and artifacts only, never A/B/C forces.

@@ -9,7 +9,7 @@ Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers at fixed L
 from .contrasts import dipole_contrast, monopole_contrast
 from .comparison import NodalForceModelComparison, compare_nodal_force_models
 from .geometries import equilateral_trimer, linear_trimer, scalene_trimer
-from .metrics import angular_errors_degrees, rms_relative_error, symmetric_particle_errors
+from .metrics import angular_errors_degrees, rms_relative_error, rms_vector_magnitude, symmetric_particle_errors
 from .incident import nodal_standing_wave_coefficients
 from .force import RayleighNodalInteractionResult, solve_rayleigh_nodal_interaction_forces
 from .multipoles import mode_count, mode_from_index, mode_index, modes
@@ -37,6 +37,7 @@ __all__ = [
     "equilateral_trimer",
     "linear_trimer",
     "rms_relative_error",
+    "rms_vector_magnitude",
     "scalene_trimer",
     "symmetric_particle_errors",
     "corrected_nodal_pair_force_magnitude",

@@ -10,7 +10,7 @@ import numpy as np
 
 from acoustic_ms import (
     angular_errors_degrees, compare_nodal_force_models, equilateral_trimer,
-    linear_trimer, rms_relative_error, scalene_trimer, symmetric_particle_errors,
+    linear_trimer, rms_relative_error, rms_vector_magnitude, scalene_trimer, symmetric_particle_errors,
 )
 
 
@@ -35,8 +35,8 @@ def _summary_rows(geometry_name, geometry, distance, f1):
         "max_symmetric_a_vs_c": float(np.max(errors_a)), "max_symmetric_b_vs_c": float(np.max(errors_b)),
         "max_angle_a_vs_c_deg": float(np.nanmax(angles_a)) if np.any(~np.isnan(angles_a)) else float("nan"),
         "max_angle_b_vs_c_deg": float(np.nanmax(angles_b)) if np.any(~np.isnan(angles_b)) else float("nan"),
-        "rms_two_body_correction": float(np.sqrt(np.mean(result.two_body_correction_xy**2))),
-        "rms_irreducible_multibody": float(np.sqrt(np.mean(result.irreducible_multibody_xy**2))),
+        "rms_two_body_correction": rms_vector_magnitude(result.two_body_correction_xy),
+        "rms_irreducible_multibody": rms_vector_magnitude(result.irreducible_multibody_xy),
         "residual_relative": result.global_result.solution.residual_relative,
         "condition_number": result.global_result.solution.condition_number,
         "sum_c_x": float(np.sum(result.model_c_forces_xy[:, 0])), "sum_c_y": float(np.sum(result.model_c_forces_xy[:, 1])),

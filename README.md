@@ -1,11 +1,7 @@
 # Silva--Bruus multiscattering
 
 Python tools for studying acoustic interaction forces between identical spheres
-in a pressure nodal plane. T02 includes the Silva--Bruus pairwise force and the
-scattering models through canonical N=3 trimers at Lmax=1, including the published corrected two-particle benchmark; no Model D or higher multipole order is implemented.
-
-#
-scattering remains out of scope.
+in a pressure nodal plane. T05 reaches canonical N=3 trimers: Model A is Silva--Bruus pairwise, Model B sums isolated T04 pair solves, and Model C is global Rayleigh multiple scattering at Lmax=1. Model D, higher multipole orders, and N>3 remain out of scope.
 
 ## Setup
 
