@@ -14,8 +14,5 @@
 - T05 is restricted to canonical N=3 trimers. Model B and C deliberately share the T04 solver and observable, so C-B isolates multibody rescattering at Lmax=1.
 - The scalar nodal-plane oracle is test-only. No zero-total-force constraint is imposed on the global scalene interaction observable, and T05 does not measure multipolar correction or introduce Model D.
 
-- T05.1 defines numerical nullity relative to the global configuration scale, (128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}), without an absolute `1.0` floor. Correction amplitudes are RMS vector magnitudes per particle, not component RMS; this changes metrics and artifacts only, never A/B/C forces.
-
-- T05.1a is documentary only; it records that relative nullity changes derived metrics/artifacts, never A/B/C, and that binary determinism is assessed in the same numerical environment.
-- T05.1 changed only derived metrics and corresponding artifacts; Models A, B, and C and their equations are unchanged.
-- Binary determinism is evaluated in the same numerical environment; T05.1b is exclusively documentary.
+- T05.1 defines numerical nullity relative to the global configuration scale, \(128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}\), without an absolute floor. Correction amplitudes are RMS vector magnitudes per particle, not component RMS; only derived metrics and corresponding artifacts changed, while A, B, C and their equations remained unchanged.
+- T05.1a, T05.1b, and T05.1c are exclusively documentary. Binary determinism is assessed in the same numerical environment.

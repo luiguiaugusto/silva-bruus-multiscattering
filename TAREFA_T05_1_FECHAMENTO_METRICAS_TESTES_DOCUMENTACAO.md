@@ -46,4 +46,6 @@ distinta do erro relativo
 
 Foram cobertos vetores idênticos, opostos, ortogonais e nulos; resíduos relativos à escala global; forças \(10^{-20}\); RMS vetorial; duas permutações; escalamento dimensional \(\lambda^2\); dependência em \(E_0\), \(f_0\) e \(f_1\); rejeição de \(L_{\max}\ne1\); e simetrias da cadeia e do equilátero. A cadeia central tem erro zero e ângulo `NaN`; o equilátero tem módulos iguais, radialidade, soma nula e rotação de \(120^\circ\). Não se impõe soma nula ao escaleno.
 
+Os cinco hashes oficiais são T03 `7e02a41ccf3832d233d0e9720f7567ab4eef72ec680df65070f3a687f23fac6a`, T04 `15ee057e2540e7b5f715fa2da4ba13d7f9ed880e0c48ac3cd341f643a5fa37a5`, regressão T05 `e422fff4b12939cc4ea995f03dd04d90f92611f9539549d93a317a6fedaf4ae1`, sweep T05 `dff96cf80380b373b1e9ceab4ef2533df9814553cd8f4c805e8353de6fea50b1` e figura T05 `5327a95c2ccc00151d4389189905feb4b988ea35d8107585f8b9e262ea460d62`.
+
 O validador passou a usar RMS vetorial nas duas correções. O sweep de 1.920 configurações foi auditado; as duas colunas RMS obedecem \(F_{\mathrm{RMS,new}}=\sqrt{2}F_{\mathrm{RMS,old}}\), enquanto A, B e C não mudam. Aceite: testes sem warnings, `git diff --check`, hashes protegidos, identidade telescópica e nenhuma extensão para Modelo D, \(N>3\) ou \(L_{\max}>1\). Os limites são regime de Rayleigh, \(N=3\) e somente Modelos A, B e C.

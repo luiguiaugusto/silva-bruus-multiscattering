@@ -56,17 +56,18 @@ F_y=\frac{\sqrt{30\pi}}{15}\,k a^3E_0
 \right].
 \]
 
-The API currently accepts real scalar (f_1), while production keeps `np.conj(f1)`.
+The API currently accepts real scalar \(f_1\), while production keeps `np.conj(f1)`.
 
 ## T05 trimer Model A/B/C comparison
 
 For a cluster, Model A is the sum of T01 Silva--Bruus pair forces. Model B is the sum of isolated two-particle T04 solves, one solve for each unordered pair; it explicitly does not use the T02 truncated analytical formula. Model C is one global T04 solve of all three particles. The signed vector corrections are `Delta F^(2)=B-A` and `Delta F^(3)=C-B`, so `C-A=Delta F^(2)+Delta F^(3)` component by component.
 
-Trimer reporting uses normalized `F/(a^2 E0)`. The shared numerical-null threshold is (F_{\mathrm{tol}}=128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}), with (F_{\mathrm{scale}}=\max_i(\lvert F_i^{\mathrm{ref}}\rvert,\lvert F_i^{\mathrm{mod}}\rvert)) and no absolute dimensional floor. Symmetric errors are `2||ref-model||/(||ref||+||model||)` and map two numerically null vectors to zero; an angular error is NaN if either vector is numerically null. Relative RMS A--C/B--C is dimensionless, while correction amplitudes use (F_{\mathrm{RMS}}=\sqrt{N^{-1}\sum_i\lvert F_i\rvert^2}). C-B isolates collective rescattering inside the common Rayleigh `Lmax=1` basis, not a multipolar correction.
 
+Trimer reporting uses normalized `F/(a^2 E0)`. For one complete configuration,
 
-T05.1a clarifies that numerical nullity uses (\lvert\mathbf F\rvert\le F_{\mathrm{tol}}), that angular comparisons with any such vector are undefined, and that (F_{\mathrm{RMS}}) is an amplitude of vector norms rather than the dimensionless (\varepsilon_{\mathrm{RMS}}).
+\[
+F_{\mathrm{scale}}=\max_i\left(|\mathbf F_i^{\mathrm{ref}}|,|\mathbf F_i^{\mathrm{mod}}|\right),\qquad
+F_{\mathrm{tol}}=128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}.
+\]
 
-## T05.1 metric conventions
-
-Numerical nullity is global to a configuration: \(F_{\mathrm{tol}}=128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}\), with no absolute floor, and \(|\mathbf F|\le F_{\mathrm{tol}}\). The correction amplitude is \(F_{\mathrm{RMS}}=\sqrt{N^{-1}\sum_i|\mathbf F_i|^2}\), whereas \(\varepsilon_{\mathrm{RMS}}\) is a dimensionless relative error. Angular comparison is undefined (`NaN`) if either vector is numerically null.
+There is no absolute floor. A vector is numerically null when \( |\mathbf F|\le F_{\mathrm{tol}} \). Symmetric error is zero when both vectors are numerically null; angular error is `NaN` when either vector is null. Correction amplitude is \(F_{\mathrm{RMS}}=\sqrt{N^{-1}\sum_i|\mathbf F_i|^2}\), distinct from the dimensionless relative error \(\varepsilon_{\mathrm{RMS}}\). Model C minus B isolates collective rescattering inside the common Rayleigh \(L_{\max}=1\) basis; T05.1 changed derived metrics and artifacts, not A, B, or C.
