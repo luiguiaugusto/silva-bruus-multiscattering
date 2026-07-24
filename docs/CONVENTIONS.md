@@ -66,3 +66,7 @@ Trimer reporting uses normalized `F/(a^2 E0)`. The shared numerical-null thresho
 
 
 T05.1a clarifies that numerical nullity uses (\lvert\mathbf F\rvert\le F_{\mathrm{tol}}), that angular comparisons with any such vector are undefined, and that (F_{\mathrm{RMS}}) is an amplitude of vector norms rather than the dimensionless (\varepsilon_{\mathrm{RMS}}).
+
+## T05.1 metric conventions
+
+Numerical nullity is global to a configuration: \(F_{\mathrm{tol}}=128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}\), with no absolute floor, and \(|\mathbf F|\le F_{\mathrm{tol}}\). The correction amplitude is \(F_{\mathrm{RMS}}=\sqrt{N^{-1}\sum_i|\mathbf F_i|^2}\), whereas \(\varepsilon_{\mathrm{RMS}}\) is a dimensionless relative error. Angular comparison is undefined (`NaN`) if either vector is numerically null.

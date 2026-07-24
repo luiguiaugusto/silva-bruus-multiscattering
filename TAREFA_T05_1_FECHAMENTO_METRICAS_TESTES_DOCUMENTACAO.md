@@ -1,30 +1,49 @@
-# T05.1 — fechamento de métricas, cobertura, artefatos e documentação
+# T05.1 — fechamento de métricas, testes, artefatos e documentação
 
-## Objetivo, base e núcleo protegido
+## Objetivo, escopo e núcleo protegido
 
-T05.1 fecha a validação de trímeros sem mudar ciência. A base é `386772321537028a45c0958980b739edd3c5a780` em `main`, com 89 testes. Solver, equações, forças A/B/C, oráculo, regressões, geometrias e arquivos protegidos permanecem inalterados.
+A T05.1 fechou a validação da comparação de trímeros aprovada na T05, cujo commit-base é `386772321537028a45c0958980b739edd3c5a780`. Foram permitidos somente métricas derivadas, sua exportação, o teste multibody, o validador T05, o sweep e a figura T05, e documentação. O solver, equações, geometrias, forças A, B e C, oráculo escalar e regressões científicas ficaram protegidos.
 
-## Métricas
+## Métricas finais
 
-\[
-F_{\mathrm{scale}}=\max_i\left(|\mathbf F_i^{\mathrm{ref}}|,|\mathbf F_i^{\mathrm{mod}}|ight),\qquad
-F_{\mathrm{tol}}=128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}},\quad
-\epsilon_{\mathrm{mach}}=\operatorname{eps}(	exttt{float}).
-\]
-
-Não há piso absoluto `1.0`; vetor nulo satisfaz \(|\mathbf F|\le F_{\mathrm{tol}}\). O erro por partícula é
+Para a configuração completa,
 
 \[
-arepsilon_{i,\mathrm{sym}}=rac{2|\mathbf F_i^{\mathrm{ref}}-\mathbf F_i^{\mathrm{mod}}|}{|\mathbf F_i^{\mathrm{ref}}|+|\mathbf F_i^{\mathrm{mod}}|}.
+F_{\mathrm{scale}}=\max_i\left(
+|\mathbf F_i^{\mathrm{ref}}|,
+|\mathbf F_i^{\mathrm{mod}}|
+\right),
+\qquad
+F_{\mathrm{tol}}=128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}},
 \]
 
-Dois vetores nulos retornam zero; se qualquer vetor angular for nulo, o ângulo é `NaN`. A amplitude das correções é \(F_{\mathrm{RMS}}=[N^{-1}\sum_i|\mathbf F_i|^2]^{1/2}\), distinta de \(arepsilon_{\mathrm{RMS}}=[\sum_i|\Delta\mathbf F_i|^2/\sum_i|\mathbf F_i^{\mathrm{ref}}|^2]^{1/2}\).
+com \(\epsilon_{\mathrm{mach}}=\operatorname{eps}(\texttt{float})\). Não há piso absoluto `1.0`; um vetor é numericamente nulo quando \(|\mathbf F|\le F_{\mathrm{tol}}\). O erro simétrico é
 
-## Validador, testes e simetrias
+\[
+\varepsilon_{i,\mathrm{sym}}=
+\frac{2|\mathbf F_i^{\mathrm{ref}}-\mathbf F_i^{\mathrm{mod}}|}
+{|\mathbf F_i^{\mathrm{ref}}|+|\mathbf F_i^{\mathrm{mod}}|}.
+\]
 
-O validador usa RMS vetorial nas duas correções. A cobertura inclui vetores idênticos, opostos, ortogonais, nulos, resíduos globais, \(10^{-20}\), RMS, permutações, escalamento \(\lambda^2\), \(E_0\), \(f_0\), \(f_1\), rejeição de \(L_{\max}
-e1\), cadeia e equilátero. A cadeia central tem erro zero e ângulo `NaN`; o equilátero preserva radialidade, soma nula e rotação de \(120^\circ\). Não se impõe soma nula ao escaleno.
+Quando ambos os vetores são numericamente nulos ele é zero. Quando qualquer vetor necessário à comparação angular é nulo, o ângulo é `NaN`. Isto evita direções espúrias e não apaga o caso físico de forças opostas de ordem \(10^{-20}\). A amplitude RMS é
 
-## Artefatos, arquivos, verificações e limites
+\[
+F_{\mathrm{RMS}}=
+\sqrt{\frac{1}{N}\sum_{i=1}^{N}|\mathbf F_i|^2},
+\]
 
-O sweep de 1.920 configurações foi regenerado; as duas RMS mudam por \(\sqrt2\), sem mudar A/B/C. O CSV de regressão tem nove linhas e hash `e422fff4b12939cc4ea995f03dd04d90f92611f9539549d93a317a6fedaf4ae1`; T03/T04 preservam `7e02a41ccf3832d233d0e9720f7567ab4eef72ec680df65070f3a687f23fac6a` e `15ee057e2540e7b5f715fa2da4ba13d7f9ed880e0c48ac3cd341f643a5fa37a5`. Arquivos permitidos são métricas, exportação, teste, validador, artefatos T05 e documentação; arquivos científicos protegidos são proibidos. Aceite: testes sem warnings, hashes, `git diff --check`, identidade telescópica e sem Modelo D, \(N>3\) ou \(L_{\max}>1\). O limite científico permanece Rayleigh, \(N=3\), A/B/C e \(L_{\max}=1\).
+distinta do erro relativo
+
+\[
+\varepsilon_{\mathrm{RMS}}=
+\left[
+\frac{\sum_i|\mathbf F_i^{\mathrm{ref}}-\mathbf F_i^{\mathrm{mod}}|^2}
+{\sum_i|\mathbf F_i^{\mathrm{ref}}|^2}
+\right]^{1/2}.
+\]
+
+## Testes, simetrias e artefatos
+
+Foram cobertos vetores idênticos, opostos, ortogonais e nulos; resíduos relativos à escala global; forças \(10^{-20}\); RMS vetorial; duas permutações; escalamento dimensional \(\lambda^2\); dependência em \(E_0\), \(f_0\) e \(f_1\); rejeição de \(L_{\max}\ne1\); e simetrias da cadeia e do equilátero. A cadeia central tem erro zero e ângulo `NaN`; o equilátero tem módulos iguais, radialidade, soma nula e rotação de \(120^\circ\). Não se impõe soma nula ao escaleno.
+
+O validador passou a usar RMS vetorial nas duas correções. O sweep de 1.920 configurações foi auditado; as duas colunas RMS obedecem \(F_{\mathrm{RMS,new}}=\sqrt{2}F_{\mathrm{RMS,old}}\), enquanto A, B e C não mudam. Aceite: testes sem warnings, `git diff --check`, hashes protegidos, identidade telescópica e nenhuma extensão para Modelo D, \(N>3\) ou \(L_{\max}>1\). Os limites são regime de Rayleigh, \(N=3\) e somente Modelos A, B e C.

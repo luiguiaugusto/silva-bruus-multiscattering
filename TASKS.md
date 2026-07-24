@@ -12,3 +12,4 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] T05.1 -- closure of T05 metrics, validation coverage, artifacts, and documentation.
 
 - [x] T05.1a -- documentary closure of T05.1 audit records.
+- [x] T05.1b -- final correction of T05.1 audit documentation.

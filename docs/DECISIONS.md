@@ -17,3 +17,5 @@
 - T05.1 defines numerical nullity relative to the global configuration scale, (128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}), without an absolute `1.0` floor. Correction amplitudes are RMS vector magnitudes per particle, not component RMS; this changes metrics and artifacts only, never A/B/C forces.
 
 - T05.1a is documentary only; it records that relative nullity changes derived metrics/artifacts, never A/B/C, and that binary determinism is assessed in the same numerical environment.
+- T05.1 changed only derived metrics and corresponding artifacts; Models A, B, and C and their equations are unchanged.
+- Binary determinism is evaluated in the same numerical environment; T05.1b is exclusively documentary.
