@@ -136,3 +136,55 @@ The canonical geometry parameters are \(a=1\), \(ka=0.1\), \(E_0=1\), \(f_0=0\),
 Verification commands: `python -m pytest -q`, `python -m pytest -q -W error`, `git diff --check`, `git status --short`, `git diff --stat`, `git diff --name-only`, and `sha256sum ...`. The audit measured 92 tests without warnings, force-oracle error \(\sim 2.72\times10^{-16}\), \(s_{10}\) error \(\sim 6.97\times10^{-17}\), forbidden mode \(\sim 1.04\times10^{-20}\), sweep residual \(\sim 4.58\times10^{-16}\), and condition number \(\sim 1.403\). The chain central angle is `NaN`; the maximum A--C/B--C angle over 640 chains is \(0^\circ\); 428 contaminated B--C angular entries were corrected. The only sweep changes are the two RMS columns, with \(F_{\mathrm{RMS,new}}=\sqrt{2}F_{\mathrm{RMS,old}}\) and maximum relative deviation \(4.44\times10^{-16}\). The figure was inspected and approved.
 
 T05.1a environment: Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0, Matplotlib 3.11.1. Two executions in the same environment are byte-identical; different numerical versions may change final floating-point digits or PNG bytes without scientific randomness. The scientific limits remain Rayleigh, \(N=3\), \(L_{\max}=1\), Models A/B/C only, no Model D, higher multipoles, or \(N>3\). A nonzero scalene sum is not automatically a total cluster force.
+
+## T06: connected \(N=4\) body expansion
+
+### Implementation and equations
+
+Created `src/acoustic_ms/cluster_expansion.py`, `tests/test_four_body.py`, `scripts/validate_t06_quartets.py`, the four T06 artifacts, and the T06 task record. Updated public exports, quartet geometries, README, task list, conventions, decisions, and this handoff. The expansion solves one quartet, the four lexicographic triplets `(0, 1, 2)`, `(0, 1, 3)`, `(0, 2, 3)`, `(1, 2, 3)`, and the isolated pairs supplied by the approved T05 comparison API.
+
+For every particle,
+
+\[
+\mathbf F^C=\mathbf F^B+\boldsymbol{\Phi}_{\Sigma}^{(3)}+\boldsymbol{\Phi}^{(4)},
+\qquad
+\mathbf F^{(\le3)}=\mathbf F^B+\boldsymbol{\Phi}_{\Sigma}^{(3)}.
+\]
+
+The recursive and closed forms of \(\boldsymbol{\Phi}^{(4)}\) agree. Model A is used only as a comparison baseline.
+
+### Geometries, regressions, and sweep
+
+Production fixes \(a=E_0=1\), \(ka=0.1\), \(f_0=0\), uses \(f_1\in\{0.1,0.4,0.8,1.0\}\) and 160 equally spaced values of \(d_{\min}/a\in[2.1,10]\). The centered canonical geometries are the four-particle chain, square, and fixed irregular quadrilateral. The sweep has 1.920 configurations and the canonical CSV has 12 particle rows.
+
+| Geometry | Particle | \(F_x^C\) | \(F_y^C\) | \(\Phi_{\Sigma,x}^{(3)}\) | \(\Phi_{\Sigma,y}^{(3)}\) | \(\Phi_x^{(4)}\) | \(\Phi_y^{(4)}\) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| linear_chain | 0 | 0.7410016700382743 | 0 | 0.03727662459009518 | 0 | 0.0015397402318367837 | 0 |
+| linear_chain | 1 | 0.06998202349087587 | 8.088132637050065e-17 | 0.02998278511626904 | 7.97136892324476e-19 | -0.00019360981048134607 | 2.2454560347183963e-20 |
+| linear_chain | 2 | -0.06998202349087597 | 8.948142298346614e-17 | -0.029982785116269336 | 4.460037048956324e-18 | 0.00019360981048154036 | 3.789207058585291e-20 |
+| linear_chain | 3 | -0.7410016700382742 | 9.073887836290757e-17 | -0.03727662459009496 | 4.561082570518581e-18 | -0.0015397402318368947 | 1.866535328858388e-19 |
+| square | 0 | 0.8218481000644532 | 0.8218481000644532 | 0.05275143070549826 | 0.05275143070549798 | 0.002227631154520071 | 0.002227631154520293 |
+| square | 1 | -0.8218481000644532 | 0.8218481000644532 | -0.05275143070549801 | 0.052751430705497995 | -0.002227631154520293 | 0.002227631154520182 |
+| square | 2 | -0.8218481000644534 | -0.8218481000644531 | -0.05275143070549815 | -0.05275143070549816 | -0.002227631154520293 | -0.002227631154520182 |
+| square | 3 | 0.8218481000644529 | -0.8218481000644532 | 0.05275143070549834 | -0.052751430705498245 | 0.002227631154519738 | -0.002227631154520071 |
+| irregular | 0 | 0.8082946943452195 | 0.3226000682788358 | 0.0366319939180071 | 0.016467994763673034 | 0.0012074413637551684 | 0.0004630733328369052 |
+| irregular | 1 | -0.6457669671255071 | 0.49471866747294174 | -0.02209008713208649 | 0.023128523747474955 | -0.0006876380032539986 | 0.0004513247992271041 |
+| irregular | 2 | 0.4730223188838932 | -0.48229814003930405 | 0.019230383145639768 | -0.02760191017146632 | 0.0007203083619243267 | -0.0006174373380510856 |
+| irregular | 3 | -0.6308499575806539 | -0.3449859470334404 | -0.02920333472506556 | -0.021760503592003034 | -0.0011089784059681307 | -0.0004964168626586107 |
+
+Canonical RMS errors \((A,C)/(B,C)/(\le3,C)\) are chain `0.09977255014752409/0.06573916615217347/0.0020850021070293536`, square `0.10419668455946075/0.06689686555910586/0.0027105144543686835`, and irregular `0.0787732847363454/0.047516541713439955/0.0014053466386455625`. Corresponding RMS amplitudes \(\Phi_{\Sigma}^{(3)}/\Phi^{(4)}\) are `0.03382686908479156/0.0010973342107698145`, `0.07460178873829999/0.0031503461906872187`, and `0.035686221945134364/0.001086879416669727`.
+
+### Validation and artifacts
+
+Final verification completed with 103 tests passing with warnings promoted to errors. The independent scalar oracle measured maximum relative errors: force `2.9594212636716024e-16`, \(s_{10}\) `1.569414410681675e-16`, embedded/summed \(\Phi^{(3)}\) `8.915326696739542e-15`, and \(\Phi^{(4)}\) `1.4551295456898224e-13`; the largest forbidden mode was `1.0901074636463385e-20`. The sweep maxima are quartet residual `3.3503948717080633e-16`, quartet condition number `1.4817617280277087`, triplet residual `4.0575294196463723e-16`, and triplet condition number `1.3583134910278372`. Maximum reconstruction and closed-form discrepancies are `1.1102230246251565e-16` and `4.440892098500626e-16`.
+
+Two executions in Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0, and Matplotlib 3.11.1 produced identical hashes:
+
+- regression CSV: `8d05db59dc4a44ee76118537af40db76aa386c8098f3f87f4359830cb5f9dea0`;
+- sweep CSV: `36f64ebd16ea1df52bf4074d42bd83356306bfc17c613267b0def746901689b5`;
+- model-error figure: `547945fa0fd658565fb837416f8f4a5c65bd4963c0e2e50226510f82f7af17d0`;
+- body-decomposition figure: `e4ce5f5a0c5f1d212d72ddd1bc6d35e1ecded8e86e437efeaf4a19bce4ab6d16`.
+
+Protected hashes remain T03 `7e02a41ccf3832d233d0e9720f7567ab4eef72ec680df65070f3a687f23fac6a`, T04 `15ee057e2540e7b5f715fa2da4ba13d7f9ed880e0c48ac3cd341f643a5fa37a5`, T05 regression `e422fff4b12939cc4ea995f03dd04d90f92611f9539549d93a317a6fedaf4ae1`, T05 sweep `dff96cf80380b373b1e9ceab4ef2533df9814553cd8f4c805e8353de6fea50b1`, and T05 figure `5327a95c2ccc00151d4389189905feb4b988ea35d8107585f8b9e262ea460d62`.
+
+The figures were visually inspected: panels are populated, axes and legends are legible, and curves are distinguishable. Scientific limits remain planar \(N=4\), Rayleigh \(L_{\max}=1\), Models A/B/C, external--scattered interaction force only, no higher multipoles, no unrestricted total-force interpretation for the irregular quartet, and no Model D. The recommended next step is Model D in a separate task.

@@ -1,7 +1,6 @@
 # Silva--Bruus multiscattering
 
-Python tools for studying acoustic interaction forces between identical spheres
-in a pressure nodal plane. T05 reaches canonical N=3 trimers: Model A is Silva--Bruus pairwise, Model B sums isolated T04 pair solves, and Model C is global Rayleigh multiple scattering at Lmax=1. Model D, higher multipole orders, and N>3 remain out of scope.
+Python tools for studying acoustic interaction forces between identical spheres in a pressure nodal plane. T06 reaches canonical planar quartets at \(N=4\): Model A is Silva--Bruus pairwise, Model B sums isolated T04 pair solves, and Model C is global Rayleigh multiple scattering at \(L_{\max}=1\). The connected expansion separates complete two-body corrections, embedded irreducible three-body terms, and the irreducible four-body remainder. Model D, higher multipole orders, and \(N>4\) remain out of scope.
 
 ## Setup
 

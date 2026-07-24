@@ -14,3 +14,4 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] T05.1a -- documentary closure of T05.1 audit records.
 - [x] T05.1b -- final correction of T05.1 audit documentation.
 - [x] T05.1c -- final cleanup of T05.1 audit documentation.
+- [x] T06 -- N=4 connected body expansion through irreducible four-body forces.

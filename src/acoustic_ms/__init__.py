@@ -3,12 +3,16 @@
 T01 provides the original Silva--Bruus pair force; T02 provides the corrected
 two-particle analytical benchmark; T03 provides the coupled Rayleigh solver at
 Lmax=1; T04 provides the Model C nodal interaction force with scattering
-Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers at fixed Lmax=1.
+Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers; T06 adds the connected N=4 body expansion through four-body order at fixed Lmax=1.
 """
 
 from .contrasts import dipole_contrast, monopole_contrast
 from .comparison import NodalForceModelComparison, compare_nodal_force_models
-from .geometries import equilateral_trimer, linear_trimer, scalene_trimer
+from .cluster_expansion import NodalQuartetBodyExpansion, decompose_nodal_quartet
+from .geometries import (
+    equilateral_trimer, irregular_quartet, linear_quartet, linear_trimer,
+    scalene_trimer, square_quartet,
+)
 from .metrics import angular_errors_degrees, rms_relative_error, rms_vector_magnitude, symmetric_particle_errors
 from .incident import nodal_standing_wave_coefficients
 from .force import RayleighNodalInteractionResult, solve_rayleigh_nodal_interaction_forces
@@ -32,14 +36,19 @@ from .silva_bruus import (
 __all__ = [
     "dipole_contrast",
     "NodalForceModelComparison",
+    "NodalQuartetBodyExpansion",
     "angular_errors_degrees",
     "compare_nodal_force_models",
     "equilateral_trimer",
+    "irregular_quartet",
+    "linear_quartet",
     "linear_trimer",
     "rms_relative_error",
     "rms_vector_magnitude",
     "scalene_trimer",
+    "square_quartet",
     "symmetric_particle_errors",
+    "decompose_nodal_quartet",
     "corrected_nodal_pair_force_magnitude",
     "corrected_nodal_pair_force_on_probe",
     "corrected_nodal_pair_forces",

@@ -16,3 +16,7 @@
 
 - T05.1 defines numerical nullity relative to the global configuration scale, \(128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}\), without an absolute floor. Correction amplitudes are RMS vector magnitudes per particle, not component RMS; only derived metrics and corresponding artifacts changed, while A, B, C and their equations remained unchanged.
 - T05.1a, T05.1b, and T05.1c are exclusively documentary. Binary determinism is assessed in the same numerical environment.
+- T06 reports only planar \(N=4\) results at Rayleigh \(L_{\max}=1\); Model D and higher scattered multipoles remain out of scope.
+- For \(N=4\), \(C-B\) is not an irreducible four-body contribution: it equals the embedded three-body sum plus \(\boldsymbol{\Phi}^{(4)}\).
+- Every connected term is built exclusively from subsets solved by the same Model C. Model A is a comparison baseline and does not define \(\boldsymbol{\Phi}^{(3)}\) or \(\boldsymbol{\Phi}^{(4)}\).
+- The decomposition is vectorial. No zero-sum constraint is imposed on the approved irregular-quartet observable.

@@ -71,3 +71,29 @@ F_{\mathrm{tol}}=128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}.
 \]
 
 There is no absolute floor. A vector is numerically null when \( |\mathbf F|\le F_{\mathrm{tol}} \). Symmetric error is zero when both vectors are numerically null; angular error is `NaN` when either vector is null. Correction amplitude is \(F_{\mathrm{RMS}}=\sqrt{N^{-1}\sum_i|\mathbf F_i|^2}\), distinct from the dimensionless relative error \(\varepsilon_{\mathrm{RMS}}\). Model C minus B isolates collective rescattering inside the common Rayleigh \(L_{\max}=1\) basis; T05.1 changed derived metrics and artifacts, not A, B, or C.
+
+## T06 connected quartet expansion
+
+For a subset \(S\) containing particle \(i\), \(\mathbf F_i^C(S)\) denotes the Model C force obtained by solving only that subset with the same Rayleigh basis. Pair terms are \(\boldsymbol{\Phi}_i^{(2)}(\{i,j\})=\mathbf F_i^C(\{i,j\})\). For each embedded triplet,
+
+\[
+\boldsymbol{\Phi}_i^{(3)}(T)=\mathbf F_i^C(T)-\sum_{j\in T,\,j\ne i}\mathbf F_i^C(\{i,j\}).
+\]
+
+The reconstruction through three-body order and the recursive four-body term are
+
+\[
+\mathbf F_i^{(\le3)}=\mathbf F_i^B+\boldsymbol{\Phi}_{i,\Sigma}^{(3)},
+\qquad
+\boldsymbol{\Phi}_i^{(4)}=\mathbf F_i^C(Q)-\mathbf F_i^{(\le3)}.
+\]
+
+The equivalent closed form is
+
+\[
+\boldsymbol{\Phi}_i^{(4)}=\mathbf F_i^C(Q)
+-\sum_{T\ni i,\,|T|=3}\mathbf F_i^C(T)
++\sum_{j\ne i}\mathbf F_i^C(\{i,j\}).
+\]
+
+This is a signed vector decomposition, not a decomposition of magnitudes. Dimensional amplitudes use \(F_{\mathrm{RMS}}=\sqrt{N^{-1}\sum_i|\mathbf F_i|^2}\), while \(\varepsilon_{\mathrm{RMS}}\) is a relative error. Numerical nullity and undefined angles continue to use the global T05.1 threshold without an absolute floor.
