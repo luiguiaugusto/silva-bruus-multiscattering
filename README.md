@@ -2,7 +2,9 @@
 
 Python tools for studying acoustic interaction forces between identical spheres
 in a pressure nodal plane. T02 includes the Silva--Bruus pairwise force and the
-published corrected fifth-order analytical two-particle benchmark; multiple
+scattering models through canonical N=3 trimers at Lmax=1, including the published corrected two-particle benchmark; no Model D or higher multipole order is implemented.
+
+#
 scattering remains out of scope.
 
 ## Setup

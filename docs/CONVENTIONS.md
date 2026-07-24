@@ -57,3 +57,9 @@ F_y=\frac{\sqrt{30\pi}}{15}\,k a^3E_0
 \]
 
 The API currently accepts real scalar (f_1), while production keeps `np.conj(f1)`.
+
+## T05 trimer Model A/B/C comparison
+
+For a cluster, Model A is the sum of T01 Silva--Bruus pair forces. Model B is the sum of isolated two-particle T04 solves, one solve for each unordered pair; it explicitly does not use the T02 truncated analytical formula. Model C is one global T04 solve of all three particles. The signed vector corrections are `Delta F^(2)=B-A` and `Delta F^(3)=C-B`, so `C-A=Delta F^(2)+Delta F^(3)` component by component.
+
+Trimer reporting uses normalized `F/(a^2 E0)`. Symmetric per-particle errors use `2||ref-model||/(||ref||+||model||)` with both numerically null vectors mapped to zero; RMS errors use C as reference; angular errors are reported in degrees and are NaN when a direction is undefined. C-B isolates collective rescattering inside the common Rayleigh `Lmax=1` basis, not a multipolar correction.

@@ -11,3 +11,5 @@
 - `Lmax=1` truncates multipolar order but not the number of rescattering events; no radiation-force API is added in T03.
 - T04 implements Model C at Rayleigh level using Eq. (22)/(27) cross terms only, with no scattered--scattered products.
 - The T03 production solver remains at `Lmax=1`; T04 uses local evaluation through `ell=2` only and reports no three-particle force results.
+- T05 is restricted to canonical N=3 trimers. Model B and C deliberately share the T04 solver and observable, so C-B isolates multibody rescattering at Lmax=1.
+- The scalar nodal-plane oracle is test-only. No zero-total-force constraint is imposed on the global scalene interaction observable, and T05 does not measure multipolar correction or introduce Model D.

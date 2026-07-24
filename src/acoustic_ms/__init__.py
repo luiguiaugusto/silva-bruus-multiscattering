@@ -3,10 +3,13 @@
 T01 provides the original Silva--Bruus pair force; T02 provides the corrected
 two-particle analytical benchmark; T03 provides the coupled Rayleigh solver at
 Lmax=1; T04 provides the Model C nodal interaction force with scattering
-Lmax=1 and local evaluation through ell=2.
+Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers at fixed Lmax=1.
 """
 
 from .contrasts import dipole_contrast, monopole_contrast
+from .comparison import NodalForceModelComparison, compare_nodal_force_models
+from .geometries import equilateral_trimer, linear_trimer, scalene_trimer
+from .metrics import angular_errors_degrees, rms_relative_error, symmetric_particle_errors
 from .incident import nodal_standing_wave_coefficients
 from .force import RayleighNodalInteractionResult, solve_rayleigh_nodal_interaction_forces
 from .multipoles import mode_count, mode_from_index, mode_index, modes
@@ -28,6 +31,14 @@ from .silva_bruus import (
 
 __all__ = [
     "dipole_contrast",
+    "NodalForceModelComparison",
+    "angular_errors_degrees",
+    "compare_nodal_force_models",
+    "equilateral_trimer",
+    "linear_trimer",
+    "rms_relative_error",
+    "scalene_trimer",
+    "symmetric_particle_errors",
     "corrected_nodal_pair_force_magnitude",
     "corrected_nodal_pair_force_on_probe",
     "corrected_nodal_pair_forces",
