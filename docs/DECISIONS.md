@@ -15,3 +15,5 @@
 - The scalar nodal-plane oracle is test-only. No zero-total-force constraint is imposed on the global scalene interaction observable, and T05 does not measure multipolar correction or introduce Model D.
 
 - T05.1 defines numerical nullity relative to the global configuration scale, (128\,\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}), without an absolute `1.0` floor. Correction amplitudes are RMS vector magnitudes per particle, not component RMS; this changes metrics and artifacts only, never A/B/C forces.
+
+- T05.1a is documentary only; it records that relative nullity changes derived metrics/artifacts, never A/B/C, and that binary determinism is assessed in the same numerical environment.
