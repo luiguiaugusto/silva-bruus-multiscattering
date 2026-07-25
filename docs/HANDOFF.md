@@ -188,3 +188,151 @@ Two executions in Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0, and Matplotlib 3.11.
 Protected hashes remain T03 `7e02a41ccf3832d233d0e9720f7567ab4eef72ec680df65070f3a687f23fac6a`, T04 `15ee057e2540e7b5f715fa2da4ba13d7f9ed880e0c48ac3cd341f643a5fa37a5`, T05 regression `e422fff4b12939cc4ea995f03dd04d90f92611f9539549d93a317a6fedaf4ae1`, T05 sweep `dff96cf80380b373b1e9ceab4ef2533df9814553cd8f4c805e8353de6fea50b1`, and T05 figure `5327a95c2ccc00151d4389189905feb4b988ea35d8107585f8b9e262ea460d62`.
 
 The figures were visually inspected: panels are populated, axes and legends are legible, and curves are distinguishable. Scientific limits remain planar \(N=4\), Rayleigh \(L_{\max}=1\), Models A/B/C, external--scattered interaction force only, no higher multipoles, no unrestricted total-force interpretation for the irregular quartet, and no Model D. The recommended next step is Model D in a separate task.
+
+## T06.1: connected-body scaling analysis
+
+### Scope, implementation, and data provenance
+
+T06.1 created `src/acoustic_ms/scaling.py`, `tests/test_scaling_analysis.py`,
+`scripts/analyze_t06_scaling.py`, `TAREFA_T06_1_ANALISE_ESCALA.md`, three CSVs,
+and two figures. It updated `src/acoustic_ms/__init__.py`, `README.md`,
+`TASKS.md`, `docs/CONVENTIONS.md`, `docs/DECISIONS.md`, and this handoff.
+No protected solver, force model, earlier test, or T03--T06 artifact changed.
+
+The analysis reads all 1,920 existing T06 sweep rows directly: three
+geometries, four contrasts \(f_1\in\{0.1,0.4,0.8,1.0\}\), and 160 distances
+per geometry--contrast pair. It performs no new trimer or quartet force sweep.
+The sole new Model C evaluation is the required centered dimer at
+\(d/a=2.1\), evaluated with the public pair APIs for the seven-row body-order
+table.
+
+The predictors and responses are
+
+\[
+\eta=|f_1|\left(\frac{a}{d_{\min}}\right)^3,
+\qquad
+\Lambda_{\max}=\max_i\left[|f_1|\sum_{j\ne i}
+\left(\frac{a}{r_{ij}}\right)^3\right],
+\]
+
+\[
+Y_3=\frac{F_{\mathrm{RMS}}(\boldsymbol{\Phi}_{\Sigma}^{(3)})}
+{F_{\mathrm{RMS}}(\mathbf F^C)},
+\qquad
+Y_4=\frac{F_{\mathrm{RMS}}(\boldsymbol{\Phi}^{(4)})}
+{F_{\mathrm{RMS}}(\mathbf F^C)}.
+\]
+
+Every unweighted fit uses every positive point in
+\(\ln y=\ln C+p\ln x\). The diagnostics are \(R^2_{\log}\), log-space RMSE,
+and maximum absolute log residual. No data are discarded, binned, smoothed,
+weighted, or treated statistically.
+
+### Geometric factors and 16 fits
+
+The measured factors \(C_g=\Lambda_{\max}/\eta\) are:
+
+| Geometry | \(C_g\) |
+|---|---:|
+| linear chain | 2.125 |
+| square | 2.353553390593274 |
+| irregular | 1.996580257145743 |
+
+| Group | Predictor | Response | Points | \(C\) | \(p\) | \(p/o\) | \(R^2_{\log}\) | RMSE\(_{\log}\) | max \(|r_{\log}|\) |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| linear chain | \(\eta\) | \(Y_3\) | 640 | 0.6536500039179222 | 0.9477457629207996 | 0.9477457629207996 | 0.9984681402009536 | 0.05819892689323387 | 0.11783376232604859 |
+| linear chain | \(\eta\) | \(Y_4\) | 640 | 0.22802259922396498 | 1.9209166221002902 | 0.9604583110501451 | 0.9991340421510149 | 0.08865959328065456 | 0.1821914636121864 |
+| linear chain | \(\Lambda_{\max}\) | \(Y_3\) | 640 | 0.3199574486842558 | 0.947745762920799 | 0.947745762920799 | 0.9984681402009536 | 0.05819892689323382 | 0.11783376232604326 |
+| linear chain | \(\Lambda_{\max}\) | \(Y_4\) | 640 | 0.053598010989882774 | 1.9209166221002894 | 0.9604583110501447 | 0.9991340421510149 | 0.08865959328065454 | 0.1821914636121953 |
+| square | \(\eta\) | \(Y_3\) | 640 | 0.6406525752847945 | 0.9487770531356282 | 0.9487770531356282 | 0.9983499381833476 | 0.060471898555038685 | 0.12137246541572999 |
+| square | \(\eta\) | \(Y_4\) | 640 | 0.27236508623737304 | 1.9198426051755004 | 0.9599213025877502 | 0.9988356442244823 | 0.10276427955401718 | 0.210058674038331 |
+| square | \(\Lambda_{\max}\) | \(Y_3\) | 640 | 0.28440637242529476 | 0.9487770531356281 | 0.9487770531356281 | 0.9983499381833476 | 0.06047189855503868 | 0.12137246541572733 |
+| square | \(\Lambda_{\max}\) | \(Y_4\) | 640 | 0.05266229214840381 | 1.919842605175501 | 0.9599213025877505 | 0.9988356442244823 | 0.10276427955401728 | 0.210058674038331 |
+| irregular | \(\eta\) | \(Y_3\) | 640 | 0.4552015284021664 | 0.9427068521180625 | 0.9427068521180625 | 0.9979957125494455 | 0.0662327902550376 | 0.13170610505534341 |
+| irregular | \(\eta\) | \(Y_4\) | 640 | 0.14364901647817394 | 1.9128217876764342 | 0.9564108938382171 | 0.9987739440349565 | 0.10506952695317552 | 0.22289695800020937 |
+| irregular | \(\Lambda_{\max}\) | \(Y_3\) | 640 | 0.23720362061363207 | 0.9427068521180623 | 0.9427068521180623 | 0.9979957125494455 | 0.0662327902550376 | 0.1317061050553443 |
+| irregular | \(\Lambda_{\max}\) | \(Y_4\) | 640 | 0.0382743281607928 | 1.9128217876764346 | 0.9564108938382173 | 0.9987739440349566 | 0.10506952695317551 | 0.2228969580002076 |
+| grouped | \(\eta\) | \(Y_3\) | 1920 | 0.575515712845375 | 0.9464098893914968 | 0.9464098893914968 | 0.9881180078496571 | 0.16270474366899415 | 0.343368958567277 |
+| grouped | \(\eta\) | \(Y_4\) | 1920 | 0.20740091186607565 | 1.917860338317407 | 0.9589301691587035 | 0.9920672952487812 | 0.2688671716039741 | 0.5606023914972305 |
+| grouped | \(\Lambda_{\max}\) | \(Y_3\) | 1920 | 0.2803940168979942 | 0.9477200372149447 | 0.9477200372149447 | 0.9927091201707364 | 0.1274516770701454 | 0.2716098723293241 |
+| grouped | \(\Lambda_{\max}\) | \(Y_4\) | 1920 | 0.04835618532017296 | 1.9207265477838105 | 0.9603632738919052 | 0.996896030515444 | 0.16818445600557255 | 0.4160067894461079 |
+
+Here \(o=1\) for \(Y_3\) and \(o=2\) for \(Y_4\), so \(p/o\) is the
+exponent relative to the transformed predictor \(x^o\). Within each fixed
+geometry, \(\Lambda_{\max}=C_g\eta\), and the predictor replacement preserves
+\(p\), \(R^2_{\log}\), RMSE, and maximum residual to rounding while changing
+the prefactor.
+
+For the grouped fits, changing from \(\eta\) to \(\Lambda_{\max}\) reduces
+log-space RMSE by 0.21666895386017415 for \(Y_3\) and
+0.37447009613617466 for \(Y_4\), or approximately 21.67% and 37.45%.
+This is a descriptive improvement for these three families, not evidence of a
+universal coupling criterion.
+
+### Canonical \(N=2,3,4\) comparison
+
+All rows use \(a=E_0=1\), \(ka=0.1\), \(f_0=0\), \(f_1=0.8\), and
+\(d_{\min}/a=2.1\). Zeros in unavailable body orders are structural zeros.
+
+| \(N\) | Geometry | A--C | B--C | \((\le3)\)--C | \(\Phi_3/F^C\) | \(\Phi_4/F^C\) | \(F_{\mathrm{RMS}}(F^C)/(a^2E_0)\) |
+|---:|---|---:|---:|---:|---:|---:|---:|
+| 2 | pair | 0.044133766948299784 | 0 | 0 | 0 | 0 | 0.6537653018280931 |
+| 3 | linear chain | 0.08319737863715175 | 0.04308674386016288 | 0 | 0.04308674386016288 | 0 | 0.5921272938347617 |
+| 3 | equilateral | 0.08826749345670055 | 0.04617144636179811 | 0 | 0.04617144636179811 | 0 | 1.1871679817853047 |
+| 3 | scalene | 0.06634541632888573 | 0.031143703608647644 | 0 | 0.031143703608647644 | 0 | 0.7711809952716625 |
+| 4 | linear chain | 0.09977255014752409 | 0.06573916615217347 | 0.0020850021070293536 | 0.06427311991532472 | 0.0020850021070293536 | 0.5262988498046471 |
+| 4 | square | 0.10419668455946075 | 0.06689686555910586 | 0.0027105144543686835 | 0.06418635110473715 | 0.0027105144543686835 | 1.1622687293217102 |
+| 4 | irregular | 0.0787732847363454 | 0.047516541713439955 | 0.0014053466386455625 | 0.046142664298696304 | 0.0014053466386455622 | 0.7733888471226102 |
+
+The T05 regression CSV stores the scalene canonical row at \(d/a=2.2\), not
+at the table's required \(2.1\). To preserve the no-new-trimer-solve rule, the
+scalene \(F^C\) RMS at \(2.1\) is recovered from the exact sweep identity
+`rms_irreducible_multibody / rms_b_vs_c`; the CSV records this provenance
+explicitly. All other trimer/quartet amplitudes come from their per-particle
+regression CSVs.
+
+### Verification, determinism, and hashes
+
+The observed environment is Python 3.12.3, NumPy 2.5.1, and Matplotlib 3.11.1.
+The final suite reports 124 tests passing with warnings treated as errors. The
+script validates all four input CSVs, and two consecutive executions produce
+byte-identical outputs with 16 fit rows, two collapse rows, and seven
+body-order rows.
+
+New artifact SHA-256 hashes:
+
+- `t06_1_scaling_fits.csv`: `2e71a1b5cb5df238b3bd9ed94f96ef36cae36964af87a77cef89238c0b4d3367`;
+- `t06_1_collapse_summary.csv`: `e8120962b77a8fdd09b1f9209f939191fe1aba9b597731aedba201f92b4eca8e`;
+- `t06_1_body_order_summary.csv`: `4258146c21e0a183fe3baa3e3f92d4e8bd59e0782344c8687fe5600a6b785ae9`;
+- `t06_1_eta_scaling.png`: `4aef5f9654533c5b2e694e0feaf0933a84266aef1c06c4d1862ac8289d32a064`;
+- `t06_1_lambda_scaling.png`: `f817b7ce31a3ee6ed2b829dd98fa8d0534a18e5e6633f51f796b547ebd4720c8`.
+
+Preserved SHA-256 hashes:
+
+- T03 CSV: `7e02a41ccf3832d233d0e9720f7567ab4eef72ec680df65070f3a687f23fac6a`;
+- T04 CSV: `15ee057e2540e7b5f715fa2da4ba13d7f9ed880e0c48ac3cd341f643a5fa37a5`;
+- T05 regression: `e422fff4b12939cc4ea995f03dd04d90f92611f9539549d93a317a6fedaf4ae1`;
+- T05 sweep: `dff96cf80380b373b1e9ceab4ef2533df9814553cd8f4c805e8353de6fea50b1`;
+- T05 figure: `5327a95c2ccc00151d4389189905feb4b988ea35d8107585f8b9e262ea460d62`;
+- T06 regression: `8d05db59dc4a44ee76118537af40db76aa386c8098f3f87f4359830cb5f9dea0`;
+- T06 sweep: `36f64ebd16ea1df52bf4074d42bd83356306bfc17c613267b0def746901689b5`;
+- T06 model figure: `547945fa0fd658565fb837416f8f4a5c65bd4963c0e2e50226510f82f7af17d0`;
+- T06 body-decomposition figure: `e4ce5f5a0c5f1d212d72ddd1bc6d35e1ecded8e86e437efeaf4a19bce4ab6d16`.
+
+Verification commands include editable installation, `python -m pytest -q`,
+`python -m pytest -q -W error`, two executions of
+`python scripts/analyze_t06_scaling.py`, SHA-256 checks, CSV row/finiteness
+checks, control-character inspection, `git diff --check`, and Git scope
+inspection. Both 2400×1000 PNGs were visually inspected: axes and legends are
+legible, all geometry/contrast series and grouped fits are present, the axes
+are logarithmic, and no clipping, empty panels, `NaN`, or `inf` is visible.
+
+The numerical evidence is limited to \(ka=0.1\), positive \(f_1\), three fixed
+planar dilation families, Rayleigh \(L_{\max}=1\), and the external--scattered
+force observable. The sweep varies \(kd\), whereas the exact coupling contains
+Hankel functions rather than only \(r^{-3}\). The fitted exponents are not an
+analytic proof. The amplitude of the embedded vector sum
+\(\boldsymbol{\Phi}_{\Sigma}^{(3)}\) is not the sum of individual trimer
+amplitudes, and multipolar corrections may exceed \(\boldsymbol{\Phi}^{(4)}\).
+T07 and Model D were not started. The recommended next step is a separate T07
+beginning with multipolar convergence for \(N=2\).

@@ -20,3 +20,8 @@
 - For \(N=4\), \(C-B\) is not an irreducible four-body contribution: it equals the embedded three-body sum plus \(\boldsymbol{\Phi}^{(4)}\).
 - Every connected term is built exclusively from subsets solved by the same Model C. Model A is a comparison baseline and does not define \(\boldsymbol{\Phi}^{(3)}\) or \(\boldsymbol{\Phi}^{(4)}\).
 - The decomposition is vectorial. No zero-sum constraint is imposed on the approved irregular-quartet observable.
+
+- T06.1 is post-processing of the already versioned T05/T06 CSVs. It performs no new trimer or quartet force sweep; the only additional Model C evaluation is one centered dimer for the \(N=2,3,4\) comparison.
+- \(\Lambda_{\max}\) is an exploratory geometric diagnostic. Its grouped improvement is reported descriptively and no universal validity threshold is defined.
+- Within each fixed-shape dilation family, \(\Lambda_{\max}=C_g\eta\), so exponent and log-space fit quality are necessarily unchanged from the \(\eta\) fit.
+- T06.1 changes no force model, solver, connected-body definition, or protected T03--T06 artifact. T07, Model D, higher multipoles, and new cluster families remain outside its scope.

@@ -97,3 +97,48 @@ The equivalent closed form is
 \]
 
 This is a signed vector decomposition, not a decomposition of magnitudes. Dimensional amplitudes use \(F_{\mathrm{RMS}}=\sqrt{N^{-1}\sum_i|\mathbf F_i|^2}\), while \(\varepsilon_{\mathrm{RMS}}\) is a relative error. Numerical nullity and undefined angles continue to use the global T05.1 threshold without an absolute floor.
+
+## T06.1 coupling and log-space scaling diagnostics
+
+The minimum-distance coupling predictor and the collective geometric predictor
+are
+
+\[
+\eta=|f_1|\left(\frac{a}{d_{\min}}\right)^3,
+\qquad
+\Lambda_i=|f_1|\sum_{j\ne i}\left(\frac{a}{r_{ij}}\right)^3,
+\qquad
+\Lambda_{\max}=\max_i\Lambda_i.
+\]
+
+Both are dimensionless. The geometric sum uses all neighbors and is evaluated
+from Euclidean center distances. Non-overlap requires \(r_{ij}\ge 2a\).
+For each fixed-shape, uniformly dilated T06 family,
+\(\Lambda_{\max}=C_g\eta\); therefore replacing \(\eta\) by
+\(\Lambda_{\max}\) changes only the intercept of an intrageometry power-law
+fit, not its exponent or log-space residual diagnostics.
+
+T06.1 fits strictly positive data without weighting according to
+
+\[
+\ln y=\ln C+p\ln x.
+\]
+
+For observed values \(y_n\) and fitted log values
+\(\widehat{\ln y_n}\), the reported diagnostics are
+
+\[
+R^2_{\log}=1-
+\frac{\sum_n(\ln y_n-\widehat{\ln y_n})^2}
+{\sum_n(\ln y_n-\overline{\ln y})^2},
+\]
+
+\[
+\operatorname{RMSE}_{\log}=
+\sqrt{\frac{1}{N}\sum_n(\ln y_n-\widehat{\ln y_n})^2}.
+\]
+
+The exponent is \(p\) when the predictor is \(x\). When the horizontal axis is
+\(x^2\), the displayed exponent relative to that transformed predictor is
+\(q=p/2\). These diagnostics describe amplitude-ratio collapse; they do not
+establish an additive force fraction or a universal validity threshold.

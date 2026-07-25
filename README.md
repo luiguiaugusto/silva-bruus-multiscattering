@@ -31,3 +31,14 @@ T04 adds `solve_rayleigh_nodal_interaction_forces`, which returns the coupled T0
 ```bash
 .venv/bin/python scripts/validate_t04_force.py
 ```
+
+## T06.1 scaling diagnosis
+
+T06.1 post-processes the existing 1,920 quartet configurations without
+re-running their force solves. The connected three-body amplitude scales
+approximately to first order and the irreducible four-body amplitude to second
+order in \(\eta=|f_1|(a/d_{\min})^3\) over the audited data. The collective
+predictor \(\Lambda_{\max}\) improves the descriptive grouped collapse for the
+three fixed geometry families, but it is exploratory and is not a universal
+validity criterion. Model D, T07, higher multipoles, new force sweeps, and
+\(N>4\) remain outside this result.
