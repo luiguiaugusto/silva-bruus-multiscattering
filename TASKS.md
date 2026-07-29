@@ -16,3 +16,4 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] T05.1c -- final cleanup of T05.1 audit documentation.
 - [x] T06 -- N=4 connected body expansion through irreducible four-body forces.
 - [x] T06.1 -- Scaling analysis of connected three- and four-body amplitudes.
+- [x] T07 -- multipolar Model D and convergence of total and connected cluster forces.

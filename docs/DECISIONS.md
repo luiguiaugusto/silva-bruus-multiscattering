@@ -25,3 +25,13 @@
 - \(\Lambda_{\max}\) is an exploratory geometric diagnostic. Its grouped improvement is reported descriptively and no universal validity threshold is defined.
 - Within each fixed-shape dilation family, \(\Lambda_{\max}=C_g\eta\), so exponent and log-space fit quality are necessarily unchanged from the \(\eta\) fit.
 - T06.1 changes no force model, solver, connected-body definition, or protected T03--T06 artifact. T07, Model D, higher multipoles, and new cluster families remain outside its scope.
+
+## T07 decisions
+
+- Model D is a new API; all A--C APIs retain their fixed \(L_{\max}=1\) meaning.
+- Every positive multipole uses its leading Rayleigh coefficient. This extends multipole order but is not an exact Mie T-matrix.
+- The planar active basis uses \(\ell+m\) odd and is checked against the complete basis. It is not reduced indiscriminately to odd \(\ell\).
+- The balanced matrix is used for solution and conditioning; convergence is judged by forces and connected terms, not by the ill-scaled raw condition number.
+- The strict odd-order dimer branch used to derive Eq. (30) is retained only as an independent benchmark. The general planar Model D also preserves symmetry-allowed even-\(\ell\), odd-\(m\) channels.
+- Connected terms are recomputed by subset inclusion--exclusion at a common \(L\). Model A does not enter that definition.
+- No 1,920-case T05 or T06 sweep was rerun. No universal claim that \(L=5\) is sufficient is made.

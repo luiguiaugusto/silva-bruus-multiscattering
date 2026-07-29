@@ -142,3 +142,25 @@ The exponent is \(p\) when the predictor is \(x\). When the horizontal axis is
 \(x^2\), the displayed exponent relative to that transformed predictor is
 \(q=p/2\). These diagnostics describe amplitude-ratio collapse; they do not
 establish an additive force fraction or a universal validity threshold.
+
+## T07 multipolar Model D
+
+For \(\ell\geq1\), Model D uses the leading Rayleigh coefficient
+
+\[
+s_\ell=i\frac{3\ell f_1}{(2\ell-1)!!(2\ell+1)!![2(2\ell+1)-(\ell-1)f_1]}(ka)^{2\ell+1},
+\]
+
+while \(s_0=-if_0(ka)^3/3\). The complete ordering contains \((L_{\max}+1)^2\) modes per particle. Planar reflection permits \(\ell+m\) odd; inactive modes are returned as exact zeros. This is a symmetry of the nodal field, not a rule that only odd \(\ell\) may occur in a generic planar cluster.
+
+The physical and balanced systems are
+
+\[
+(\mathbf I-\mathbf D\mathbf U)\mathbf s=\mathbf D\mathbf a_{\rm ext},
+\qquad
+(\mathbf I-\mathbf D^{1/2}\mathbf U\mathbf D^{1/2})\mathbf q=\mathbf D^{1/2}\mathbf a_{\rm ext}.
+\]
+
+The physical residual is measured in the first equation, while reported conditioning refers primarily to the balanced matrix. Multipole order does not count re-scattering events: the coupled solve already resums all paths admitted at fixed \(L_{\max}\).
+
+Connected terms at order \(L\) are defined only from Model-D subset solutions at that same \(L\), by vector inclusion--exclusion. Successive convergence is measured separately for the total force and each nonzero connected term. A relative ratio is undefined for a numerically null term; its applicability flag must be false rather than silently interpreting zero as a measured ratio.

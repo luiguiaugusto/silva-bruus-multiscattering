@@ -336,3 +336,72 @@ analytic proof. The amplitude of the embedded vector sum
 amplitudes, and multipolar corrections may exceed \(\boldsymbol{\Phi}^{(4)}\).
 T07 and Model D were not started. The recommended next step is a separate T07
 beginning with multipolar convergence for \(N=2\).
+
+## T07 — Model D and multipolar convergence
+
+### Implementation and protected scope
+
+T07 added `multipolar_scattering.py`, `multipolar_solver.py`, `model_d.py`, and `multipolar_expansion.py`; exported their public APIs; added three T07 test modules and `validate_t07_multipolar.py`; generated three CSVs and two PNGs; and updated this documentation, conventions, decisions, task registry, README, and the self-contained T07 specification. No protected T01--T06.1 scientific module, test, script, or artifact was modified.
+
+The positive-order Rayleigh coefficients are
+
+\[
+s_\ell=i\frac{3\ell f_1}{(2\ell-1)!!(2\ell+1)!![2(2\ell+1)-(\ell-1)f_1]}(ka)^{2\ell+1}.
+\]
+
+The solver uses the complete project ordering, a planar active basis with \(\ell+m\) odd, principal complex square roots in the balanced equation, and reports a residual evaluated in the original physical equation. Local fields are reexpanded with source order \(L_{\max}\) and target order 2; the T04 force expression is unchanged.
+
+### Independent validation
+
+Across an isolated particle, two dimers, the three canonical trimers, and the three canonical quartets, the maximum absolute differences between Model D at \(L=1\) and Model C were \(4.44\times10^{-16}\) for force components and \(4.41\times10^{-19}\) for scattering coefficients. The corrected one-particle symmetry reduction of the dimer agreed with the global solution at \(L=1,3,5\); the largest observed coefficient difference was \(1.13\times10^{-19}\).
+
+The strict odd-order branch used in the derivation of Eq. (30) gave relative discrepancies \(1.7061326608\times10^{-3}\), \(4.3074064108\times10^{-4}\), and \(1.0794930439\times10^{-4}\) at \(ka=0.1,0.05,0.025\), respectively. Thus its asymptotic error decreases by approximately a factor four per halving of \(ka\). The general planar Model D retains additional symmetry-allowed even-\(\ell\), odd-\(m\) channels; its direct discrepancy from Eq. (30) is separately recorded in the analytic CSV and must not be conflated with the strict reduced benchmark.
+
+### Dimer convergence
+
+The base map contains exactly \(5\times4\times5=100\) rows. Nine targeted \(L=11\) rows were added only where needed to test or confirm convergence. Minimum confirmed orders were:
+
+| \(d/a\) | \(f_1=0.1\) | \(f_1=0.4\) | \(f_1=0.8\) | \(f_1=1.0\) |
+|---:|---:|---:|---:|---:|
+| 2.00 | 7 | 9 | not confirmed through 11 | not confirmed through 11 |
+| 2.05 | 7 | 9 | not confirmed through 11 | not confirmed through 11 |
+| 2.10 | 7 | 9 | not confirmed through 11 | not confirmed through 11 |
+| 2.50 | 5 | 7 | 7 | 7 |
+| 3.00 | 5 | 5 | 5 | 7 |
+
+For the stress case \(d/a=2,f_1=1\), the \(L=11\) successive force error is \(6.0377621229\times10^{-3}\); no convergence claim is made.
+
+### Canonical clusters
+
+All subsets were solved at the same order. The final available RMS force and successive errors are:
+
+| geometry | final \(L\) | \(F_{\rm RMS}(\mathbf F^{D,L})\) | \(\epsilon_L^F\) | \(\epsilon_L^{(3)}\) | \(\epsilon_L^{(4)}\) |
+|---|---:|---:|---:|---:|---:|
+| trimer linear | 11 | 0.6518606954444777 | 1.45622e-4 | 2.35237e-3 | not applicable |
+| trimer equilateral | 11 | 1.417220834396371 | 2.11264e-4 | 2.81969e-4 | not applicable |
+| trimer scalene | 9 | 0.8611163977289301 | 8.09874e-4 | 6.69608e-4 | not applicable |
+| quartet linear | 13 | 0.5750165079059795 | 3.01722e-5 | 3.40585e-4 | 2.07603e-4 |
+| quartet square | 11 | 1.344690911288789 | 1.82564e-4 | 2.28772e-4 | 3.39363e-4 |
+| quartet irregular | 9 | 0.8492744782490987 | 7.15549e-4 | 5.43663e-4 | 7.84447e-4 |
+
+The linear trimer's total force is converged by the force criterion, but its three-body term is not confirmed through \(L=11\); this distinction is intentional. Four clusters required \(L=11\), and only the linear quartet required \(L=13\). The maximum physical residual was \(8.01\times10^{-16}\). The largest balanced condition number was 1.6753, while the raw matrix reached \(5.57\times10^{40}\); the latter is scaling pathology, not physical divergence.
+
+### Artifacts and environment
+
+The verification environment was Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0, and Matplotlib 3.11.1. Two consecutive runs in this environment were byte-identical. Official T07 hashes:
+
+```text
+c0e115f87a8d80a58f7a9188c69be4ce0f0d60518326bd3128726b369c93735e  results/data/t07_pair_analytic_validation.csv
+fba9e51c5a93c0161a3a04c9ff98505ee2032d3e42f2f55490ca644cf4eb2dc6  results/data/t07_dimer_convergence.csv
+a272d80770a19a015a5bcc6245a2d35eb2acb165a3b6fd79bae0947c988b1db0  results/data/t07_cluster_convergence.csv
+c38297886a664bb82193a1a500812902b85daf315ff9ede196705837715d65c7  results/figures/t07_dimer_convergence.png
+0b19fa7b7cffdbf06e1144ad72f881393b3fc658b43586fd969f9ee59e6c45de  results/figures/t07_cluster_convergence.png
+```
+
+The pre-existing T03--T06.1 artifact hashes were rechecked byte for byte. Both figures were inspected for readable labels, visible tolerance lines, distinct geometry/contrast curves, and explicit adaptive orders.
+
+### Commands and limitations
+
+Verification completed with 160/160 tests passing and no warnings. It included editable installation, `pytest -q`, `pytest -q -W error`, two executions of the T07 validator, SHA-256 comparisons, `git diff --check`, protected-file diff checks, and an ASCII-control scan. No T05/T06 1,920-case sweep was rerun.
+
+Scientific scope remains \(ka\leq0.1\), \(N\leq4\), identical fixed spheres in the nodal plane, leading Rayleigh coefficients at each multipole, and the external--scattered force. Exact Mie coefficients, scattered--scattered forces, viscosity, streaming, walls, torque, and dynamics remain outside scope. No universal multipolar cutoff is inferred from these canonical cases.

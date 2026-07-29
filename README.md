@@ -42,3 +42,7 @@ predictor \(\Lambda_{\max}\) improves the descriptive grouped collapse for the
 three fixed geometry families, but it is exploratory and is not a universal
 validity criterion. Model D, T07, higher multipoles, new force sweeps, and
 \(N>4\) remain outside this result.
+
+## T07: multipolar Model D
+
+T07 adds planar multipolar Model D for identical nodal clusters with \(N\leq4\). It uses a balanced globally coupled system, preserves the external--scattered force observable, and studies total-force and connected-term convergence separately. Model D at \(L_{\max}=1\) is numerically equivalent to Model C. The implemented coefficients are the leading Rayleigh term at each multipole, not an exact finite-frequency T-matrix; viscosity, streaming, walls, dynamics, and scattered--scattered force terms remain out of scope.
