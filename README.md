@@ -1,6 +1,6 @@
 # Silva--Bruus multiscattering
 
-Python tools for studying acoustic interaction forces between identical spheres in a pressure nodal plane. T06 reaches canonical planar quartets at \(N=4\): Model A is Silva--Bruus pairwise, Model B sums isolated T04 pair solves, and Model C is global Rayleigh multiple scattering at \(L_{\max}=1\). The connected expansion separates complete two-body corrections, embedded irreducible three-body terms, and the irreducible four-body remainder. Model D, higher multipole orders, and \(N>4\) remain out of scope.
+Python tools for studying acoustic interaction forces between identical spheres in a pressure nodal plane. Models A--C provide the Silva--Bruus, matched Rayleigh pairwise, and global \(L_{\max}=1\) hierarchy; T07 adds balanced multipolar Model D. T08 tests transferability through \(N=10\) using deterministic planar families, while preserving \(N\leq4\) as calibration and \(N=6,10\) as an untouched external holdout. The project remains restricted to the external--scattered force observable and leading Rayleigh coefficients at each retained multipole.
 
 ## Setup
 
@@ -46,3 +46,16 @@ validity criterion. Model D, T07, higher multipoles, new force sweeps, and
 ## T07: multipolar Model D
 
 T07 adds planar multipolar Model D for identical nodal clusters with \(N\leq4\). It uses a balanced globally coupled system, preserves the external--scattered force observable, and studies total-force and connected-term convergence separately. Model D at \(L_{\max}=1\) is numerically equivalent to Model C. The implemented coefficients are the leading Rayleigh term at each multipole, not an exact finite-frequency T-matrix; viscosity, streaming, walls, dynamics, and scattered--scattered force terms remain out of scope.
+
+## T08: transferability and frozen article data
+
+T08 evaluates 312 deterministic configurations at \(ka=0.1\), spanning
+\(N\in\{2,3,4,6,10\}\), three cluster families where applicable, four
+positive dipole contrasts, and six separations. The matched pairwise baseline
+\(B_L\) sums isolated Model-D dimers at the same multipolar order as the global
+solution. Predictor selection and empirical thresholds use only \(N\leq4\);
+\(N=6,10\) is held out until final evaluation. Cross-validation selected the
+dipolar balanced-operator spectral radius \(\rho_1\), and the prespecified
+diagnostic transferability criterion was supported within this sampled nodal
+domain. This is not a universal validity theorem. T08 closes the computational
+sweeps used for the article; the data are frozen.

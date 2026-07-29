@@ -164,3 +164,73 @@ The physical and balanced systems are
 The physical residual is measured in the first equation, while reported conditioning refers primarily to the balanced matrix. Multipole order does not count re-scattering events: the coupled solve already resums all paths admitted at fixed \(L_{\max}\).
 
 Connected terms at order \(L\) are defined only from Model-D subset solutions at that same \(L\), by vector inclusion--exclusion. Successive convergence is measured separately for the total force and each nonzero connected term. A relative ratio is undefined for a numerically null term; its applicability flag must be false rather than silently interpreting zero as a measured ratio.
+
+## T08 transferability conventions
+
+The historical Model B remains the sum of isolated Rayleigh dimers at
+\(L=1\). T08 introduces a separate, explicitly order-matched diagnostic,
+
+\[
+\mathbf F_i^{B_L}=\sum_{j\ne i}\mathbf F_{ij}^{D,N=2,L},
+\]
+
+called the multipolarly matched pairwise baseline. Thus \(B_1=B\), while
+\(B_L=D_L\) for a dimer. It does not redefine Model B. The signed vector
+identity audited in every configuration is
+
+\[
+\mathbf F^{D_L}-\mathbf F^A=
+(\mathbf F^{B_L}-\mathbf F^A)+(\mathbf F^{D_L}-\mathbf F^{B_L}).
+\]
+
+With the project RMS vector magnitude, the primary and residual errors are
+
+\[
+\varepsilon_A=\frac{F_{\mathrm{RMS}}(\mathbf F^A-\mathbf F^D)}
+{F_{\mathrm{RMS}}(\mathbf F^D)},
+\qquad
+\varepsilon_B=\frac{F_{\mathrm{RMS}}(\mathbf F^{B_L}-\mathbf F^D)}
+{F_{\mathrm{RMS}}(\mathbf F^D)}.
+\]
+
+The associated amplitudes are
+
+\[
+Y_{\mathrm{2B}}=\frac{F_{\mathrm{RMS}}(\mathbf F^{B_L}-\mathbf F^A)}
+{F_{\mathrm{RMS}}(\mathbf F^D)},\quad
+Y_{\mathrm{coll}}=\frac{F_{\mathrm{RMS}}(\mathbf F^D-\mathbf F^{B_L})}
+{F_{\mathrm{RMS}}(\mathbf F^D)},\quad
+Y_{\mathrm{mp}}=\frac{F_{\mathrm{RMS}}(\mathbf F^D-\mathbf F^{D_1})}
+{F_{\mathrm{RMS}}(\mathbf F^D)}.
+\]
+
+The three dimensionless predictors are
+
+\[
+\eta=|f_1|\left(\frac{a}{d_{\min}}\right)^3,
+\qquad
+\Lambda_{\max}=|f_1|\max_i\sum_{j\ne i}
+\left(\frac{a}{r_{ij}}\right)^3,
+\]
+
+\[
+\rho_1=\rho(\mathbf K_b^{(1)}),
+\qquad
+\mathbf K_b^{(1)}=\mathbf I-\mathbf A_b^{(1)}.
+\]
+
+Here \(\rho_1\) is computed from the balanced \(L=1\) rescattering operator,
+not from the system matrix itself or from its condition number.
+
+Convergence is assessed independently for \(D_L\), \(B_L\), and
+\(R_L=D_L-B_L\). A quantity is confirmed only when its last two successive
+normalized RMS changes are both at most \(10^{-3}\). The collective residual
+is numerically resolved only when \(\varepsilon_B>5u_R\), with \(u_R\) the
+larger of its last two truncation changes. Non-applicable ratios use an
+explicit flag and a finite placeholder; they are never represented by
+`NaN` or `inf`.
+
+Calibration is restricted to \(N\leq4\). Clusters with \(N=6,10\) form an
+external holdout and cannot select a predictor, fit a power law, or define a
+threshold. The thresholds at 1%, 5%, and 10% are conservative empirical
+nodal-plane thresholds within the sampled domain, not universal constants.

@@ -35,3 +35,9 @@
 - The strict odd-order dimer branch used to derive Eq. (30) is retained only as an independent benchmark. The general planar Model D also preserves symmetry-allowed even-\(\ell\), odd-\(m\) channels.
 - Connected terms are recomputed by subset inclusion--exclusion at a common \(L\). Model A does not enter that definition.
 - No 1,920-case T05 or T06 sweep was rerun. No universal claim that \(L=5\) is sufficient is made.
+- T08 leaves every established force solver unchanged. Its \(B_L\) baseline is a diagnostic sum of isolated Model-D dimers at the same \(L\), and does not rename or redefine historical Model B.
+- T08 calibrates exclusively on \(N\leq4\). The \(N=6,10\) cases are a locked external holdout and are never used for predictor selection, fits, or empirical thresholds.
+- Predictor selection uses leave-\((N,\mathrm{family})\)-out log-RMSE for \(\varepsilon_A\). The selected predictor is \(\rho_1\), the spectral radius of the balanced dipolar rescattering operator.
+- The 1%, 5%, and 10% cutoffs are conservative empirical nodal-plane thresholds within the sampled domain. Their successful holdout diagnosis is not a universal criterion or an analytic bound.
+- Nonconverged-at-limit cases are labeled unconfirmed, not divergent, and are excluded from fits and thresholds. Raw conditioning is retained only as a scaling diagnostic; convergence decisions use successive force changes.
+- T08 closes and freezes the computational datasets intended for the article. No T05/T06 sweep was rerun, and later work must treat the committed T08 raw tables as immutable provenance.

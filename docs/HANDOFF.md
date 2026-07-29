@@ -405,3 +405,269 @@ The pre-existing T03--T06.1 artifact hashes were rechecked byte for byte. Both f
 Verification completed with 160/160 tests passing and no warnings. It included editable installation, `pytest -q`, `pytest -q -W error`, two executions of the T07 validator, SHA-256 comparisons, `git diff --check`, protected-file diff checks, and an ASCII-control scan. No T05/T06 1,920-case sweep was rerun.
 
 Scientific scope remains \(ka\leq0.1\), \(N\leq4\), identical fixed spheres in the nodal plane, leading Rayleigh coefficients at each multipole, and the external--scattered force. Exact Mie coefficients, scattered--scattered forces, viscosity, streaming, walls, torque, and dynamics remain outside scope. No universal multipolar cutoff is inferred from these canonical cases.
+
+## T08 — transferability through \(N=10\) and frozen article data
+
+### Scope, implementation, and provenance
+
+T08 started from `bd3752ef2d4fa61ec10887445575f507d8c8cd6b` and leaves all
+T01--T07 scientific modules and artifacts unchanged. It adds the deterministic
+cluster families, matched multipolar pairwise baseline, transferability
+analysis, three focused test files, raw and derived CSVs, two figures, and the
+self-contained T08 specification. The exact changed-file set is:
+
+```text
+TAREFA_T08_TRANSFERIBILIDADE_CRITERIO_ACOPLAMENTO.md
+README.md
+TASKS.md
+docs/CONVENTIONS.md
+docs/DECISIONS.md
+docs/HANDOFF.md
+src/acoustic_ms/__init__.py
+src/acoustic_ms/cluster_families.py
+src/acoustic_ms/transferability.py
+scripts/run_t08_transferability.py
+scripts/analyze_t08_transferability.py
+tests/test_t08_cluster_families.py
+tests/test_t08_transferability.py
+tests/test_t08_analysis.py
+results/data/t08_cases.csv
+results/data/t08_forces.csv
+results/data/t08_convergence.csv
+results/data/t08_predictor_fits.csv
+results/data/t08_validity_thresholds.csv
+results/figures/t08_predictor_comparison.png
+results/figures/t08_transferability.png
+```
+
+The physical grid is fixed at \(a=E_0=1\), \(k=ka=0.1\), \(f_0=0\),
+\(f_1\in\{0.1,0.4,0.8,1.0\}\), and
+\(d_{\min}/a\in\{2.1,2.5,3,4,6,10\}\). The thirteen deterministic
+geometries are one pair and linear, compact, and irregular families for each
+of \(N=3,4,6,10\). This produces exactly 312 configurations: 168 calibration
+cases with \(N\leq4\) and 144 external-holdout cases with \(N=6,10\).
+The long force table contains 1,704 particle rows and the adaptive convergence
+table contains 1,270 evaluated orders.
+
+The new matched baseline is
+
+\[
+\mathbf F_i^{B_L}=\sum_{j\ne i}\mathbf F_{ij}^{D,N=2,L}.
+\]
+
+Each unordered dimer is solved at the same \(L\) as the global cluster and is
+cached deterministically by distance and physical parameters. Across the 13
+families at a representative point, the maximum component difference in
+\(B_1=B\) was \(4.440892098500626\times10^{-16}\). For all dimer rows,
+\(B_L=D_L\) to a maximum recorded relative discrepancy of
+\(2.703147394448881\times10^{-16}\). The vector identity
+
+\[
+\mathbf F^{D_L}-\mathbf F^A=
+(\mathbf F^{B_L}-\mathbf F^A)+(\mathbf F^{D_L}-\mathbf F^{B_L})
+\]
+
+closed with maximum absolute component error exactly zero in the frozen CSV.
+
+The analyzed errors and amplitude diagnostics are
+
+\[
+\varepsilon_A=\frac{F_{\mathrm{RMS}}(\mathbf F^A-\mathbf F^D)}
+{F_{\mathrm{RMS}}(\mathbf F^D)},
+\qquad
+\varepsilon_B=\frac{F_{\mathrm{RMS}}(\mathbf F^{B_L}-\mathbf F^D)}
+{F_{\mathrm{RMS}}(\mathbf F^D)},
+\]
+
+\[
+Y_{\mathrm{2B}}=\frac{F_{\mathrm{RMS}}(\mathbf F^{B_L}-\mathbf F^A)}
+{F_{\mathrm{RMS}}(\mathbf F^D)},\quad
+Y_{\mathrm{coll}}=\frac{F_{\mathrm{RMS}}(\mathbf F^D-\mathbf F^{B_L})}
+{F_{\mathrm{RMS}}(\mathbf F^D)},\quad
+Y_{\mathrm{mp}}=\frac{F_{\mathrm{RMS}}(\mathbf F^D-\mathbf F^{D_1})}
+{F_{\mathrm{RMS}}(\mathbf F^D)}.
+\]
+
+### Convergence and numerical audit
+
+Every case was evaluated at \(L=1,3,5,7,9,11\), stopping early only after
+both latest normalized differences satisfied \(10^{-3}\); \(L=13\) was
+available only for \(N\leq4\). Total, matched-pairwise, and collective
+residual convergence were assessed separately. No case required \(L=13\).
+The final status by particle count and family is:
+
+| \(N\) | family | cases | total confirmed | joint confirmed | residual resolved |
+|---:|---|---:|---:|---:|---:|
+| 2 | pair | 24 | 24 | 24 | 3 |
+| 3 | linear | 24 | 24 | 24 | 23 |
+| 3 | compact | 24 | 24 | 24 | 24 |
+| 3 | irregular | 24 | 24 | 24 | 24 |
+| 4 | linear | 24 | 24 | 24 | 23 |
+| 4 | compact | 24 | 24 | 24 | 24 |
+| 4 | irregular | 24 | 24 | 24 | 24 |
+| 6 | linear | 24 | 23 | 23 | 22 |
+| 6 | compact | 24 | 22 | 22 | 22 |
+| 6 | irregular | 24 | 23 | 23 | 23 |
+| 10 | linear | 24 | 23 | 23 | 22 |
+| 10 | compact | 24 | 23 | 23 | 23 |
+| 10 | irregular | 24 | 23 | 23 | 23 |
+
+Seven close, strong holdout cases reached the \(L=11\) limit without two-step
+confirmation and are explicitly `unconfirmed`, not divergent:
+
+| case | penultimate \(\delta_D\) | last \(\delta_D\) |
+|---|---:|---:|
+| `n6_linear_f1.0_d2.1` | 0.001456726809597844 | 0.00032289030982289487 |
+| `n6_compact_f0.8_d2.1` | 0.0010763361885936945 | 0.0001852716698896735 |
+| `n6_compact_f1.0_d2.1` | 0.0020863427787391302 | 0.0004162852041807814 |
+| `n6_irregular_f1.0_d2.1` | 0.0010913381614902689 | 0.00023661282579013175 |
+| `n10_linear_f1.0_d2.1` | 0.0014522538245897031 | 0.00032191409609328694 |
+| `n10_compact_f1.0_d2.1` | 0.0019299115954099244 | 0.00038728538373673338 |
+| `n10_irregular_f1.0_d2.1` | 0.001095178367888512 | 0.00023650133997409569 |
+
+Holdout total-convergence coverage is \(137/144=0.9513888888888888\).
+The maximum physical residual is \(1.2851934906867192\times10^{-15}\), the
+maximum balanced condition number is 2.236483305457277, and the maximum raw
+condition number is \(2.2449893674832796\times10^{43}\). The raw number is a
+basis-scaling diagnostic and was not used to judge convergence. All forces,
+required metrics, residues, and conditions are finite.
+
+The six canonical T07 clusters were compared at every overlapping stored
+order: all 35 RMS-force comparisons had zero absolute and relative difference
+in this environment. No T07 CSV was modified.
+
+### Predictor calibration and leakage-safe selection
+
+The three predictors are
+
+\[
+\eta=|f_1|\left(\frac{a}{d_{\min}}\right)^3,
+\qquad
+\Lambda_{\max}=|f_1|\max_i\sum_{j\ne i}
+\left(\frac{a}{r_{ij}}\right)^3,
+\]
+
+\[
+\rho_1=\max_\nu|\lambda_\nu(\mathbf I-\mathbf A_b^{(1)})|.
+\]
+
+All fits use only eligible calibration cases. The \(\varepsilon_B\) fit also
+excludes dimers, unresolved residuals, and cases without joint convergence.
+
+| predictor | response | points | \(C\) | \(p\) | \(R^2_{\log}\) | RMSE\(_{\log}\) | max \(|r_{\log}|\) | Spearman |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| \(\eta\) | \(\varepsilon_A\) | 168 | 1.8559963067143632 | 1.0565911785455437 | 0.9811693912231740 | 0.26950576804208048 | 0.7018318973222302 | 0.9877944657410198 |
+| \(\eta\) | \(\varepsilon_B\) | 142 | 0.47433468176396937 | 0.9499523012966420 | 0.9550720993519037 | 0.38026694230919372 | 0.9662089673176322 | 0.9727713531608475 |
+| \(\Lambda_{\max}\) | \(\varepsilon_A\) | 168 | 0.9484449956388588 | 1.0487353446836789 | 0.9861594514823149 | 0.23105349130712635 | 0.8069362842422012 | 0.9916858600913990 |
+| \(\Lambda_{\max}\) | \(\varepsilon_B\) | 142 | 0.24645304782633867 | 0.9530358680835566 | 0.9641571551868680 | 0.33965009913058924 | 0.9580978250544607 | 0.9784272925999035 |
+| \(\rho_1\) | \(\varepsilon_A\) | 168 | 2.6353684041458636 | 1.1088518115798773 | 0.9872268644670024 | 0.22196507422252662 | 0.8018841610319449 | 0.9922707416949703 |
+| \(\rho_1\) | \(\varepsilon_B\) | 142 | 0.6506524433812200 | 1.0144638088529034 | 0.9787397449907628 | 0.26158614905731969 | 0.7845782241353017 | 0.9871581819439177 |
+
+Leave-\((N,\mathrm{family})\)-out validation on \(\varepsilon_A\) gave
+log-RMSE 0.29572460861555683 for \(\eta\), 0.24630178255151594 for
+\(\Lambda_{\max}\), and 0.23203390779877014 for \(\rho_1\). Therefore
+\(\rho_1\) was selected without consulting the holdout.
+
+### External holdout and empirical thresholds
+
+For frozen \(\rho_1\) calibration predictions, the holdout results are:
+
+| scope | eligible | RMSE\(_{\log}\) | median factor | p90 factor | max factor | within factor 2 | Spearman |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| all holdout | 137 | 0.2320007775714556 | 1.2294242478993347 | 1.4345931747220635 | 1.5933123541981697 | 1.0 | 0.9970504228349543 |
+| \(N=6\) | 68 | 0.1965479872155958 | 1.1853099998758223 | 1.3508031534732079 | 1.4452142044835998 | 1.0 | 0.9967553536664503 |
+| \(N=10\) | 69 | 0.26229261958175215 | 1.264449698281531 | 1.4834377134937253 | 1.5933123541981697 | 1.0 | 0.9965655827548413 |
+
+The conservative thresholds were fixed from calibration prefixes only:
+
+| tolerance | \(\rho_{1,\tau}\) | calibration count | safe holdout | coverage | false safe | worst safe error |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0.01 | 0.0053990295322641655 | 75 | 48 | 0.35036496350364965 | 0 | 0.007151263247680959 |
+| 0.05 | 0.02000077753569526 | 117 | 86 | 0.6277372262773723 | 0 | 0.03756638733704074 |
+| 0.10 | 0.03914887870730305 | 141 | 101 | 0.7372262773722628 | 0 | 0.05274196806688931 |
+
+All five prespecified diagnostic conditions are satisfied, so
+`criterion_supported = true`. This means only that \(\rho_1\) improved the
+transferable description for these deterministic nodal clusters and sampled
+parameters. It is not a universal validity criterion, an analytic proof, or a
+licensed extrapolation beyond the domain.
+
+### Determinism, artifacts, and environment
+
+The complete expensive sweep was executed once. Its three raw files were then
+audited by recomputing eight stratified cases covering \(N=2,4,10\), weak and
+strong contrast, near and far separation, and all three \(N=10\) families.
+The audit agreed numerically and did not rewrite the raw files. The analysis
+was executed twice; both derived CSVs and both PNGs were byte-identical.
+No 1,920-case T05 or T06 sweep was rerun.
+
+The verification environment was Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0,
+Matplotlib 3.11.1, on Linux 7.0.0-28-generic x86_64 with glibc 2.39. Binary
+reproducibility is asserted only within this numerical environment.
+
+Official T08 SHA-256 hashes:
+
+```text
+62e013b8429846cb085633cfe2fb0eb530e944dd8059484bd20055a02a6b94fb  results/data/t08_cases.csv
+73f870eaa2774a47d2eb83d07618b29290d83ee16516f027a5245e6e6d4beed4  results/data/t08_forces.csv
+87e0320b7ff023884213c562997912fb7492b5aec7bd5caa505a3039e037f3a3  results/data/t08_convergence.csv
+707024d14c79b4ee6aebc5e20ae0037b33fd65790a082b9b561e60dee30776a1  results/data/t08_predictor_fits.csv
+27ad27a0b5b2a7bc4521118d4b4e32c04e77a6ec19085141e56c9ac0e3114f2c  results/data/t08_validity_thresholds.csv
+f67c0c41f0c590af6127a50f9041da5f22b082049ac568cc1d74d3f260269578  results/figures/t08_predictor_comparison.png
+60992fc1135a44b2698ad4cf90004fde730bfd8e241ed82b4355342643344efa  results/figures/t08_transferability.png
+```
+
+The full pre-T08 results manifest was compared after generation. Every one of
+its 21 hashes remained unchanged; the audit includes Figure 2 and all
+T03--T07 data and figures. The hashes are:
+
+```text
+c19b025db20f97b04a19b8ec14afbdf4440760b980ee533a464528b29074de40  results/data/figure_2_relative_error.csv
+7e02a41ccf3832d233d0e9720f7567ab4eef72ec680df65070f3a687f23fac6a  results/data/t03_solver_validation.csv
+15ee057e2540e7b5f715fa2da4ba13d7f9ed880e0c48ac3cd341f643a5fa37a5  results/data/t04_pair_force_validation.csv
+e422fff4b12939cc4ea995f03dd04d90f92611f9539549d93a317a6fedaf4ae1  results/data/t05_trimer_regression.csv
+dff96cf80380b373b1e9ceab4ef2533df9814553cd8f4c805e8353de6fea50b1  results/data/t05_trimer_sweep.csv
+4258146c21e0a183fe3baa3e3f92d4e8bd59e0782344c8687fe5600a6b785ae9  results/data/t06_1_body_order_summary.csv
+e8120962b77a8fdd09b1f9209f939191fe1aba9b597731aedba201f92b4eca8e  results/data/t06_1_collapse_summary.csv
+2e71a1b5cb5df238b3bd9ed94f96ef36cae36964af87a77cef89238c0b4d3367  results/data/t06_1_scaling_fits.csv
+8d05db59dc4a44ee76118537af40db76aa386c8098f3f87f4359830cb5f9dea0  results/data/t06_quartet_regression.csv
+36f64ebd16ea1df52bf4074d42bd83356306bfc17c613267b0def746901689b5  results/data/t06_quartet_sweep.csv
+a272d80770a19a015a5bcc6245a2d35eb2acb165a3b6fd79bae0947c988b1db0  results/data/t07_cluster_convergence.csv
+fba9e51c5a93c0161a3a04c9ff98505ee2032d3e42f2f55490ca644cf4eb2dc6  results/data/t07_dimer_convergence.csv
+c0e115f87a8d80a58f7a9188c69be4ce0f0d60518326bd3128726b369c93735e  results/data/t07_pair_analytic_validation.csv
+678cb8f086d7dacfd9be9f7960556dc8ad6ccdac3a38335fe5a3827719490f05  results/figures/figure_2_relative_error.png
+5327a95c2ccc00151d4389189905feb4b988ea35d8107585f8b9e262ea460d62  results/figures/t05_trimer_model_errors.png
+4aef5f9654533c5b2e694e0feaf0933a84266aef1c06c4d1862ac8289d32a064  results/figures/t06_1_eta_scaling.png
+f817b7ce31a3ee6ed2b829dd98fa8d0534a18e5e6633f51f796b547ebd4720c8  results/figures/t06_1_lambda_scaling.png
+e4ce5f5a0c5f1d212d72ddd1bc6d35e1ecded8e86e437efeaf4a19bce4ab6d16  results/figures/t06_quartet_body_decomposition.png
+547945fa0fd658565fb837416f8f4a5c65bd4963c0e2e50226510f82f7af17d0  results/figures/t06_quartet_model_errors.png
+0b19fa7b7cffdbf06e1144ad72f881393b3fc658b43586fd969f9ee59e6c45de  results/figures/t07_cluster_convergence.png
+c38297886a664bb82193a1a500812902b85daf315ff9ede196705837715d65c7  results/figures/t07_dimer_convergence.png
+```
+
+Both T08 figures were visually inspected. Their logarithmic axes, labels,
+legends, calibration/holdout distinction, family and particle-count encodings,
+calibration-only fit lines, open holdout and crossed unconfirmed markers, tolerance lines, and the
+observed-versus-predicted factor-two band are legible and populated without
+clipping or physical `NaN`/`inf` values.
+
+### Commands and final limitations
+
+Final verification reports 189/189 tests passing, including warnings promoted
+to errors.
+
+The workflow used editable installation; baseline and final `pytest -q` and
+`pytest -q -W error`; one full `run_t08_transferability.py`; one
+`run_t08_transferability.py --audit-existing`; two executions of
+`analyze_t08_transferability.py`; SHA-256 manifests before and after; CSV
+count, uniqueness, finiteness, and identity audits; ASCII-control scans;
+visual PNG inspection; `git diff --check`; and protected-path inspection.
+
+The evidence is limited to the nodal plane, \(ka=0.1\), positive \(f_1\),
+identical fixed spheres, \(N\leq10\), and only three deterministic families at
+\(N=6,10\). It uses the external--scattered force and leading Rayleigh
+coefficient of every retained multipole. It excludes scattered--scattered
+forces, exact Mie T-matrices, negative contrasts, random ensembles, viscosity,
+streaming, walls, contact, torque, trajectories, and dynamics. The empirical
+thresholds apply only to the sampled domain. T08 is the final computational
+sweep planned for the article, and the committed datasets are frozen.
