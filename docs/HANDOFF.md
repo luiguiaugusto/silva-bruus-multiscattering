@@ -892,3 +892,185 @@ Model D as complete force theories. The campaign is limited to
 does not include absorption, viscosity, elastic solids, walls, nonspherical
 particles, or `scattered--scattered` force terms. Global Mie integration and
 the complete-force extension belong to T11.
+## T11 — complete-reference Model E
+
+### Scope and implementation
+
+T11 starts from \`153403c59571ad081098248165b5b184c3721179\`
+with 258 baseline tests and leaves every Model A--D module and artifact
+unchanged. Model E is
+
+\[
+\boxed{\text{exact Mie}+\text{global multiple scattering}+\text{complete multipolar force}.}
+\]
+
+The effective incident and scattered coefficients satisfy
+
+\[
+(I-UD)b=a,\qquad d=Db.
+\]
+
+Production solves the first equation directly with \`numpy.linalg.solve\`; an
+independent test solves \((I-DU)d=Da\). Planar symmetry retains \(n+m\) odd,
+while all public arrays use the complete \(n^2+n+m\) ordering and exact zeros
+for inactive modes.
+
+The force coupling is
+
+\[
+\Gamma_n=s_n+s_{n+1}^*+2s_ns_{n+1}^*,
+\]
+
+with the complete transverse and longitudinal formulas documented in
+\`docs/CONVENTIONS.md\`. Their prefactors include
+\(E_{\mathrm{LAS}}=2E_0\). With \(c=b-a\),
+
+\[
+F_{\mathrm{int}}=\mathcal F[b]-\mathcal F[a]
+=F_{\mathrm{ext-sc}}+F_{\mathrm{ss}},
+\qquad
+F_{\mathrm{ss}}=\mathcal F[c].
+\]
+
+The recoil term inside \(\Gamma_n\) and the field channel \(\mathcal F[c]\)
+are distinct.
+
+### Files
+
+Created:
+
+\`\`\`text
+src/acoustic_ms/mie_multiparticle.py
+src/acoustic_ms/complete_force.py
+src/acoustic_ms/model_e.py
+tests/test_mie_multiparticle.py
+tests/test_complete_force.py
+tests/test_model_e.py
+tests/test_t11_artifacts.py
+scripts/t11_stress_oracle.py
+scripts/analyze_t11_model_e.py
+results/data/t11_model_e_convergence.csv
+results/data/t11_force_oracle.csv
+results/data/t11_force_decomposition.csv
+results/figures/t11_model_e_validation.png
+TAREFA_T11_MODELO_E_REFERENCIA_COMPLETA.md
+\`\`\`
+
+Updated:
+
+\`\`\`text
+src/acoustic_ms/__init__.py
+README.md
+TASKS.md
+docs/CONVENTIONS.md
+docs/DECISIONS.md
+docs/HANDOFF.md
+\`\`\`
+
+The untracked user specification
+\`PROMPT_T11_MODELO_E_REFERENCIA_COMPLETA.md\` was preserved as input and not
+modified.
+
+### Independent validation
+
+The stress-tensor oracle independently reconstructs the local regular plus
+outgoing field and integrates
+
+\[
+\overline S/E_0=-(|g|^2-|\psi|^2)I+2\operatorname{Re}(gg^\dagger).
+\]
+
+At \(L_{\max}=4\), two particles, two radii
+\(R/a\in\{1.01,1.04\}\), and angular grids \(24\times48\) and
+\(32\times64\), the maximum relative component error for resolved forces is
+\(6.297712539249374\times10^{-15}\). The result is independent of radius and
+resolution at the reported scale. The Rayleigh cross-channel test with
+\(s_0=s_2=0\) and \(s_1=i f_1(ka)^3/6\) reproduces the approved Model-D
+\(L=1\) force. Full and planar bases agree at approximately
+\(4.3\times10^{-16}\) in the audited dimer, and the complete tests cover
+trimers and quartet geometry as well.
+
+### Compact campaign
+
+All cases use \(a=E_0=1\) and \(f_0=0\). Coordinates are recorded at full
+precision in \`t11_model_e_convergence.csv\`.
+
+| case | \(N\) | \(ka\) | \(f_1\) | \(d_{\min}/a\) | final \(L\) | RMS total | RMS ext-sc | RMS ss |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| dimer axis | 2 | 0.1 | 0.8 | 2.5 | 9 | 0.35488509499395798 | 0.33265034508023195 | 0.022234749913726034 |
+| dimer diagonal | 2 | 0.05 | 0.4 | 4.0 | 9 | 0.011957953437788547 | 0.011905867214909946 | 0.000052086222878601739 |
+| dimer rigid | 2 | 0.1 | 1.0 | 3.0 | 9 | 0.25220422902022588 | 0.24342909911142702 | 0.008775129908798876 |
+| trimer equilateral | 3 | 0.1 | 0.8 | 3.0 | 9 | 0.28851299734919822 | 0.27523599980056734 | 0.01327699754863086 |
+| trimer scalene | 3 | 0.1 | 0.8 | 2.7 | 9 | 0.29442036247659009 | 0.27961658721656057 | 0.014961914394038276 |
+| quartet irregular | 4 | 0.1 | 0.8 | 2.8 | 9 | 0.25007642652434453 | 0.23873909624244133 | 0.011452274463533961 |
+
+The RMS values are normalized by \(a^2E_0\). Convergence requires two
+successive applicable changes at or below \(10^{-5}\) for each channel:
+
+| case | total | interaction | ext-sc | ss |
+|---|---:|---:|---:|---:|
+| dimer axis | unconfirmed | unconfirmed | unconfirmed | unconfirmed |
+| dimer diagonal | 7 | 7 | 6 | 9 |
+| dimer rigid | 9 | 9 | 8 | unconfirmed |
+| trimer equilateral | 9 | 9 | 8 | unconfirmed |
+| trimer scalene | unconfirmed | unconfirmed | 9 | unconfirmed |
+| quartet irregular | 9 | 9 | 8 | unconfirmed |
+
+Thus a converged total does not imply convergence of the smaller
+scattered--scattered term. Unconfirmed cases are not labeled divergent. The
+largest system residual is \(9.575091508106486\times10^{-5}\), in the axial
+dimer at \(L=9\), and the largest condition number is
+\(5.906478133855654\times10^{24}\). The raw diagnostics are retained without
+regularization, clipping, or substitution by the alternative scattered-field
+system.
+
+### Verification, determinism, and environment
+
+Commands executed include:
+
+\`\`\`bash
+.venv/bin/python -m pip install -e ".[dev,plot]"
+.venv/bin/python scripts/analyze_t11_model_e.py
+.venv/bin/python scripts/analyze_t11_model_e.py
+.venv/bin/python -m pytest -q -W error
+git diff --check
+git status --short
+git diff --stat
+git diff --name-only
+sha256sum results/data/t11_*.csv results/figures/t11_model_e_validation.png
+\`\`\`
+
+The final suite reports **295 passed** with warnings treated as errors. The
+campaign has 48 convergence rows, 72 oracle rows, and 16 per-particle
+decomposition rows; no physical \`NaN\` or \`inf\` is present. Two executions
+in the same environment are byte-identical. The environment is Python 3.12.3,
+NumPy 2.5.1, SciPy 1.18.0, and Matplotlib 3.11.1.
+
+Official T11 hashes:
+
+\`\`\`text
+f017993c893a6a1d8db5161007ba8361dc55770922849101e8ac193d45ccf893  results/data/t11_model_e_convergence.csv
+d1a8e89c62a248ac339d5f8c1e51c35b30651034460ca5b2bed0419d05f585fb  results/data/t11_force_oracle.csv
+6c2b83134b306ab6b113e058439348a9de21f5f735a468a891e0868ad6f53986  results/data/t11_force_decomposition.csv
+b96f9e089a833b175bea0621fef6b708c66f73a47f523655300c24a67ac9301f  results/figures/t11_model_e_validation.png
+\`\`\`
+
+All 35 pre-T11 result artifacts match the baseline manifest. The figure was
+visually inspected: all three panels are populated, labels and legends are
+readable, logarithmic scales and the \(10^{-5}\) line are visible, and
+unconfirmed interaction cases are marked at their final order.
+
+### Remaining limitations
+
+Model E is limited to identical, lossless fluid spheres fixed in the nodal
+plane of an ideal unbounded fluid. It includes neither viscosity, streaming,
+walls, elasticity, absorption, nonspherical particles, nor dynamics. The
+compact campaign is not the T12 transferability study:
+
+\[
+\boxed{\text{internal Model-E convergence}\ne
+\text{validation of the }\rho_1\text{ thresholds}.}
+\]
+
+No T12 sentinel was evaluated, no T08 threshold was recalibrated, and the
+T13--T14 holdout remains unopened.

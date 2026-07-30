@@ -1,6 +1,6 @@
 # Silva--Bruus multiscattering
 
-Python tools for studying acoustic interaction forces between identical spheres in a pressure nodal plane. Models A--C provide the Silva--Bruus, matched Rayleigh pairwise, and global \(L_{\max}=1\) hierarchy; T07 adds balanced multipolar Model D. T08 tests transferability through \(N=10\) using deterministic planar families, while preserving \(N\leq4\) as calibration and \(N=6,10\) as an untouched external holdout. The project remains restricted to the external--scattered force observable and leading Rayleigh coefficients at each retained multipole.
+Python tools for studying acoustic interaction forces between identical spheres in a pressure nodal plane. Models A--C provide the Silva--Bruus, matched Rayleigh pairwise, and global \(L_{\max}=1\) hierarchy; T07 adds balanced multipolar Model D. T11 adds Model E: exact lossless-fluid Mie coefficients, global multiple scattering, and the complete multipolar force including external--scattered and scattered--scattered channels. Earlier A--D APIs and results retain their approved meanings.
 
 ## Setup
 
@@ -91,9 +91,26 @@ fluid sphere and the analytic rigid-sphere limit. A deterministic campaign
 compares orders \(\ell=0,\ldots,5\) with the existing leading Rayleigh
 coefficients for \(10^{-3}\le ka\le0.1\). The new coefficients are deliberately
 not connected to Model D: exact single-sphere Mie coefficients are not a
-complete collective-force model. Global integration and
-`scattered--scattered` force terms remain for T11.
+complete collective-force model. Global integration and the
+`scattered--scattered` channel are implemented separately by T11 Model E.
 
 ```bash
 .venv/bin/python scripts/analyze_t10_mie_rayleigh.py
 ```
+
+## T11: complete-reference Model E
+
+Model E solves \((I-UD)b=a\) with the exact T10 diagonal T-matrix and then
+evaluates the complete partial-wave radiation force. Its interaction force is
+split exactly into external--scattered and scattered--scattered terms. An
+independent surface-stress quadrature validates the force normalization, and a
+compact six-case campaign audits \(L_{\max}=2,\ldots,9\) without opening the
+T12 sentinel campaign.
+
+```bash
+.venv/bin/python scripts/analyze_t11_model_e.py
+```
+
+The current scope remains lossless identical fluid spheres in an ideal fluid,
+fixed in the nodal plane. Convergence internal to Model E does not validate the
+empirical \(\rho_1\) thresholds; that transfer study belongs to T12--T14.

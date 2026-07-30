@@ -292,3 +292,59 @@ Material ratios obey
 \(s_\ell=-j_\ell'(x)/{h_\ell^{(1)}}'(x)\). Undefined tabulated quantities
 use `NaN` plus an explicit applicability flag. The exact-Mie label applies
 only to the isolated-sphere T-matrix and not to the collective force.
+## T11 complete-reference Model E
+
+For each particle, \(a\) denotes the external incident BSCs, \(b\) the
+effective incident BSCs, and \(d=Db\) the scattered BSCs. Model E solves
+
+\[
+(I-UD)b=a,
+\qquad
+d=Db,
+\]
+
+with exact T10 coefficients in \(D\) and translation oriented
+\`target <- source\`. Planar reflection retains modes with \(n+m\) odd; public
+coefficient arrays always retain the complete ordering \(n^2+n+m\), with
+inactive entries equal to zero. No magnitude threshold prunes modes.
+
+For \(n=0,\ldots,L_{\max}-1\), define
+
+\[
+\Gamma_n=s_n+s_{n+1}^*+2s_ns_{n+1}^*.
+\]
+
+The complete force is
+
+\[
+F_x+iF_y=\frac{iE_0}{k^2}\sum_{n,m}
+\sqrt{\frac{(n+m+1)(n+m+2)}{(2n+1)(2n+3)}}
+\left[\Gamma_n b_{nm}b_{n+1,m+1}^*
++\Gamma_n^*b_{n,-m}^*b_{n+1,-m-1}\right],
+\]
+
+\[
+F_z=\frac{2E_0}{k^2}\operatorname{Im}\sum_{n,m}
+\sqrt{\frac{(n-m+1)(n+m+1)}{(2n+1)(2n+3)}}
+\Gamma_n b_{nm}b_{n+1,m}^*.
+\]
+
+These prefactors already use \(E_{\mathrm{LAS}}=2E_0\). With \(c=b-a\),
+
+\[
+F_{\mathrm{total}}=\mathcal F[b],\quad
+F_{\mathrm{external}}=\mathcal F[a],\quad
+F_{\mathrm{int}}=F_{\mathrm{total}}-F_{\mathrm{external}},
+\]
+
+\[
+F_{\mathrm{ss}}=\mathcal F[c],\qquad
+F_{\mathrm{ext-sc}}=F_{\mathrm{int}}-F_{\mathrm{ss}}.
+\]
+
+The quadratic recoil \(2s_ns_{n+1}^*\) inside \(\Gamma_n\) is not the same
+object as \(\mathcal F[c]\). The principal Model-E API requires
+\(L_{\max}\ge2\), and every force uses coefficients through precisely the
+requested truncation; coefficients of order \(L_{\max}+1\) are never
+invented. Convergence requires two consecutive applicable changes not
+exceeding \(10^{-5}\), separately for each force channel.

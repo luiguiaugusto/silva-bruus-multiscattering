@@ -20,3 +20,4 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] T08 -- transferability through N=10 and collective-coupling validity diagnosis.
 - [x] T09 -- analytical foundation and independent operator audit of rho_1.
 - [x] T10 -- exact isolated-sphere Mie coefficients and Rayleigh-error audit.
+- [x] T11 -- exact-Mie global Model E with the complete multipolar radiation force.

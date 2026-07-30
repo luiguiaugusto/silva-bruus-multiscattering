@@ -67,3 +67,22 @@
 - Exact isolated-sphere coefficients do not imply a complete collective-force
   theory. Integration with global multiple scattering and
   `scattered--scattered` force terms is deferred to T11.
+
+## T11 decisions
+
+- Model E is a new, isolated API combining the exact T10 T-matrix, global
+  multiple scattering, and the complete multipolar force. Models A--D and all
+  their established artifacts remain unchanged.
+- The production unknown is the effective incident field in
+  \((I-UD)b=a\); the equivalent scattered-field system is an independent test,
+  not the implementation path.
+- The complete force includes both the quadratic recoil in \(\Gamma_n\) and
+  the distinct scattered--scattered incident-field channel \(\mathcal F[c]\).
+- An independent stress-tensor surface integral is the normalization and sign
+  oracle. No empirical prefactor or sign adjustment is permitted.
+- Model-E convergence is assessed separately for total, interaction,
+  external--scattered, and scattered--scattered forces. Cases without two
+  successive changes below \(10^{-5}\) by \(L_{\max}=9\) are retained and
+  explicitly marked unconfirmed.
+- Model E is not a recalibration of \(\rho_1\). T12, its sentinel campaign,
+  and the T13--T14 holdout remain unopened.

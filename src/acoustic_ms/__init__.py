@@ -3,7 +3,7 @@
 T01 provides the original Silva--Bruus pair force; T02 provides the corrected
 two-particle analytical benchmark; T03 provides the coupled Rayleigh solver at
 Lmax=1; T04 provides the Model C nodal interaction force with scattering
-Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers; T06 adds the connected N=4 body expansion through four-body order at fixed Lmax=1; T06.1 adds post-processing predictors and log-space scaling diagnostics; T07 adds balanced multipolar Model D and convergence diagnostics; T08 tests collective-coupling transferability through N=10 with a frozen calibration/holdout split; T09 derives and audits the dipolar operator underlying rho_1; T10 adds exact isolated-sphere Mie coefficients without changing Models A--D.
+Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers; T06 adds the connected N=4 body expansion; T07 adds multipolar Model D; T08--T09 audit rho_1 transferability and its operator; T10 adds exact isolated-sphere Mie coefficients; T11 adds globally coupled exact-Mie Model E and its complete multipolar radiation force without changing Models A--D.
 """
 
 from .contrasts import dipole_contrast, monopole_contrast
@@ -26,6 +26,9 @@ from .mie_scattering import (
     mie_scattering_coefficients_from_contrasts,
     rigid_sphere_scattering_coefficients,
 )
+from .mie_multiparticle import MieMultiparticleSolution, solve_mie_multiparticle_nodal
+from .complete_force import complete_radiation_force_from_bsc
+from .model_e import ModelENodalResult, solve_model_e_nodal
 from .multipolar_solver import MultipolarNodalSolution, solve_multipolar_nodal
 from .model_d import MultipolarNodalInteractionResult, NodalModelDComparison, compare_nodal_model_d, solve_multipolar_nodal_interaction_forces
 from .multipolar_expansion import MultipolarClusterExpansion, MultipolarConnectedTerm, decompose_multipolar_cluster
@@ -60,6 +63,8 @@ __all__ = [
     "MultipolarConnectedTerm",
     "MultipolarNodalInteractionResult",
     "MultipolarNodalSolution",
+    "MieMultiparticleSolution",
+    "ModelENodalResult",
     "PowerLawFit",
     "angular_errors_degrees",
     "compare_nodal_force_models",
@@ -114,12 +119,15 @@ __all__ = [
     "rayleigh_multipolar_scattering_coefficients",
     "fluid_sphere_mie_scattering_coefficients",
     "mie_scattering_coefficients_from_contrasts",
+    "complete_radiation_force_from_bsc",
     "rigid_sphere_scattering_coefficients",
     "separation_coefficient",
     "select_predictor_by_group_cv",
     "solve_rayleigh_nodal",
     "solve_multipolar_nodal",
     "solve_multipolar_nodal_interaction_forces",
+    "solve_mie_multiparticle_nodal",
+    "solve_model_e_nodal",
     "spherical_hankel1",
     "spectral_radius_l1",
     "two_step_converged",
