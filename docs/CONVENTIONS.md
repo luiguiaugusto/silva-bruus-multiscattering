@@ -266,3 +266,29 @@ rescattering events; it is unrelated to multipole truncation \(L_{\max}\).
 Spectral-radius convergence and force accuracy must also remain distinct:
 \(\rho_1<1\) guarantees convergence of the finite-dimensional matrix Neumann
 series for every source, not a prescribed Silva--Bruus error.
+
+## T10 isolated-sphere Mie conventions
+
+The exact lossless-fluid coefficient uses the same \(e^{-i\omega t}\)
+convention and outgoing Hankel function as the rest of the project. Define
+
+\[
+x=ka,\quad y=x\sqrt{\widetilde\rho\widetilde\kappa},\quad
+\beta=\sqrt{\widetilde\kappa/\widetilde\rho}.
+\]
+
+Then
+
+\[
+s_\ell=-\frac{\beta j_\ell(x)j_\ell'(y)-j_\ell(y)j_\ell'(x)}
+{\beta h_\ell^{(1)}(x)j_\ell'(y)-j_\ell(y){h_\ell^{(1)}}'(x)}.
+\]
+
+Material ratios obey
+\(\widetilde\kappa=1-f_0\),
+\(\widetilde\rho=(2+f_1)/[2(1-f_1)]\), and
+\(c_p/c_0=(\widetilde\rho\widetilde\kappa)^{-1/2}\) for
+\(-2<f_1<1\). Exactly \(f_1=1\), without clipping, selects
+\(s_\ell=-j_\ell'(x)/{h_\ell^{(1)}}'(x)\). Undefined tabulated quantities
+use `NaN` plus an explicit applicability flag. The exact-Mie label applies
+only to the isolated-sphere T-matrix and not to the collective force.

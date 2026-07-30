@@ -3,7 +3,7 @@
 T01 provides the original Silva--Bruus pair force; T02 provides the corrected
 two-particle analytical benchmark; T03 provides the coupled Rayleigh solver at
 Lmax=1; T04 provides the Model C nodal interaction force with scattering
-Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers; T06 adds the connected N=4 body expansion through four-body order at fixed Lmax=1; T06.1 adds post-processing predictors and log-space scaling diagnostics; T07 adds balanced multipolar Model D and convergence diagnostics; T08 tests collective-coupling transferability through N=10 with a frozen calibration/holdout split; T09 derives and audits the dipolar operator underlying rho_1.
+Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers; T06 adds the connected N=4 body expansion through four-body order at fixed Lmax=1; T06.1 adds post-processing predictors and log-space scaling diagnostics; T07 adds balanced multipolar Model D and convergence diagnostics; T08 tests collective-coupling transferability through N=10 with a frozen calibration/holdout split; T09 derives and audits the dipolar operator underlying rho_1; T10 adds exact isolated-sphere Mie coefficients without changing Models A--D.
 """
 
 from .contrasts import dipole_contrast, monopole_contrast
@@ -20,6 +20,12 @@ from .incident import nodal_standing_wave_coefficients
 from .force import RayleighNodalInteractionResult, solve_rayleigh_nodal_interaction_forces
 from .multipoles import mode_count, mode_from_index, mode_index, modes
 from .multipolar_scattering import rayleigh_multipolar_scattering_coefficients
+from .mie_scattering import (
+    fluid_sphere_mie_scattering_coefficients,
+    material_ratios_from_contrasts,
+    mie_scattering_coefficients_from_contrasts,
+    rigid_sphere_scattering_coefficients,
+)
 from .multipolar_solver import MultipolarNodalSolution, solve_multipolar_nodal
 from .model_d import MultipolarNodalInteractionResult, NodalModelDComparison, compare_nodal_model_d, solve_multipolar_nodal_interaction_forces
 from .multipolar_expansion import MultipolarClusterExpansion, MultipolarConnectedTerm, decompose_multipolar_cluster
@@ -71,6 +77,7 @@ __all__ = [
     "linear_trimer",
     "linear_cluster",
     "maximum_geometric_coupling",
+    "material_ratios_from_contrasts",
     "matched_multipolar_pairwise_baseline",
     "normalized_rms_difference",
     "rms_relative_error",
@@ -105,6 +112,9 @@ __all__ = [
     "nodal_standing_wave_coefficients",
     "rayleigh_scattering_coefficients",
     "rayleigh_multipolar_scattering_coefficients",
+    "fluid_sphere_mie_scattering_coefficients",
+    "mie_scattering_coefficients_from_contrasts",
+    "rigid_sphere_scattering_coefficients",
     "separation_coefficient",
     "select_predictor_by_group_cv",
     "solve_rayleigh_nodal",

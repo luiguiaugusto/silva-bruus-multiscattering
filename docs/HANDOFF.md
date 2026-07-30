@@ -760,3 +760,135 @@ predictor. It does not derive the empirical prefactor \(2.635\), make the
 exponent \(1.109\) exact, or turn the T08 thresholds into universal
 constants. The complete derivation and artifact list are in
 `TAREFA_T09_FUNDAMENTACAO_ANALITICA_RHO1.md`.
+
+## T10 — exact isolated-sphere Mie coefficients
+
+### Scientific scope and implementation
+
+T10 adds the exact diagonal partial-wave response of a homogeneous, lossless
+fluid sphere under the project's \(e^{-i\omega t}\) convention. It changes no
+Model A--D equation and does not connect the new coefficients to the global
+multipolar solver. The implemented definitions are
+
+\[
+x=ka,\qquad y=x\sqrt{\widetilde\rho\widetilde\kappa},\qquad
+\beta=\sqrt{\widetilde\kappa/\widetilde\rho},
+\]
+
+\[
+s_\ell^{\mathrm{Mie}}=-
+\frac{\beta j_\ell(x)j_\ell'(y)-j_\ell(y)j_\ell'(x)}
+{\beta h_\ell^{(1)}(x)j_\ell'(y)-j_\ell(y){h_\ell^{(1)}}'(x)},
+\]
+
+with
+
+\[
+\widetilde\kappa=1-f_0,\qquad
+\widetilde\rho=\frac{2+f_1}{2(1-f_1)},\qquad
+\frac{c_p}{c_0}=(\widetilde\rho\widetilde\kappa)^{-1/2}.
+\]
+
+Exactly \(f_1=1\) selects the analytic sound-hard limit
+
+\[
+s_\ell^{\mathrm{rigid}}=-\frac{j_\ell'(x)}{{h_\ell^{(1)}}'(x)}.
+\]
+
+There is no clipping or artificial large density. Exact material matching
+returns bitwise zeros. The API accepts \(L_{\max}=0\), validates real finite
+physical inputs, and leaves the truncation choice to the caller outside the
+audited Rayleigh interval.
+
+### Independent validation and campaign
+
+An independent test-only \(2\times2\) boundary-condition solve covers two
+materials, \(ka\in\{0.01,0.05,0.1\}\), and
+\(\ell=0,\ldots,5\). The maximum coefficient difference was
+\(9.359714502574357\times10^{-20}\) in absolute value. The largest relative
+difference, \(3.1694037722230735\times10^{-12}\), occurs in the nearly
+matched, poorly scaled monopole at \(ka=0.01\). The maximum boundary-condition
+residual in the 2,424-row production campaign was
+\(2.2204460492505655\times10^{-16}\), and the maximum lossless-unitarity
+defect \(|\operatorname{Re}s_\ell+|s_\ell|^2|\) was
+\(1.3234889800848443\times10^{-23}\).
+
+The campaign uses \(f_0=0\),
+\(f_1\in\{0.1,0.4,0.8,1\}\), 101 logarithmic values over
+\(10^{-3}\le ka\le0.1\), and \(\ell=0,\ldots,5\). It yields 2,424 validation
+rows and 24 summary rows. At \(ka=0.1\), the complex relative dipole errors
+are:
+
+| \(f_1\) | \(\varepsilon_{s_1}\) |
+|---:|---:|
+| 0.1 | 0.0018021200413863723 |
+| 0.4 | 0.0012045872800514213 |
+| 0.8 | 0.00042193608732433199 |
+| 1.0, rigid | 0.0030243505842077237 |
+
+Every positive-order asymptotic relative-error slope is numerically 2 to the
+reported precision. The \(f_0=0\) Rayleigh monopole vanishes while its exact
+dynamic correction need not; the CSV therefore retains absolute error and
+applicability flags and documents that this channel is inactive in the
+current nodal symmetry. Increasing finite densities
+\(10^8,10^{10},10^{12}\) approached the direct rigid result with relative
+vector errors \(1.6337683061174943\times10^{-3}\),
+\(2.0490033945573912\times10^{-4}\), and
+\(1.474460765039206\times10^{-5}\).
+
+### Files, verification, and hashes
+
+Created:
+
+```text
+src/acoustic_ms/mie_scattering.py
+tests/test_mie_scattering.py
+tests/test_t10_artifacts.py
+scripts/analyze_t10_mie_rayleigh.py
+results/data/t10_mie_rayleigh_validation.csv
+results/data/t10_mie_rayleigh_summary.csv
+results/figures/t10_mie_rayleigh_error.png
+TAREFA_T10_COEFICIENTES_EXATOS_MIE.md
+```
+
+Updated:
+
+```text
+src/acoustic_ms/__init__.py
+README.md
+TASKS.md
+docs/CONVENTIONS.md
+docs/DECISIONS.md
+docs/HANDOFF.md
+```
+
+Verification uses Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0, and Matplotlib
+3.11.1. The final suite reports 258 tests passing with warnings promoted to
+errors. Two consecutive campaign executions are byte-identical. T10 hashes:
+
+```text
+a4b8c3c496da33b899516dab912adc2102b84c9ea070bb62da2c5d10b009ca29  results/data/t10_mie_rayleigh_validation.csv
+6a240084e1e108a2cb31efb749abf8f7e10e2ef8cf9a419a00b1c0407057a3e3  results/data/t10_mie_rayleigh_summary.csv
+96a23e87c3504d697f3d2a16f920f6a98df42c78bf0006098a57664446caacc9  results/figures/t10_mie_rayleigh_error.png
+```
+
+The figure was inspected for readable logarithmic axes, four distinguishable
+contrasts, all five positive multipole orders, unclipped labels, and absence
+of physical `NaN` or `inf` values.
+
+### Interpretation and remaining limitations
+
+\[
+\boxed{
+\text{exact Mie coefficients}
+\ne
+\text{complete collective force}
+}
+\]
+
+T10 validates an isolated ideal-fluid-sphere T-matrix, not Silva--Bruus or
+Model D as complete force theories. The campaign is limited to
+\(10^{-3}\le ka\le0.1\), real lossless properties, and \(\ell\le5\). It
+does not include absorption, viscosity, elastic solids, walls, nonspherical
+particles, or `scattered--scattered` force terms. Global Mie integration and
+the complete-force extension belong to T11.

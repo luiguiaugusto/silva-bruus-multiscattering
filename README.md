@@ -83,3 +83,17 @@ Neumann-series audits with:
 
 The full derivation is in
 [`TAREFA_T09_FUNDAMENTACAO_ANALITICA_RHO1.md`](TAREFA_T09_FUNDAMENTACAO_ANALITICA_RHO1.md).
+
+## T10: exact isolated-sphere Mie coefficients
+
+T10 adds the exact diagonal partial-wave response of a homogeneous lossless
+fluid sphere and the analytic rigid-sphere limit. A deterministic campaign
+compares orders \(\ell=0,\ldots,5\) with the existing leading Rayleigh
+coefficients for \(10^{-3}\le ka\le0.1\). The new coefficients are deliberately
+not connected to Model D: exact single-sphere Mie coefficients are not a
+complete collective-force model. Global integration and
+`scattered--scattered` force terms remain for T11.
+
+```bash
+.venv/bin/python scripts/analyze_t10_mie_rayleigh.py
+```

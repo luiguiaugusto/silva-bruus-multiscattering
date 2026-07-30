@@ -52,3 +52,18 @@
 - The approximately linear force-error law is an asymptotic order statement. Its prefactor and the T08 fitted exponent remain empirical.
 - Non-normality is reported explicitly. The spectral radius controls asymptotic convergence, while induced norms delimit possible finite-order amplification.
 - T09 performs no new force sweep and does not rewrite any T01--T08 artifact.
+
+## T10 decisions
+
+- Exact fluid-sphere Mie coefficients live in a separate single-particle API;
+  Models A--D and the multipolar solver retain their approved meanings.
+- The exact point \(f_1=1\) uses the analytic rigid boundary condition. No
+  finite surrogate density, clipping, or near-one tolerance is introduced.
+- Validation uses an independent boundary-condition system, Rayleigh
+  asymptotics, the rigid limit, and lossless unitarity.
+- The production audit is restricted to \(10^{-3}\le ka\le0.1\) and
+  \(\ell\le5\). Acceptance of larger \(ka\) by the isolated API is not a
+  convergence guarantee for a caller-selected \(L_{\max}\).
+- Exact isolated-sphere coefficients do not imply a complete collective-force
+  theory. Integration with global multiple scattering and
+  `scattered--scattered` force terms is deferred to T11.
