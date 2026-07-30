@@ -3,7 +3,7 @@
 T01 provides the original Silva--Bruus pair force; T02 provides the corrected
 two-particle analytical benchmark; T03 provides the coupled Rayleigh solver at
 Lmax=1; T04 provides the Model C nodal interaction force with scattering
-Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers; T06 adds the connected N=4 body expansion through four-body order at fixed Lmax=1; T06.1 adds post-processing predictors and log-space scaling diagnostics; T07 adds balanced multipolar Model D and convergence diagnostics; T08 tests collective-coupling transferability through N=10 with a frozen calibration/holdout split.
+Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers; T06 adds the connected N=4 body expansion through four-body order at fixed Lmax=1; T06.1 adds post-processing predictors and log-space scaling diagnostics; T07 adds balanced multipolar Model D and convergence diagnostics; T08 tests collective-coupling transferability through N=10 with a frozen calibration/holdout split; T09 derives and audits the dipolar operator underlying rho_1.
 """
 
 from .contrasts import dipole_contrast, monopole_contrast
@@ -23,6 +23,7 @@ from .multipolar_scattering import rayleigh_multipolar_scattering_coefficients
 from .multipolar_solver import MultipolarNodalSolution, solve_multipolar_nodal
 from .model_d import MultipolarNodalInteractionResult, NodalModelDComparison, compare_nodal_model_d, solve_multipolar_nodal_interaction_forces
 from .multipolar_expansion import MultipolarClusterExpansion, MultipolarConnectedTerm, decompose_multipolar_cluster
+from .rho_foundation import DipolarCouplingDiagnostics, dipolar_balanced_coupling_matrix, dipolar_coupling_diagnostics, dipolar_coupling_entry, near_field_dipolar_coupling_entry, near_field_dipolar_coupling_matrix, neumann_partial_solutions
 from .scattering import rayleigh_scattering_coefficients
 from .special import spherical_hankel1
 from .solver import RayleighNodalSolution, solve_rayleigh_nodal
@@ -48,6 +49,7 @@ __all__ = [
     "MatchedPairwiseBaseline",
     "TransferabilityConfiguration",
     "TransferabilityFit",
+    "DipolarCouplingDiagnostics",
     "MultipolarClusterExpansion",
     "MultipolarConnectedTerm",
     "MultipolarNodalInteractionResult",
@@ -78,12 +80,18 @@ __all__ = [
     "symmetric_particle_errors",
     "decompose_nodal_quartet",
     "decompose_multipolar_cluster",
+    "dipolar_balanced_coupling_matrix",
+    "dipolar_coupling_diagnostics",
+    "dipolar_coupling_entry",
     "enumerate_transferability_configurations",
     "corrected_nodal_pair_force_magnitude",
     "corrected_nodal_pair_force_on_probe",
     "corrected_nodal_pair_forces",
     "corrected_pair_coefficients",
     "monopole_contrast",
+    "near_field_dipolar_coupling_entry",
+    "near_field_dipolar_coupling_matrix",
+    "neumann_partial_solutions",
     "nodal_pair_force_magnitude",
     "nodal_pair_force_on_probe",
     "nodal_pair_forces",

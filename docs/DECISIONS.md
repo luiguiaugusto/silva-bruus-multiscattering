@@ -41,3 +41,14 @@
 - The 1%, 5%, and 10% cutoffs are conservative empirical nodal-plane thresholds within the sampled domain. Their successful holdout diagnosis is not a universal criterion or an analytic bound.
 - Nonconverged-at-limit cases are labeled unconfirmed, not divergent, and are excluded from fits and thresholds. Raw conditioning is retained only as a scaling diagnostic; convergence decisions use successive force changes.
 - T08 closes and freezes the computational datasets intended for the article. No T05/T06 sweep was rerun, and later work must treat the committed T08 raw tables as immutable provenance.
+
+## T09 decisions
+
+- T09 is the newly approved analytical foundation of \(\rho_1\), superseding the unrelated preliminary T09 label in the first project roadmap.
+- Python/SymPy remains the official and sufficient implementation; Wolfram Mathematica is not a project dependency.
+- The closed \(N\times N\) operator is an independent analytical reconstruction of the existing balanced \(L=1\) matrix. It does not change the T03, T07, or T08 solvers.
+- The exact retarded entry is used for \(\rho_1\); the inverse-cube operator is only its near-field limit.
+- \(\rho_1<1\) is used as the necessary and sufficient convergence condition for the finite-dimensional matrix Neumann series, not as a universal force-error threshold.
+- The approximately linear force-error law is an asymptotic order statement. Its prefactor and the T08 fitted exponent remain empirical.
+- Non-normality is reported explicitly. The spectral radius controls asymptotic convergence, while induced norms delimit possible finite-order amplification.
+- T09 performs no new force sweep and does not rewrite any T01--T08 artifact.

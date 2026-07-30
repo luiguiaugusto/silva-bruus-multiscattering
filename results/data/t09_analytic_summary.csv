@@ -1,0 +1,10 @@
+metric,value
+symbolic_hankel_identity,1
+symbolic_near_field_series,1
+maximum_frozen_rho_absolute_difference,4.163336342344337e-16
+maximum_rho,0.2544601331856266
+maximum_spectral_norm_to_rho,1.0174745602981063
+maximum_infinity_norm_to_rho,1.4935853868714868
+maximum_normalized_commutator,0.16028774339157456
+maximum_near_field_relative_difference,0.35914842314271322
+maximum_contact_near_field_relative_difference,0.039847812390293474

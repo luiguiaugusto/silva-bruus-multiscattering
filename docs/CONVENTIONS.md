@@ -234,3 +234,35 @@ Calibration is restricted to \(N\leq4\). Clusters with \(N=6,10\) form an
 external holdout and cannot select a predictor, fit a power law, or define a
 threshold. The thresholds at 1%, 5%, and 10% are conservative empirical
 nodal-plane thresholds within the sampled domain, not universal constants.
+
+## T09 analytical rho_1 conventions
+
+For \(f_0=0\), \(L=1\), and centers in the nodal plane, the only active
+scattered channel per particle is \((\ell,m)=(1,0)\). The balanced operator
+therefore reduces exactly, within the leading-Rayleigh dipole model, to
+
+\[
+(K_b)_{ii}=0,\qquad
+(K_b)_{ij}=
+\frac{f_1}{2}\left(\frac{a}{r_{ij}}\right)^3
+e^{ikr_{ij}}(1-ikr_{ij}).
+\]
+
+The word `exact` in this section means algebraically identical to the
+implemented \(L=1\) leading-Rayleigh operator. It does not mean an exact Mie
+coefficient or complete radiation force.
+
+The near-field operator drops only the retarded factor:
+
+\[
+(K_b^{\mathrm{nf}})_{ij}
+=
+\frac{f_1}{2}\left(\frac{a}{r_{ij}}\right)^3.
+\]
+
+The production value of \(\rho_1\) always uses the retarded operator, not this
+near-field approximation. The Neumann index \(p\) counts additional
+rescattering events; it is unrelated to multipole truncation \(L_{\max}\).
+Spectral-radius convergence and force accuracy must also remain distinct:
+\(\rho_1<1\) guarantees convergence of the finite-dimensional matrix Neumann
+series for every source, not a prescribed Silva--Bruus error.

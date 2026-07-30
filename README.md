@@ -59,3 +59,27 @@ dipolar balanced-operator spectral radius \(\rho_1\), and the prespecified
 diagnostic transferability criterion was supported within this sampled nodal
 domain. This is not a universal validity theorem. T08 closes the computational
 sweeps used for the article; the data are frozen.
+
+## T09: analytical foundation of rho_1
+
+T09 reduces the balanced nodal \(L=1\) operator to an exact \(N\times N\)
+dipolar matrix,
+
+\[
+(K_b)_{ij}=\frac{f_1}{2}\left(\frac{a}{r_{ij}}\right)^3
+e^{ikr_{ij}}(1-ikr_{ij}),\qquad i\ne j.
+\]
+
+This derives the inverse-cube scale, connects \(\rho_1\) to convergence of the
+Neumann rescattering series, and explains why the leading pairwise correction
+and connected three-body term are first order while the connected four-body
+term begins at second order. The derivation does not make the empirical T08
+fit or thresholds universal. Reproduce the symbolic, spectral, and
+Neumann-series audits with:
+
+```bash
+.venv/bin/python scripts/analyze_t09_rho_foundation.py
+```
+
+The full derivation is in
+[`TAREFA_T09_FUNDAMENTACAO_ANALITICA_RHO1.md`](TAREFA_T09_FUNDAMENTACAO_ANALITICA_RHO1.md).

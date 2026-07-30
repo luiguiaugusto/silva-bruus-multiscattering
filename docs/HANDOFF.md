@@ -672,3 +672,91 @@ forces, exact Mie T-matrices, negative contrasts, random ensembles, viscosity,
 streaming, walls, contact, torque, trajectories, and dynamics. The empirical
 thresholds apply only to the sampled domain. T08 is the final computational
 sweep planned for the article, and the committed datasets are frozen.
+
+## T09 — analytical foundation of \(\rho_1\)
+
+T09 leaves the frozen T08 tables untouched and analytically reconstructs the
+balanced \(L=1\) rescattering operator. With \(f_0=0\), planar nodal symmetry
+leaves one \((1,0)\) channel per particle. Combining
+
+\[
+s_1=i f_1(ka)^3/6
+\]
+
+with
+
+\[
+h_0^{(1)}(x)+h_2^{(1)}(x)
+=-3e^{ix}(x+i)/x^3
+\]
+
+gives
+
+\[
+(K_b)_{ii}=0,\qquad
+(K_b)_{ij}
+=
+\frac{f_1}{2}\left(\frac{a}{r_{ij}}\right)^3
+e^{ikr_{ij}}(1-ikr_{ij}).
+\]
+
+Its near-field limit is \(f_1(a/r_{ij})^3/2\), which derives the scales
+\(\eta\) and \(\Lambda_{\max}\). For a dimer,
+
+\[
+\rho_1
+=
+\frac{|f_1|}{2}\left(\frac{a}{d}\right)^3
+\sqrt{1+(kd)^2}.
+\]
+
+The expansion
+
+\[
+(\mathbf I-\mathbf K_b)^{-1}
+=
+\sum_{p=0}^{\infty}\mathbf K_b^p
+\]
+
+converges as a matrix series exactly when \(\rho_1<1\). The \(p=0\) force is Model A in the
+\(L=1\) observable and the omitted correction begins at \(O(\mathbf K_b)\),
+explaining the fitted exponent near one. A connected \(n\)-body path first
+requires \(p=n-2\), so \(\Phi^{(3)}=O(\rho_1)\) and
+\(\Phi^{(4)}=O(\rho_1^2)\), consistent with T06.1.
+
+The independent closed matrix reproduced all 312 frozen T08 radii with
+maximum absolute difference \(4.163336342344337\times10^{-16}\). Across that
+domain, the maximum radius was \(0.2544601331856266\), the maximum
+\(\|\mathbf K_b\|_2/\rho_1\) was \(1.0174745602981063\), and the maximum
+\(\|\mathbf K_b\|_\infty/\rho_1\) was \(1.4935853868714868\). Thus every
+sampled operator is Neumann-convergent and close to normal in the
+spectral-norm ratio, although non-normality remains an explicit theoretical
+caveat.
+
+SymPy verified the Hankel identity and
+
+\[
+e^{ix}(1-ix)
+=1+x^2/2+ix^3/3-x^4/8+O(x^5).
+\]
+
+No Mathematica step was required. Three sentinel cases with
+\(\rho_1=0.00599,\ 0.0672,\ 0.254\) showed monotone convergence of the
+partial Neumann sums to the direct solution down to the floating-point floor.
+T09 adds 24 focused tests. Final verification gives **217/217 tests passing**
+with warnings promoted to errors.
+
+Official T09 SHA-256 hashes:
+
+```text
+00278f05d92b4040bf2abd1572e1073bc69c9aec0048e096fba4d80dbdb30ff9  results/data/t09_analytic_summary.csv
+be512cfe95c19fa6491e8f43a6f5f1645c56648c48881f43805a26d26c751f29  results/data/t09_neumann_convergence.csv
+9ff6a120ceca132203ba83de88000d7e94ee79845e70d0a7f3ef81fb8db24e92  results/data/t09_operator_audit.csv
+2abb82bdb19627b813ec45693483bb4d0f998598707ea1a750b62c8220f4f6ea  results/figures/t09_rho_foundation.png
+```
+
+The analytical result justifies the order and physical meaning of the
+predictor. It does not derive the empirical prefactor \(2.635\), make the
+exponent \(1.109\) exact, or turn the T08 thresholds into universal
+constants. The complete derivation and artifact list are in
+`TAREFA_T09_FUNDAMENTACAO_ANALITICA_RHO1.md`.
