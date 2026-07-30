@@ -493,7 +493,8 @@ Y_{\mathrm{mp}}=\frac{F_{\mathrm{RMS}}(\mathbf F^D-\mathbf F^{D_1})}
 Every case was evaluated at \(L=1,3,5,7,9,11\), stopping early only after
 both latest normalized differences satisfied \(10^{-3}\); \(L=13\) was
 available only for \(N\leq4\). Total, matched-pairwise, and collective
-residual convergence were assessed separately. No case required \(L=13\).
+residual convergence were assessed separately. Eleven calibration cases
+required \(L=13\): 2 dimers, 5 trimers, and 4 quartets.
 The final status by particle count and family is:
 
 | \(N\) | family | cases | total confirmed | joint confirmed | residual resolved |
@@ -614,7 +615,7 @@ Official T08 SHA-256 hashes:
 707024d14c79b4ee6aebc5e20ae0037b33fd65790a082b9b561e60dee30776a1  results/data/t08_predictor_fits.csv
 27ad27a0b5b2a7bc4521118d4b4e32c04e77a6ec19085141e56c9ac0e3114f2c  results/data/t08_validity_thresholds.csv
 f67c0c41f0c590af6127a50f9041da5f22b082049ac568cc1d74d3f260269578  results/figures/t08_predictor_comparison.png
-60992fc1135a44b2698ad4cf90004fde730bfd8e241ed82b4355342643344efa  results/figures/t08_transferability.png
+078d6543fa819033e01389d2c76bb81c4d8a0e2bdf34b4838dc25748bb48723e  results/figures/t08_transferability.png
 ```
 
 The full pre-T08 results manifest was compared after generation. Every one of
@@ -653,7 +654,7 @@ clipping or physical `NaN`/`inf` values.
 
 ### Commands and final limitations
 
-Final verification reports 189/189 tests passing, including warnings promoted
+Final verification reports 193/193 tests passing, including warnings promoted
 to errors.
 
 The workflow used editable installation; baseline and final `pytest -q` and

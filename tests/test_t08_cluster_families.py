@@ -41,6 +41,24 @@ def test_exact_configuration_count_and_order():
     assert sum(item.split == "holdout" for item in configurations) == 144
 
 
+def test_configuration_order_is_explicit_and_deterministic():
+    geometries = [(2, "pair")]
+    geometries.extend(
+        (n, family)
+        for n in (3, 4, 6, 10)
+        for family in ("linear", "compact", "irregular")
+    )
+    expected = [
+        f"n{n}_{family}_f{f1:.1f}_d{distance:.1f}"
+        for n, family in geometries
+        for f1 in (0.1, 0.4, 0.8, 1.0)
+        for distance in (2.1, 2.5, 3.0, 4.0, 6.0, 10.0)
+    ]
+    first = [item.case_id for item in enumerate_transferability_configurations()]
+    second = [item.case_id for item in enumerate_transferability_configurations()]
+    assert first == expected == second
+
+
 @pytest.mark.parametrize("builder", [linear_cluster, compact_cluster, irregular_cluster])
 def test_geometry_distance_validation(builder):
     for distance in (0, -1, np.nan, np.inf):

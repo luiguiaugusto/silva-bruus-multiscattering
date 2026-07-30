@@ -188,29 +188,48 @@ def _plot_predictors(rows, fits):
 def _plot_transferability(rows, selected, fit):
     eligible = [row for row in rows if _true(row, "total_converged") and float(row["epsilon_a"]) > 0]
     fig, axes = plt.subplots(1, 2, figsize=(12, 5), constrained_layout=True)
-    for split, marker, color in (("calibration", "o", "tab:blue"), ("holdout", "s", "tab:orange")):
-        subset = [row for row in eligible if row["split"] == split]
-        x = np.array([float(row[selected]) for row in subset]); y = np.array([float(row["epsilon_a"]) for row in subset])
+    series = (
+        ("calibration", None, "o", "tab:blue"),
+        ("holdout N=6", 6, "s", "tab:orange"),
+        ("holdout N=10", 10, "D", "tab:red"),
+    )
+    for label, particle_count, marker, color in series:
+        subset = [
+            row for row in eligible
+            if (
+                (particle_count is None and row["split"] == "calibration")
+                or (
+                    row["split"] == "holdout"
+                    and int(row["particle_count"]) == particle_count
+                )
+            )
+        ]
+        x = np.array([float(row[selected]) for row in subset])
+        y = np.array([float(row["epsilon_a"]) for row in subset])
         predicted = float(fit["prefactor"]) * x ** float(fit["exponent"])
-        axes[0].scatter(x, y, marker=marker, color=color, alpha=0.7, label=split)
-        axes[1].scatter(predicted, y, marker=marker, color=color, alpha=0.7, label=split)
-    unconfirmed = [
-        row for row in rows
-        if not _true(row, "total_converged") and float(row["epsilon_a"]) > 0
-    ]
-    if unconfirmed:
-        unconfirmed_x = np.array([float(row[selected]) for row in unconfirmed])
-        unconfirmed_y = np.array([float(row["epsilon_a"]) for row in unconfirmed])
-        unconfirmed_predicted = (
-            float(fit["prefactor"]) * unconfirmed_x ** float(fit["exponent"])
-        )
+        axes[0].scatter(x, y, marker=marker, color=color, alpha=0.7, label=label)
+        axes[1].scatter(predicted, y, marker=marker, color=color, alpha=0.7, label=label)
+    for particle_count, marker, color in ((6, "s", "tab:orange"), (10, "D", "tab:red")):
+        unconfirmed = [
+            row for row in rows
+            if (
+                not _true(row, "total_converged")
+                and int(row["particle_count"]) == particle_count
+                and float(row["epsilon_a"]) > 0
+            )
+        ]
+        if not unconfirmed:
+            continue
+        x = np.array([float(row[selected]) for row in unconfirmed])
+        y = np.array([float(row["epsilon_a"]) for row in unconfirmed])
+        predicted = float(fit["prefactor"]) * x ** float(fit["exponent"])
         axes[0].scatter(
-            unconfirmed_x, unconfirmed_y, marker="x", color="black",
-            alpha=0.8, label="unconfirmed",
+            x, y, marker=marker, facecolors="none", edgecolors=color,
+            linewidths=1.3, label=f"N={particle_count} unconfirmed",
         )
         axes[1].scatter(
-            unconfirmed_predicted, unconfirmed_y, marker="x", color="black",
-            alpha=0.8, label="unconfirmed",
+            predicted, y, marker=marker, facecolors="none", edgecolors=color,
+            linewidths=1.3, label=f"N={particle_count} unconfirmed",
         )
     xline = np.logspace(np.log10(min(float(row[selected]) for row in eligible)), np.log10(max(float(row[selected]) for row in eligible)), 200)
     axes[0].plot(xline, float(fit["prefactor"]) * xline ** float(fit["exponent"]), color="black", label="calibration fit")
