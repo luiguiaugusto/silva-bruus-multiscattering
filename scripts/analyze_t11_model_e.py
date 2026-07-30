@@ -89,24 +89,7 @@ def _campaign():
             "total_forces_xyz", "interaction_forces_xyz",
             "external_scattered_forces_xyz", "scattered_scattered_forces_xyz",
         )
-
-        def all_confirmed() -> bool:
-            if len(results) < 3:
-                return False
-            for channel in channels:
-                last, last_applicable, _ = _successive(
-                    getattr(results[-1], channel), getattr(results[-2], channel)
-                )
-                prior, prior_applicable, _ = _successive(
-                    getattr(results[-2], channel), getattr(results[-3], channel)
-                )
-                if not (last_applicable and prior_applicable and last <= TOLERANCE and prior <= TOLERANCE):
-                    return False
-            return True
-
         for order in (8, 9):
-            if all_confirmed():
-                break
             orders.append(order)
             results.append(
                 solve_model_e_nodal(positions, ka, 1.0, 1.0, f0, f1, order)
@@ -163,6 +146,12 @@ def _campaign():
                 "active_modes_per_particle": len(result.solution.active_modes),
                 "system_residual": _format(result.solution.residual_relative),
                 "condition_number": _format(result.solution.condition_number),
+                "scattered_condition_number": _format(result.solution.scattered_condition_number),
+                "balanced_condition_number": _format(result.solution.balanced_condition_number),
+                "balanced_backward_error": _format(result.solution.balanced_backward_error),
+                "effective_incident_closure_error": _format(result.solution.effective_incident_closure_error),
+                "scattering_closure_error": _format(result.solution.scattering_closure_error),
+                "production_solver": result.solution.production_solver,
                 "decomposition_residual": _format(result.decomposition_residual),
                 "used_planar_symmetry": str(result.solution.used_planar_symmetry).lower(),
             }

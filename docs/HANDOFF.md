@@ -967,9 +967,8 @@ docs/DECISIONS.md
 docs/HANDOFF.md
 \`\`\`
 
-The untracked user specification
-\`PROMPT_T11_MODELO_E_REFERENCIA_COMPLETA.md\` was preserved as input and not
-modified.
+The specification `PROMPT_T11_MODELO_E_REFERENCIA_COMPLETA.md` was included in
+the T11 commit together with the executed task record; it is not untracked.
 
 ### Independent validation
 
@@ -1074,3 +1073,182 @@ compact campaign is not the T12 transferability study:
 
 No T12 sentinel was evaluated, no T08 threshold was recalibrated, and the
 T13--T14 holdout remains unopened.
+
+## T11.1 numerical stabilization of Model E
+
+### Scope and derivation
+
+T11.1 changes the numerical path only. The exact T10 coefficients, translation
+operator, complete force, four force channels, planar symmetry, six physical
+cases, and \(L_{\max}=2,\ldots,9\) campaign are unchanged. With
+\(S=D^{1/2}\) taken from the principal NumPy complex square root, production
+solves
+
+\[
+(I-SUS)q=Sa,
+\]
+
+then reconstructs
+
+\[
+d=Sq,
+\qquad
+b=a+Ud.
+\]
+
+No \(S^{-1}\), inverse, pseudoinverse, least-squares solve, or magnitude
+threshold is used. The legacy system \(A_b=I-UD\) and scattered system
+\(A_d=I-DU\) remain explicit diagnostics. The legacy names system_matrix,
+right_hand_side, condition_number, and residual_relative still denote
+\(A_b\), \(a\), \(\kappa(A_b)\), and the legacy residual, respectively.
+
+### Files
+
+Created:
+
+    scripts/analyze_t11_1_model_e_stability.py
+    tests/test_t11_1_stability.py
+    tests/test_t11_1_artifacts.py
+    results/data/t11_1_solver_stability.csv
+    results/data/t11_1_high_precision_oracle.csv
+    results/figures/t11_1_model_e_stability.png
+    TAREFA_T11_1_ESTABILIZACAO_NUMERICA_MODELO_E.md
+
+Updated:
+
+    src/acoustic_ms/mie_multiparticle.py
+    src/acoustic_ms/__init__.py
+    scripts/analyze_t11_model_e.py
+    results/data/t11_model_e_convergence.csv
+    results/data/t11_force_oracle.csv
+    results/data/t11_force_decomposition.csv
+    results/figures/t11_model_e_validation.png
+    pyproject.toml
+    README.md
+    TASKS.md
+    docs/CONVENTIONS.md
+    docs/DECISIONS.md
+    docs/HANDOFF.md
+
+The user input PROMPT_T11_1_ESTABILIZACAO_NUMERICA_MODELO_E.md remains
+untracked, unchanged, and outside the T11.1 change set.
+
+### Conditioning and physical closures
+
+Across all 48 rows:
+
+| diagnostic | maximum |
+|---|---:|
+| \(\kappa(A_b)\) | \(5.906478133855654\times10^{24}\) |
+| \(\kappa(A_d)\) | \(6.561723110752275\times10^{24}\) |
+| \(\kappa(A_q)\) | \(1.1329535742333885\) |
+| legacy residual | \(6.305093914217009\times10^{-5}\) |
+| balanced backward error | \(5.344776630489665\times10^{-17}\) |
+| \(r_b\) | \(2.0138083755836\times10^{-17}\) |
+| \(r_d\) | \(3.0898191582801966\times10^{-16}\) |
+
+Thus the raw condition number diagnoses coefficient scaling, not physical
+divergence. It is also distinct from multipole convergence and from empirical
+Silva–Bruus validity.
+
+The audit solves the scattered formulation directly and applies one explicit
+residual-refinement step. Maximum resolved force discrepancies between that
+audit and production are:
+
+| channel | maximum relative discrepancy |
+|---|---:|
+| total | \(7.892084928414508\times10^{-16}\) |
+| interaction | \(7.892084928414508\times10^{-16}\) |
+| external–scattered | \(7.48946401245463\times10^{-16}\) |
+| scattered–scattered | \(2.1188592886720627\times10^{-15}\) |
+
+The unrefined legacy solve remains diagnostic and differs from production by at
+most \(1.3560036588172588\times10^{-7}\) among the four resolved force
+channels at high order.
+
+### High-precision linear oracle
+
+The dimer_axis and trimer_scalene sentinels at \(L_{\max}=9\) use mpmath 1.3.0
+with 80 decimal digits. The official complex128 \(A_q\) and \(Sa\) are
+converted element by element, so this is an oracle for the linear solve rather
+than an independent arbitrary-precision Mie or translation implementation.
+
+| quantity | maximum relative discrepancy |
+|---|---:|
+| \(q\) | \(2.510742075062353\times10^{-16}\) |
+| \(d\) | \(2.3455518820419097\times10^{-16}\) |
+| \(b\) | \(2.407681443774223\times10^{-16}\) |
+| total force | \(3.128402140403269\times10^{-16}\) |
+| interaction force | \(3.128402140403269\times10^{-16}\) |
+| external–scattered force | \(3.3375083154927963\times10^{-16}\) |
+| scattered–scattered force | \(2.4654006544895997\times10^{-16}\) |
+
+The independent surface-stress oracle remains satisfied; its maximum resolved
+relative component error after regeneration is
+\(6.4551553527306055\times10^{-15}\).
+
+### Effect on T11 results
+
+Relative to the official pre-stabilization T11 artifacts, the maximum changes
+of RMS force channels are:
+
+| channel | maximum relative change |
+|---|---:|
+| total | \(2.7919410267986013\times10^{-8}\) |
+| interaction | \(2.7919410267986013\times10^{-8}\) |
+| external–scattered | \(2.5925511856521585\times10^{-8}\) |
+| scattered–scattered | \(6.92534995800785\times10^{-8}\) |
+
+No convergence classification changed. The differences are numerical effects
+of stabilizing the same equations, not a physical model change. The old T11
+hashes in the preceding historical section are superseded by the stabilized
+official hashes below.
+
+### Verification and environment
+
+Commands executed include:
+
+    .venv/bin/python -m pip install -e ".[dev,plot]"
+    .venv/bin/python scripts/analyze_t11_model_e.py
+    .venv/bin/python scripts/analyze_t11_1_model_e_stability.py
+    .venv/bin/python scripts/analyze_t11_model_e.py
+    .venv/bin/python scripts/analyze_t11_1_model_e_stability.py
+    .venv/bin/python -m pytest -q -W error
+    git diff --check
+    git status --short
+    git diff --stat
+    git diff --name-only
+    sha256sum results/data/t11*.csv results/figures/t11*.png
+
+The final suite reports **307 passed** with warnings treated as errors.
+The environment is Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0,
+Matplotlib 3.11.1, and mpmath 1.3.0.
+
+Two consecutive executions in this environment produced identical hashes:
+
+    99805905800b155c7ff7d278989ef55e42f424363b5d410765959e1e221b1e6e  results/data/t11_model_e_convergence.csv
+    c0738004a2fa2de8ee081e633beb8eab725c71161e6eec1111c0f2b37fc6ea9e  results/data/t11_force_oracle.csv
+    8c2b83134b306ab6b113e058439348a9de21f5f735a468a891e0868ad6f53986  results/data/t11_force_decomposition.csv
+    afcee969e41cb1e0d58d1a2ded3bc091b7809c953e59299b2773d00118eb2217  results/figures/t11_model_e_validation.png
+    51f34cf9f89612615b1d31e8a458c14590a93b394bfd072897d43a905f8e6693  results/data/t11_1_solver_stability.csv
+    eaf8c7688ad4607d6f1119551dd869ddbc7e4b5dd994bd0a6708b2b31fcd2ff7  results/data/t11_1_high_precision_oracle.csv
+    06ac914313d5454b3e455b2dd511de6544da9fdf3f01e988eb349d48adea7420  results/figures/t11_1_model_e_stability.png
+
+All pre-existing T01–T10 artifacts remain byte-identical to the initial
+manifest. Safe raster inspection confirmed RGB images of 3300 by 1056 and
+3410 by 1056 pixels, three populated panels in each, nonempty color content,
+clear outer margins, and no invalid pixel values. Direct image export to the
+conversation was blocked by the sandbox privacy policy.
+
+### Limitations and next-step gate
+
+Model E remains restricted to identical lossless fluid spheres fixed in the
+nodal plane of an ideal unbounded fluid. It excludes viscosity, streaming,
+walls, elasticity, absorption, nonspherical particles, and dynamics. The
+high-precision oracle validates the linear system built in complex128, not the
+full Mie and translation pipeline at arbitrary precision.
+
+No T12 sentinel was evaluated, no \(\rho_1\) threshold was recalibrated, and
+the T13–T14 holdout remains unopened. With all numerical acceptance criteria
+satisfied, the solver is technically ready for a separately authorized T12;
+this task does not start it.

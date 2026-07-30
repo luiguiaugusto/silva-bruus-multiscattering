@@ -295,18 +295,58 @@ only to the isolated-sphere T-matrix and not to the collective force.
 ## T11 complete-reference Model E
 
 For each particle, \(a\) denotes the external incident BSCs, \(b\) the
-effective incident BSCs, and \(d=Db\) the scattered BSCs. Model E solves
+effective incident BSCs, and \(d=Db\) the scattered BSCs. The legacy
+effective-incident system is
 
 \[
-(I-UD)b=a,
-\qquad
-d=Db,
+A_b b=a,
+\qquad A_b=I-UD.
 \]
 
-with exact T10 coefficients in \(D\) and translation oriented
-\`target <- source\`. Planar reflection retains modes with \(n+m\) odd; public
-coefficient arrays always retain the complete ordering \(n^2+n+m\), with
-inactive entries equal to zero. No magnitude threshold prunes modes.
+The equivalent scattered-field system is
+
+\[
+A_d d=Da,
+\qquad A_d=I-DU.
+\]
+
+Using the elementwise principal complex square root,
+
+\[
+S=D^{1/2},
+\qquad
+A_q=I-SUS,
+\qquad
+A_q q=Sa.
+\]
+
+Production solves only the balanced system with `numpy.linalg.solve` and
+reconstructs without division by \(S\):
+
+\[
+d=Sq,
+\qquad
+b=a+Ud.
+\]
+
+No inverse, pseudoinverse, least-squares solve, or magnitude pruning is used.
+Legacy public attributes continue to denote \(A_b\), \(a\),
+\(\kappa(A_b)\), and the residual of the legacy equation.
+
+The balanced backward error is
+
+\[
+\eta_q=
+\frac{\lVert A_q q-Sa\rVert}
+{\lVert A_q\rVert\lVert q\rVert+\lVert Sa\rVert}.
+\]
+
+The physical closure diagnostics are
+
+\[
+r_b=\frac{\lVert b-a-Ud\rVert}
+{\lVert b\rVert+\lVert a\rVert+\lVert Ud\rVert},
+\qquad
 
 For \(n=0,\ldots,L_{\max}-1\), define
 

@@ -100,8 +100,10 @@ complete collective-force model. Global integration and the
 
 ## T11: complete-reference Model E
 
-Model E solves \((I-UD)b=a\) with the exact T10 diagonal T-matrix and then
-evaluates the complete partial-wave radiation force. Its interaction force is
+Model E uses the exact T10 diagonal T-matrix and evaluates the complete
+partial-wave radiation force. T11.1 stabilizes its linear algebra by solving
+\((I-D^{1/2}UD^{1/2})q=D^{1/2}a\), followed by \(d=D^{1/2}q\) and
+\(b=a+Ud\), without forming \(D^{-1/2}\). Its interaction force is
 split exactly into external--scattered and scattered--scattered terms. An
 independent surface-stress quadrature validates the force normalization, and a
 compact six-case campaign audits \(L_{\max}=2,\ldots,9\) without opening the
@@ -109,6 +111,7 @@ T12 sentinel campaign.
 
 ```bash
 .venv/bin/python scripts/analyze_t11_model_e.py
+.venv/bin/python scripts/analyze_t11_1_model_e_stability.py
 ```
 
 The current scope remains lossless identical fluid spheres in an ideal fluid,

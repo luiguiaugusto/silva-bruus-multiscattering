@@ -21,3 +21,4 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] T09 -- analytical foundation and independent operator audit of rho_1.
 - [x] T10 -- exact isolated-sphere Mie coefficients and Rayleigh-error audit.
 - [x] T11 -- exact-Mie global Model E with the complete multipolar radiation force.
+- [x] T11.1 -- numerical stabilization and high-precision audit of Model E.

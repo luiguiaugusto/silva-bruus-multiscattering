@@ -73,9 +73,13 @@
 - Model E is a new, isolated API combining the exact T10 T-matrix, global
   multiple scattering, and the complete multipolar force. Models A--D and all
   their established artifacts remain unchanged.
-- The production unknown is the effective incident field in
-  \((I-UD)b=a\); the equivalent scattered-field system is an independent test,
-  not the implementation path.
+- T11.1 changes only the numerical solution path. Production solves the
+  principal-square-root-balanced system
+  \((I-D^{1/2}UD^{1/2})q=D^{1/2}a\), reconstructs \(d=D^{1/2}q\), and then
+  reconstructs \(b=a+Ud\) without division by \(D^{1/2}\).
+- The effective-incident and scattered systems remain explicit diagnostics.
+  Their legacy public attributes retain their original meanings; neither raw
+  condition number is interpreted as physical multipole divergence.
 - The complete force includes both the quadratic recoil in \(\Gamma_n\) and
   the distinct scattered--scattered incident-field channel \(\mathcal F[c]\).
 - An independent stress-tensor surface integral is the normalization and sign
