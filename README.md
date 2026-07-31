@@ -138,3 +138,12 @@ Leave-\((N,\mathrm{family})\)-out diagnostics show that a recalibrated
 sentinel set. This supports only a separate T12.2 recalibration study. It does
 not validate a universal criterion, does not open the \(N=6,10\) holdout, and
 does not authorize T13 or T14.
+
+## T12.2: controlled rho1 recalibration
+
+T12.2 performs the preregistered seven-fold leave-\((N,\mathrm{family})\)-out
+recalibration of the same power law against the 28 confirmed Model-E
+interaction-force errors. The candidate improves the frozen T08 calibration,
+but retains one false-safe case at the 10% threshold. The resulting decision is
+`NO_GO_T13_RHO1_NOT_QUANTITATIVE`; no alternative predictor, new force solve,
+or \(N=6,10\) holdout case was evaluated.

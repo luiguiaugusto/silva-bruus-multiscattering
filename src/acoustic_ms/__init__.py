@@ -42,6 +42,13 @@ from .rho1_model_e_diagnostics import (
     out_of_fold_metrics, spearman_correlation, vector_field_amplitude_ratio,
     vector_field_cosine, vector_field_inner_product, vector_field_projection,
 )
+from .rho1_model_e_recalibration import (
+    BootstrapCalibration, ConfirmatoryMetrics, GateCriterion, LogoFoldFit,
+    LogoPrediction, SafetyAudit, SafetyClassification,
+    classify_logo_safety, confirmatory_metrics, evaluate_recalibration_gate,
+    grouped_bootstrap_calibration, logo_power_law_predictions,
+    power_law_threshold,
+)
 from .multipolar_solver import MultipolarNodalSolution, solve_multipolar_nodal
 from .model_d import MultipolarNodalInteractionResult, NodalModelDComparison, compare_nodal_model_d, solve_multipolar_nodal_interaction_forces
 from .multipolar_expansion import MultipolarClusterExpansion, MultipolarConnectedTerm, decompose_multipolar_cluster
@@ -165,4 +172,17 @@ __all__ = [
     "vector_field_cosine",
     "vector_field_inner_product",
     "vector_field_projection",
+    "BootstrapCalibration",
+    "ConfirmatoryMetrics",
+    "GateCriterion",
+    "LogoFoldFit",
+    "LogoPrediction",
+    "SafetyAudit",
+    "SafetyClassification",
+    "classify_logo_safety",
+    "confirmatory_metrics",
+    "evaluate_recalibration_gate",
+    "grouped_bootstrap_calibration",
+    "logo_power_law_predictions",
+    "power_law_threshold",
 ]

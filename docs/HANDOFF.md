@@ -1637,3 +1637,166 @@ Two scattered--scattered channels remain unconfirmed at \(L=21\), so their
 mechanism diagnostics are intentionally absent. The result is descriptive,
 does not establish a universal error bound, and authorizes only a separately
 specified T12.2 study.
+
+## T12.2 — controlled recalibration of rho1 against Model E
+
+### Scope and provenance
+
+T12.2 reads the 28 canonical rows of
+`results/data/t12_1_resolved_comparison.csv` and channel status from the
+versioned T12/T12.1 convergence tables. It performs no multipolar or Model-E
+solve. The domain remains \(N\in\{2,3,4\}\), \(ka=0.1\), \(f_0=0\), positive
+sampled \(f_1\), fixed planar families, identical spheres, and the confirmed
+complete Model-E interaction force. The seven generalization units are
+`n2_pair`, `n3_compact`, `n3_irregular`, `n3_linear`, `n4_compact`,
+`n4_irregular`, and `n4_linear`.
+
+All 28 interaction/total references are confirmed. The
+scattered--scattered channels of `n2_pair_f1.0_d2.1` and
+`n3_irregular_f1.0_d2.1` remain `unconfirmed_at_21` and are explicitly marked;
+this does not remove their confirmed interaction force from the regression.
+No \(N=6,10\) case was read as a calibration row or evaluated.
+
+Created files are:
+
+- `src/acoustic_ms/rho1_model_e_recalibration.py`;
+- `scripts/analyze_t12_2_rho1_recalibration.py`;
+- `tests/test_t12_2_recalibration.py`;
+- `tests/test_t12_2_artifacts.py`;
+- six `results/data/t12_2_*.csv` files;
+- `results/figures/t12_2_rho1_recalibration.png`;
+- `TAREFA_T12_2_RECALIBRACAO_CONTROLADA_RHO1.md`.
+
+Updated files are `src/acoustic_ms/__init__.py`, `README.md`, `TASKS.md`,
+`docs/DECISIONS.md`, and `docs/HANDOFF.md`. The four local prompt inputs remain
+untracked and are not part of the commit.
+
+### Confirmatory protocol
+
+The single candidate is
+
+\[
+\log\widehat\varepsilon_A^E=\beta_0+\beta_1\log\rho_1,
+\qquad
+\widehat\varepsilon_A^E=C_E\rho_1^{\alpha_E}.
+\]
+
+Each LOGO fold fits only the other six groups. The 28 strictly OOF predictions
+retain canonical sentinel order. The frozen P0 law is evaluated without
+refitting. No epsilon floor is used because all 28 target errors are strictly
+positive; the recorded value is zero.
+
+| held-out group | train/test | \(C_E^{(-g)}\) | \(\alpha_E^{(-g)}\) | 1% threshold | 5% threshold | 10% threshold |
+|---|---:|---:|---:|---:|---:|---:|
+| n2_pair | 24/4 | 8.664479283491534 | 1.276944106033447 | 0.005004909122702858 | 0.0176511631671110 | 0.0303749680210992 |
+| n3_compact | 24/4 | 15.08273461506406 | 1.435586621602670 | 0.006108525564888686 | 0.0187423683582234 | 0.0303749623820695 |
+| n3_irregular | 24/4 | 16.14180680161521 | 1.447883002680308 | 0.006086735301654885 | 0.0184985425625791 | 0.0298571228848490 |
+| n3_linear | 24/4 | 16.03273298265274 | 1.444265785492683 | 0.006037736222652936 | 0.0184007831001668 | 0.0297349674845416 |
+| n4_compact | 24/4 | 16.86608146832317 | 1.453133997997103 | 0.006015514813023603 | 0.0182088047039304 | 0.0293386808154164 |
+| n4_irregular | 24/4 | 16.49085211796474 | 1.453121927799739 | 0.006109118707505293 | 0.0184923113498588 | 0.0297955949711974 |
+| n4_linear | 24/4 | 16.23827532420431 | 1.449085672013724 | 0.006087479079470081 | 0.0184837428561375 | 0.0298213846896951 |
+
+### OOF performance and safety
+
+| model | RMSE log | MAE log | median absolute log ratio | within factor 2 | within factor 1.5 | Spearman | maximum log underestimation |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| P0 frozen | 0.8106033557995027 | 0.6330031366128833 | 0.4726269784443000 | 0.6071428571428571 | 0.4285714285714286 | 0.9709906951286261 | 1.2967556230417525 |
+| recalibrated rho1 | 0.6458489737104012 | 0.3786559305780956 | 0.2256534353283870 | 0.9285714285714286 | 0.7142857142857143 | 0.9600437876299945 | 0.7513842151522394 |
+
+| tolerance | predicted safe | groups covered | true safe | false safe | false unsafe | worst false-safe excess |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1% | 7 | 7 | 7 | 0 | 0 | 0 |
+| 5% | 14 | 7 | 14 | 0 | 0 | 0 |
+| 10% | 20 | 7 | 19 | 1 | 1 | 0.020573189849995427 |
+
+The 10% false-safe case is `n2_pair_f0.8_d2.5`. It is retained without
+clipping, exclusion, margin, or post-hoc safety factor.
+
+### Final descriptive calibration and uncertainty
+
+Only after freezing OOF predictions, the same model fitted to all 28 cases is
+
+\[
+\widehat\varepsilon_A^E
+=14.73950709797405\rho_1^{1.4226504975598322}.
+\]
+
+Its candidate thresholds are 0.005926947606709601,
+0.01837157635582504, and 0.029905042165737895 for 1%, 5%, and 10%.
+The fold ranges are 8.664479283491534--16.86608146832317 for \(C_E\) and
+1.276944106033447--1.453133997997103 for \(\alpha_E\).
+
+The whole-group bootstrap used seed 1202 and produced 10,000 valid samples in
+10,000 attempts. Percentile 95% intervals are:
+
+- \(C_E\): [7.579782806369310, 47.07370137527077];
+- \(\alpha_E\): [1.249649355494450, 1.728753959643017];
+- 1% threshold: [0.004875978405960654, 0.007605269077613946];
+- 5% threshold: [0.01714149487572852, 0.01942975087950808];
+- 10% threshold: [0.02830655600345593, 0.03155362429778696].
+
+These intervals are descriptive and do not change the gate.
+
+### Gate decision
+
+Nine of ten criteria pass: all predictions and fold coefficients are positive;
+RMSE is below \(\ln2\); 92.86% lie within factor 2; Spearman is 0.9600; both
+primary metrics improve on P0; coverage is nonempty; and integrity checks pass.
+The zero-false-safe criterion fails at 10%. The exact decision is therefore:
+
+```text
+NO_GO_T13_RHO1_NOT_QUANTITATIVE
+```
+
+The result supports \(\rho_1\) as an ordinal or mechanistic indicator but does
+not validate the simple power law as an autonomous quantitative criterion. No
+second candidate was tried. T13 and T14 remain unopened.
+
+### Verification, determinism, and artifacts
+
+The final suite reports **371 passed** with warnings treated as errors. The
+verification environment is Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0, and
+Matplotlib 3.11.1. Two consecutive script executions in this environment
+produce identical bytes. Different numerical/plotting environments need not
+produce identical binary representations.
+
+Artifact hashes are:
+
+    e0c4b24078ea64d142808f64e170e346621d8252155f58f407620b972eab4b48  results/data/t12_2_logo_predictions.csv
+    f75b2d04fc342c1b211bd6171ad2b2fe7668141d7787b7baf63d0966efc55e4b  results/data/t12_2_logo_fits.csv
+    4a4a013e4e83eacf32bd766851349e52a10100f2fdbdb555ebca67f7da898e56  results/data/t12_2_metrics.csv
+    b262f8c4576501a93e4d1dbc5a69d344f225a318965db603d55742afd7607328  results/data/t12_2_safety_audit.csv
+    ea43f118469b46c41acf03b03780750fe977c79d6816eab7c044383c39398da6  results/data/t12_2_final_calibration.csv
+    0059c29c652af7a3ab84d1b1469c8824b1679196a2dbab4b4877cf43d9a6bbbf  results/data/t12_2_gate.csv
+    bc9eee3afd9d717cb16aeebe8a2482aece9351930fb0568e5a71f7c841654104  results/figures/t12_2_rho1_recalibration.png
+
+The initial and final manifests of all 54 earlier versioned artifacts are
+identical. The sandbox image viewer again failed while configuring loopback;
+structural raster inspection verified a finite 2904×2156 RGBA image with full
+bounds, all channels spanning valid ranges, four populated panels,
+`constrained_layout=True`, and deterministic bytes.
+
+Commands include:
+
+    .venv/bin/python -m pip install -e ".[dev,plot]"
+    .venv/bin/python scripts/analyze_t12_2_rho1_recalibration.py
+    .venv/bin/python scripts/analyze_t12_2_rho1_recalibration.py
+    .venv/bin/python -m pytest -q -W error
+    git diff --check
+    git status --short
+    git diff --stat
+    git diff --name-only
+    sha256sum results/data/t12_2_*.csv results/figures/t12_2_rho1_recalibration.png
+
+### Limitations
+
+This is a small, internally calibrated \(N\leq4\) data set, not independent
+validation. It covers only \(ka=0.1\), \(f_0=0\), sampled positive contrasts,
+fixed planar geometry families, identical spheres, and the Model-E interaction
+force. It provides no result for \(N=6,10\), no universal threshold, and no
+new physical descriptor. In particular,
+
+\[
+\boxed{\text{candidate calibration}\ne\text{external validation}\ne
+\text{universal criterion}.}
+\]

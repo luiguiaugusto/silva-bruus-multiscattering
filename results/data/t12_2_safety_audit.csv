@@ -1,0 +1,4 @@
+tolerance,predicted_safe_count,predicted_safe_group_count,true_safe_count,false_safe_count,false_unsafe_count,worst_false_safe_excess,coverage_sufficient,zero_false_safe
+0.01,7,7,7,0,0,0,true,true
+0.050000000000000003,14,7,14,0,0,0,true,true
+0.10000000000000001,20,7,19,1,1,0.020573189849995427,true,false

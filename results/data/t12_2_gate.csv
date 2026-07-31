@@ -1,0 +1,12 @@
+record_type,criterion,observed,threshold,passed,justification,decision
+criterion,finite_positive_oof,1,1,true,all 28 OOF predictions must be finite and positive,pending
+criterion,positive_fold_coefficients,1,1,true,all seven fold prefactors and exponents must be positive,pending
+criterion,rmse_log,0.64584897371040118,0.69314718055994529,true,candidate RMSE log must not exceed ln(2),pending
+criterion,fraction_within_factor_2,0.9285714285714286,0.84999999999999998,true,candidate factor-two coverage must be at least 85%,pending
+criterion,spearman,0.96004378762999454,0.90000000000000002,true,candidate Spearman must be at least 0.90,pending
+criterion,rmse_improves_p0,0.64584897371040118,0.81060335579950271,true,candidate RMSE log must improve on frozen P0,pending
+criterion,factor_2_improves_p0,0.9285714285714286,0.6071428571428571,true,candidate factor-two coverage must improve on P0,pending
+criterion,zero_false_safe,1,0,false,each tolerance must have zero false-safe cases,pending
+criterion,minimum_safety_coverage,7,3,true,each tolerance needs three predicted-safe cases in two groups,pending
+criterion,scientific_numeric_integrity,1,1,true,"all scientific, numerical and integrity checks must pass",pending
+decision,final_decision,0,0,false,all ten pre-registered criteria must pass,NO_GO_T13_RHO1_NOT_QUANTITATIVE

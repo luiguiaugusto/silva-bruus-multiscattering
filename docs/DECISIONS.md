@@ -129,3 +129,18 @@
   `READY_T12_2_RHO1_RECALIBRATION_STUDY`: it authorizes only a separately
   specified recalibration study on the 28 sentinels. It is not `GO_T13`, does
   not open the \(N=6,10\) holdout, and is not a universal validity claim.
+
+## T12.2 decisions
+
+- The only confirmatory candidate is the same unweighted power law in
+  \(\rho_1\), fitted in log space. No alternative feature or model is tested.
+- Generalization is assessed exclusively by seven deterministic
+  leave-\((N,\mathrm{family})\)-out folds. The fit on all 28 cases is
+  descriptive and cannot support the gate.
+- Fold-specific thresholds are inverted only from training coefficients. No
+  residual margin, clipping, outlier removal, or post-hoc safety factor is
+  introduced.
+- The 10% threshold retains one false-safe dimer. Consequently the exact gate
+  is `NO_GO_T13_RHO1_NOT_QUANTITATIVE`, even though all other criteria pass.
+- The final fit is retained as a documented candidate, not as an approved
+  autonomous criterion. T13, T14, and the \(N=6,10\) holdout remain unopened.
