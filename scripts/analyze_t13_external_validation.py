@@ -22,6 +22,7 @@ from acoustic_ms import (
     audit_external_threshold,
     compare_model_e_forces,
     evaluate_external_validation_gate,
+    external_eligibility_mask,
     external_prediction_metrics,
     mechanism_diagnostics,
 )
@@ -211,7 +212,9 @@ def analyze() -> None:
         diagnostics = all(_truth(row["diagnostics_pass"]) for row in case_rows)
         confirmed = _truth(final["interaction_confirmed"])
         applicable = comparison.epsilon_a_e_applicable
-        eligible = bool(confirmed and diagnostics and applicable)
+        eligible = bool(external_eligibility_mask(
+            [confirmed], [diagnostics], [applicable]
+        )[0])
         extended = int(final["final_lmax"]) > 13
         if int(final["final_lmax"]) < 13 and not all(
             _truth(final[f"{channel}_confirmed"])

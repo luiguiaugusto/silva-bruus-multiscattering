@@ -1960,3 +1960,164 @@ This internal candidate-selection result is limited to 28 sentinels with
 families, identical spheres, and the complete Model-E interaction force. The
 sample is small, M2 is strongly correlated, and the bootstrap is descriptive.
 No \(N=6,10\) case, new force solve, T13, or T14 was executed.
+
+## T13 — external validation of the frozen Lambda-max criterion
+
+### Chronology, scope, and files
+
+The response-blind Fase A was committed as
+`af29faf89cb8f8c6883cc8bea0d44073e7caf020` and pushed before the first new
+Model-E solve for \(N=6,10\). It fixed 24 IDs, the M1/P3 formulas, conservative
+margins, target levels, thresholds, metrics, convergence protocol, and gate.
+The three blind files remained byte-identical throughout Fase B.
+The pre-T13 baseline was 388 passing tests; the published Fase-A suite had 395.
+
+Created or updated implementation and documentation files are:
+
+- `src/acoustic_ms/external_validation.py` and `src/acoustic_ms/__init__.py`;
+- `scripts/preregister_t13_external_validation.py`,
+  `scripts/run_t13_external_validation.py`, and
+  `scripts/analyze_t13_external_validation.py`;
+- `tests/test_t13_preregistration.py` and
+  `tests/test_t13_external_validation.py`, plus the future-proof artifact filter in
+  `tests/test_t12_3_artifacts.py`;
+- `TAREFA_T13_VALIDACAO_EXTERNA_LAMBDA_MAX.md`, `README.md`, `TASKS.md`,
+  `docs/CONVENTIONS.md`, `docs/DECISIONS.md`, and `docs/HANDOFF.md`;
+- three blind CSVs, seven revealed CSVs, and
+  `results/figures/t13_external_validation.png`.
+
+No solver, scattering coefficient, force equation, T08 raw table, or T01–T12.3
+artifact was changed. The local `PROMPT_*.md` inputs remain untracked.
+
+### Frozen sample and protocol
+
+The sample contains four target levels for each of `n6_linear`, `n6_compact`,
+`n6_irregular`, `n10_linear`, `n10_compact`, and `n10_irregular`. Thus it has
+12 cases for each \(N\), eight per family, six per level, and 24 total. The
+physical parameters are \(a=E_0=1\), \(ka=0.1\), \(f_0=0\), positive sampled
+\(f_1\), identical planar spheres, and the complete Model-E interaction force.
+
+The frozen confirmatory law is
+
+\[
+\widehat\varepsilon_{M1}
+=4.4964255121671126\,\Lambda_{\max}^{1.3883601043764593},
+\qquad
+\widehat\varepsilon_{M1,\mathrm{safe}}
+=2.5699703122019222\,\widehat\varepsilon_{M1}.
+\]
+
+The blind conservative safe counts were 6, 12, and 18 at 1%, 5%, and 10%.
+Convergence requires two successive applicable channel changes no larger than
+\(10^{-5}\), with no early stop below \(L_{\max}=5\), standard cap 13, and
+interaction-only extension cap 21.
+
+### Campaign, convergence, and diagnostics
+
+Exactly 24 cases were solved once, producing 205 order rows and 192 long-form
+particle-force rows. All 24 interaction references are confirmed, eligible,
+finite, and diagnostically approved. No case required extension beyond 13.
+Final orders were: three cases at 6, one at 7, two at 8, seven at 9, four at
+10, two at 11, two at 12, and three at 13.
+
+The eight-case stratified `--audit-existing` sample reproduced both values of
+\(N\), all three families, all four target levels, all force channels, and the
+balanced condition numbers. Across all calculated orders, the maxima were:
+
+| diagnostic | maximum |
+|---|---:|
+| balanced condition number | 1.073351390634244 |
+| balanced backward error | \(8.327818760262406\times10^{-17}\) |
+| effective-incident closure | \(4.458332851489474\times10^{-17}\) |
+| scattering closure | \(5.913315086486320\times10^{-16}\) |
+| force-channel decomposition residual | \(1.111617380757604\times10^{-16}\) |
+| planar \(\max|F_z|\) | 0 |
+
+Six holdout cases lie outside the development range of
+\(\Lambda_{\max}\); they remain present and are explicitly flagged rather
+than discarded. The signed mechanism identity has maximum absolute closure
+error \(1.0408340855860843\times10^{-17}\). Mechanism and cancellation
+diagnostics do not participate in the gate.
+
+### External metrics and strict safety audit
+
+| model/scope | RMSE log | MAE log | factor-2 fraction | Spearman | worst factor |
+|---|---:|---:|---:|---:|---:|
+| M1 all | 0.465095692587546 | 0.405022711598156 | 0.875000000000000 | 0.964347826086956 | 2.493764309928004 |
+| M1 \(N=6\) | 0.454863744834485 | 0.369519569189719 | 0.833333333333333 | 0.965034965034965 | 2.493764309928004 |
+| M1 \(N=10\) | 0.475107335411828 | 0.440525854006593 | 0.916666666666667 | 0.958041958041958 | 2.405678357508736 |
+| P3 all | 0.428876277730838 | 0.342637422617774 | 0.875000000000000 | 0.964347826086956 | 2.568595139431090 |
+
+M1 produced zero false-safe cases at every tolerance. At 1%, 5%, and 10%,
+its predicted-safe counts were 6, 12, and 18; observed-safe counts were 11,
+20, and 24; false-unsafe counts were 5, 8, and 6. The worst observed errors
+inside its predicted-safe regions were 0.00337799714600463,
+0.0145233336544098, and 0.0367211292312633. P3 is reported transparently but
+cannot alter the M1 decision.
+
+Every sufficiency and scientific item passed. The exact result is:
+
+```text
+PASS_T13_EXTERNAL_VALIDATION_LAMBDA_MAX
+GO_T14_SCALE_OUT_WITH_FROZEN_LAMBDA_MAX
+```
+
+This is external evidence for the frozen M1 criterion in the sampled domain,
+not a universal error theorem and not an implementation of T14.
+
+### Artifacts, determinism, and commands
+
+The blind SHA-256 hashes are:
+
+```text
+25d79db59d9dd6d52c5674d0a64fe2fea351cf213a0cdcd92b45845a9ecc2b38  results/data/t13_holdout_manifest.csv
+581a748dca2e5d161890284fca673ed20f2a4fbcbc0ff356d5d31db6ec8ac9c2  results/data/t13_frozen_predictions.csv
+eb1878e3425ede7a2b599fd20f63550d2fdb23d177264a043d443694907dc650  results/data/t13_frozen_protocol.csv
+```
+
+The revealed SHA-256 hashes are:
+
+```text
+ac73b4b12d1ab937fd39d7b62e5446e021058e21b207295e57fd4c818ae0d95d  results/data/t13_model_e_convergence.csv
+95719a996df27f0b11c1828bb2589403a4d9a8b8df2447f0c37e556532d8490b  results/data/t13_forces.csv
+a07dfab5386a15be32894ca69638e81fe9389f5adefca01f1d8e301e1559ae97  results/data/t13_case_summary.csv
+1936ccdf7dbda9eec6e8f68fe181157f18fd43f059f0002ce3fc560075910ae1  results/data/t13_external_predictions.csv
+1e2fac933d0684fcd953a389255e0ac1ef83ea9c8500ffe380f82f0e0cdb2788  results/data/t13_metrics.csv
+81d1c3d0dc84e232f24b1165303a16b0035af1a336baa76905dba918478dd6ff  results/data/t13_threshold_audit.csv
+8d6f8484c44c8c26499862c9572b62ae7ec770efdb5a46a232119aa5b0933761  results/data/t13_gate.csv
+76dd31bf849855330ae3c61bc438c62ee38ab9be7079631c01d06b2a5c243776  results/figures/t13_external_validation.png
+```
+
+Two `--analyze-only` executions in the same environment produced identical
+bytes. The figure is a finite 2904×1804 RGBA PNG; visual inspection confirmed
+six populated panels, legible text, visible identities/thresholds, distinct
+\(N\), families and target levels, and no destructive overlap. The verification
+environment is Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0, and Matplotlib 3.11.1.
+
+Commands executed include:
+
+```bash
+.venv/bin/python scripts/preregister_t13_external_validation.py
+.venv/bin/python -m pytest -q -W error
+.venv/bin/python scripts/run_t13_external_validation.py --workers 2
+.venv/bin/python scripts/run_t13_external_validation.py --audit-existing
+.venv/bin/python scripts/run_t13_external_validation.py --analyze-only
+git diff --check
+git status --short
+git diff --stat
+git diff --name-only
+sha256sum results/data/t13_*.csv results/figures/t13_external_validation.png
+```
+
+All 70 pre-T13 result artifacts retained their original hashes. The three
+blind files remained identical to the first commit. The final suite reports
+405 passed with warnings treated as errors.
+
+### Limitations
+
+The result covers only \(N=6,10\), three fixed planar family constructions,
+the sampled positive contrasts, \(ka=0.1\), \(f_0=0\), identical fixed fluid
+spheres, and the complete interaction force of the present Model E. It does
+not establish universality, other frequencies, negative contrasts, arbitrary
+geometries, dynamics, viscosity, streaming, or walls. T14 remains a separate
+future task.

@@ -341,6 +341,22 @@ def minimum_two_step_confirmation(
     return 0
 
 
+def external_eligibility_mask(
+    interaction_confirmed: Sequence[bool],
+    diagnostics_passed: Sequence[bool],
+    error_applicable: Sequence[bool],
+) -> NDArray[np.bool_]:
+    """Return the literal T13 eligibility intersection without imputation."""
+
+    interaction = np.asarray(interaction_confirmed, dtype=bool)
+    diagnostics = np.asarray(diagnostics_passed, dtype=bool)
+    applicable = np.asarray(error_applicable, dtype=bool)
+    if interaction.ndim != 1 or not (
+        interaction.shape == diagnostics.shape == applicable.shape
+    ):
+        raise ValueError("eligibility flags must have matching one-dimensional shapes")
+    return interaction & diagnostics & applicable
+
 def external_prediction_metrics(observed: ArrayLike, predicted: ArrayLike) -> ExternalPredictionMetrics:
     """Calculate the immutable positive external metrics without fitting."""
 

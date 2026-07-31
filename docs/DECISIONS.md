@@ -167,3 +167,24 @@
 - This result does not validate \(\Lambda_{\max}\) externally. It authorizes
   only a separately specified T13 using the still unopened \(N=6,10\)
   holdout. T13 and T14 were not started.
+
+## T13 decisions
+
+- The exact 24-case selection, M1/P3 coefficients, margins, thresholds, gate,
+  and three blind CSVs were committed and pushed before any new \(N=6,10\)
+  Model-E solve.
+- Selection uses only T08 holdout metadata, \(\Lambda_{\max}\), \(\rho_1\),
+  and confirmation of the preexisting D reference. No A/D/E force or error
+  participates.
+- The complete Model-E interaction force is the sole external reference. A
+  and D are independently audited diagnostics.
+- Sufficiency precedes the scientific gate. An insufficient campaign is
+  `INCONCLUSIVE`, not a scientific failure. P3 cannot rescue M1.
+- The measured result is `PASS_T13_EXTERNAL_VALIDATION_LAMBDA_MAX`; this
+  validates the frozen criterion only on the sampled planar \(N=6,10\)
+  domain. No coefficient was refitted and no universal claim is made.
+- The campaign is executed once. Determinism is tested by two analysis-only
+  passes, while eight stratified final-order solves provide an independent
+  audit without repeating all 24 cases.
+- T14 is only recommended by the frozen gate. It is not implemented or
+  started by T13.

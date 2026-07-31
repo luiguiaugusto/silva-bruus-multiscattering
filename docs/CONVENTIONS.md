@@ -470,3 +470,33 @@ leave-\((N,\mathrm{family})\)-out validation. P0 is the unchanged frozen T08
 law; P1, P2, P3, and P4 use respectively \(\eta\),
 \(\Lambda_{\max}\), \(\rho_1\), and \(\varepsilon_A^D\). P4 is explicitly a
 reference-derived diagnostic rather than a standalone validity predictor.
+
+## T13 external-validation conventions
+
+The external predictor and its conservative envelope are frozen as
+
+\[
+\widehat\varepsilon_{M1}
+=4.4964255121671126\,\Lambda_{\max}^{1.3883601043764593},
+\qquad
+\widehat\varepsilon_{M1,\mathrm{safe}}
+=2.5699703122019222\,\widehat\varepsilon_{M1}.
+\]
+
+P3 is reported only as a frozen comparator and never participates in the M1
+gate. Predicted and observed safety both use a strict inequality against the
+tolerance; equality is unsafe. The external response is exclusively
+\(\varepsilon_A^E\) formed from the complete Model-E interaction force.
+
+An external case is eligible exactly when the interaction channel has two
+successive applicable changes no larger than \(10^{-5}\), every numerical
+diagnostic passes, and the interaction-force error is applicable. A case that
+fails any item remains in the 24-row summary but is excluded from metrics and
+threshold audits without imputation. The standard order cap is 13 and the
+interaction-only extension cap is 21.
+
+Multiplicative metrics use positive errors and predictions in natural-log
+space. Conservative false-safe means
+\(\widehat\varepsilon_{\mathrm{safe}}<\tau\) while
+\(\varepsilon_A^E\geq\tau\). Mechanism amplitudes remain RMS vector-field
+diagnostics and are not additive scalar force fractions.

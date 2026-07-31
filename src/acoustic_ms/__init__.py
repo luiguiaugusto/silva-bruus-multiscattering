@@ -5,7 +5,7 @@ two-particle analytical benchmark; T03 provides the coupled Rayleigh solver at
 Lmax=1; T04 provides the Model C nodal interaction force with scattering
 Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers; T06 adds the connected N=4 body expansion; T07 adds multipolar Model D; T08--T09 audit rho_1 transferability and its operator; T10 adds exact isolated-sphere Mie coefficients; T11 adds globally coupled exact-Mie Model E and its complete multipolar radiation force without changing Models A--D.
 T11.1 stabilizes Model E with a square-root-balanced linear solve; T12 adds
-three-dimensional sentinel comparison metrics without recalibrating rho_1.
+three-dimensional sentinel comparison metrics without recalibrating rho_1; T13 externally validates the frozen Lambda_max criterion on N=6 and N=10 holdouts.
 """
 
 from .contrasts import dipole_contrast, monopole_contrast
@@ -62,7 +62,8 @@ from .external_validation import (
     ExternalGateCriterion, ExternalPredictionMetrics,
     ExternalThresholdAudit, ExternalValidationCase, FrozenExternalPrediction,
     audit_external_threshold, canonical_coordinate_hash,
-    evaluate_external_validation_gate, external_prediction_metrics,
+    evaluate_external_validation_gate, external_eligibility_mask,
+    external_prediction_metrics,
     frozen_external_predictions, minimum_two_step_confirmation,
     select_external_validation_cases, successive_change,
 )
@@ -227,6 +228,7 @@ __all__ = [
     "audit_external_threshold",
     "canonical_coordinate_hash",
     "evaluate_external_validation_gate",
+    "external_eligibility_mask",
     "external_prediction_metrics",
     "frozen_external_predictions",
     "minimum_two_step_confirmation",

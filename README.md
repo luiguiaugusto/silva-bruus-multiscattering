@@ -159,3 +159,22 @@ minimum safe coverage, so the literal result is
 `GO_T13_VALIDATE_LAMBDA_MAX`. This means only that \(\Lambda_{\max}\) is a
 candidate for later external validation. T12.3 does not read the \(N=6,10\)
 holdout, run a new force solve, start T13/T14, or establish a universal rule.
+
+## T13: external validation of the frozen Lambda-max criterion
+
+T13 preregistered and published a response-blind sample of 24 T08 holdout
+clusters before any new Model-E solve: four target levels in each combination
+of \(N\in\{6,10\}\) and the linear, compact, and irregular families. The
+frozen M1 law in \(\Lambda_{\max}\) passed its literal external gate with all
+24 references eligible, zero conservative false-safe cases at 1%, 5%, and
+10%, global log-RMSE 0.465095692587546, factor-two fraction 0.875, and
+Spearman 0.964347826086956.
+
+This supports transfer of the frozen criterion only to the sampled planar
+domain at \(ka=0.1\). It is not a universal theorem, does not refit M1, and
+does not start T14. Reproduce the already frozen campaign analysis without
+calling Model E using:
+
+```bash
+.venv/bin/python scripts/run_t13_external_validation.py --analyze-only
+```

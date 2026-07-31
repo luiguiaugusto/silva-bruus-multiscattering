@@ -140,3 +140,20 @@ reprovação científica de M1 é resultado válido, não falha de software.
 As conclusões restringem-se às famílias e parâmetros congelados, a
 \(N\in\{6,10\}\), \(ka=0.1\), clusters planares e ao Modelo E disponível.
 Não há reajuste, busca de novo preditor, T13.1 ou início automático da T14.
+
+## Resultado executado
+
+A Fase A foi congelada no commit
+`af29faf89cb8f8c6883cc8bea0d44073e7caf020` antes de qualquer solve externo.
+A Fase B resolveu exatamente os 24 IDs, com 24/24 casos elegíveis e nenhuma
+extensão além de \(L_{\max}=13\). O M1 obteve RMSE log 0.465095692587546,
+fração em fator 2 de 0.875, Spearman 0.964347826086956 e zero falsos seguros
+em 1%, 5% e 10%. O gate literal retornou
+`PASS_T13_EXTERNAL_VALIDATION_LAMBDA_MAX` e
+`GO_T14_SCALE_OUT_WITH_FROZEN_LAMBDA_MAX`.
+
+O CSV bruto tem 205 linhas de ordem; os artefatos derivados foram reproduzidos
+byte a byte por duas análises sem solver. Uma auditoria estratificada de oito
+casos reproduziu os canais de força e condicionamentos. A figura foi
+inspecionada visualmente. Os 70 artefatos anteriores e os três arquivos cegos
+permaneceram byte-idênticos. T14 não foi iniciada.

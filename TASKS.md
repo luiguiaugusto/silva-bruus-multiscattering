@@ -26,3 +26,4 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] T12.1 -- Model E convergence extension and diagnosis of the frozen rho_1 failure.
 - [x] T12.2 -- controlled LOGO recalibration of rho_1 against Model E.
 - [x] T12.3 -- grouped mechanistic validation of the Lambda_max criterion.
+- [x] T13 -- external validation of the frozen Lambda_max criterion on N=6 and N=10 clusters.

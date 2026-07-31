@@ -114,7 +114,7 @@ def test_all_pre_t12_3_result_artifacts_match_git_head():
         ["git", "ls-tree", "-r", "--name-only", "HEAD", "results/data", "results/figures"],
         cwd=ROOT, check=True, capture_output=True, text=True,
     ).stdout.splitlines()
-    protected = [path for path in paths if "/t12_3_" not in path]
+    protected = [path for path in paths if "/t12_3_" not in path and "/t13_" not in path]
     assert len(protected) == 61
     for relative in protected:
         expected = subprocess.run(
