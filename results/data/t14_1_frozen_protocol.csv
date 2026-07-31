@@ -1,0 +1,79 @@
+category,key,value,source
+frozen_rule,base_commit,7c6329ffa6208ac517602f4e411172128fc43465,T14.1 preregistration
+frozen_rule,m1_prefactor,4.4964255121671126,T14.1 preregistration
+frozen_rule,m1_exponent,1.3883601043764593,T14.1 preregistration
+frozen_rule,m1_safety_factor,2.5699703122019222,T14.1 preregistration
+frozen_rule,p3_prefactor,14.73950709797405,T14.1 preregistration
+frozen_rule,p3_exponent,1.4226504975598322,T14.1 preregistration
+frozen_rule,p3_safety_factor,2.0464420079866286,T14.1 preregistration
+frozen_rule,comparison,conservative_prediction < tolerance and observed_error < tolerance,T14.1 preregistration
+frozen_rule,radius,1,T14.1 preregistration
+frozen_rule,energy_density,1,T14.1 preregistration
+frozen_rule,k,0.10000000000000001,T14.1 preregistration
+frozen_rule,ka,0.10000000000000001,T14.1 preregistration
+frozen_rule,f0,0,T14.1 preregistration
+frozen_rule,f1,0.80000000000000004,T14.1 preregistration
+frozen_rule,convergence_tolerance,1.0000000000000001e-05,T14.1 preregistration
+frozen_rule,minimum_lmax,5,T14.1 preregistration
+frozen_rule,maximum_lmax,13,T14.1 preregistration
+frozen_rule,workers_default,1,T14.1 preregistration
+frozen_rule,blas_threads_default,1,T14.1 preregistration
+frozen_rule,required_eligible_all,20,T14.1 preregistration
+frozen_rule,required_eligible_each_n,10,T14.1 preregistration
+frozen_rule,required_eligible_each_family,6,T14.1 preregistration
+frozen_rule,required_eligible_each_level,5,T14.1 preregistration
+frozen_rule,required_global_factor2,0.80000000000000004,T14.1 preregistration
+frozen_rule,required_each_n_factor2,0.75,T14.1 preregistration
+frozen_rule,required_spearman,0.90000000000000002,T14.1 preregistration
+frozen_rule,required_max_rmse_log,0.69314718055994529,T14.1 preregistration
+frozen_rule,trend_no_deterioration_median_max,1.1000000000000001,T14.1 preregistration
+frozen_rule,trend_no_deterioration_p90_max,1.25,T14.1 preregistration
+frozen_rule,trend_systematic_median_min,1.25,T14.1 preregistration
+frozen_rule,trend_systematic_count_over_1_10,9,T14.1 preregistration
+frozen_rule,trend_minimum_applicable_pairs,10,T14.1 preregistration
+frozen_rule,m2_status,excluded_UNSTABLE_COLLINEARITY,T14.1 preregistration
+frozen_rule,phase_a_t14_1_model_e_solves,0,T14.1 preregistration
+threshold,tolerance_1,0.01,T14.1 preregistration
+threshold,lambda_max_1,0.0062222482453383283,T14.1 preregistration
+threshold,rho_l1_1,0.00358282366706918,T14.1 preregistration
+threshold,tolerance_2,0.050000000000000003,T14.1 preregistration
+threshold,lambda_max_2,0.019833411059191678,T14.1 preregistration
+threshold,rho_l1_2,0.011105567812764965,T14.1 preregistration
+threshold,tolerance_3,0.10000000000000001,T14.1 preregistration
+threshold,lambda_max_3,0.032675448712630381,T14.1 preregistration
+threshold,rho_l1_3,0.018077516446208253,T14.1 preregistration
+selection,lambda_target_1,0.0031111241226691642,T14.1 preregistration
+selection,lambda_target_2,0.011108933664494051,T14.1 preregistration
+selection,lambda_target_3,0.025457132710914911,T14.1 preregistration
+selection,lambda_target_4,0.065350897425260762,T14.1 preregistration
+selection,case_ids,t14_1_n45_linear_level1;t14_1_n45_linear_level2;t14_1_n45_linear_level3;t14_1_n45_linear_level4;t14_1_n45_compact_level1;t14_1_n45_compact_level2;t14_1_n45_compact_level3;t14_1_n45_compact_level4;t14_1_n45_irregular_level1;t14_1_n45_irregular_level2;t14_1_n45_irregular_level3;t14_1_n45_irregular_level4;t14_1_n105_linear_level1;t14_1_n105_linear_level2;t14_1_n105_linear_level3;t14_1_n105_linear_level4;t14_1_n105_compact_level1;t14_1_n105_compact_level2;t14_1_n105_compact_level3;t14_1_n105_compact_level4;t14_1_n105_irregular_level1;t14_1_n105_irregular_level2;t14_1_n105_irregular_level3;t14_1_n105_irregular_level4,T14.1 preregistration
+selection,case_count,24,T14.1 preregistration
+geometry,particle_counts,45;105,T14.1 preregistration
+geometry,families,linear;compact;irregular,T14.1 preregistration
+geometry,compact_rows,N45:q9;N105:q14,T14.1 preregistration
+geometry,irregular_amplitude,0.14999999999999999,T14.1 preregistration
+geometry,irregular_rule,T14 deterministic perturbation; recenter; renormalize,T14.1 preregistration
+resource,memory_estimate,16*n_active^2 bytes per dense complex matrix times conservative factor 12,T14.1 preregistration
+environment,cpu,AMD Ryzen 9 9950X 16-Core Processor,T14.1 preregistration
+environment,logical_cpus,32,T14.1 preregistration
+environment,memory_total,195403108 kB,T14.1 preregistration
+environment,rlimit_as,"(-1, -1)",T14.1 preregistration
+environment,python,3.12.3,T14.1 preregistration
+environment,numpy,2.5.1,T14.1 preregistration
+environment,scipy,1.18.0,T14.1 preregistration
+environment,matplotlib,3.11.1,T14.1 preregistration
+environment,blas_lapack,"{""blas"": {""detection method"": ""pkgconfig"", ""found"": true, ""include directory"": ""/opt/_internal/cpython-3.12.13/lib/python3.12/site-packages/scipy_openblas64/include"", ""lib directory"": ""/opt/_internal/cpython-3.12.13/lib/python3.12/site-packages/scipy_openblas64/lib"", ""name"": ""scipy-openblas"", ""openblas configuration"": ""OpenBLAS 0.3.33.112.0  USE64BITINT DYNAMIC_ARCH NO_AFFINITY Haswell MAX_THREADS=64"", ""pc file directory"": ""/project/.openblas"", ""version"": ""0.3.33.112.0""}, ""lapack"": {""detection method"": ""pkgconfig"", ""found"": true, ""include directory"": ""/opt/_internal/cpython-3.12.13/lib/python3.12/site-packages/scipy_openblas64/include"", ""lib directory"": ""/opt/_internal/cpython-3.12.13/lib/python3.12/site-packages/scipy_openblas64/lib"", ""name"": ""scipy-openblas"", ""openblas configuration"": ""OpenBLAS 0.3.33.112.0  USE64BITINT DYNAMIC_ARCH NO_AFFINITY Haswell MAX_THREADS=64"", ""pc file directory"": ""/project/.openblas"", ""version"": ""0.3.33.112.0""}}",T14.1 preregistration
+phase_a_code_sha256,src/acoustic_ms/large_n_validation.py,b9fa0b3fd39414dca38c5cae2c83b2c8f49928b4fdf0ad9a444755bd0b49e491,src/acoustic_ms/large_n_validation.py
+phase_a_code_sha256,scripts/preregister_t14_1_large_n.py,0ae98f891db794e5542c2b9e24c4708577c94a94ee65a8752ec6741c1c291f4b,scripts/preregister_t14_1_large_n.py
+phase_a_code_sha256,scripts/run_t14_1_large_n.py,308e733ce84315db4fcfea142604d6a83def15d235b8cd8861e51a5fb8414d64,scripts/run_t14_1_large_n.py
+phase_a_code_sha256,scripts/analyze_t14_1_large_n.py,5fc249034309c2fc211699414743f0719de3a3f0fb04cd50045dce1e3e4c7c6b,scripts/analyze_t14_1_large_n.py
+phase_a_code_sha256,tests/test_t14_1_preregistration.py,17c3b2558627b21877de1542b9a33187808f5f5ee37ee981bdc4c62be5de10fe,tests/test_t14_1_preregistration.py
+provenance_sha256,results/data/t12_3_logo_coefficients.csv,4f63024eebcdbe509d796fc54856d867ee212f95d463a278b45ce44501e068f5,results/data/t12_3_logo_coefficients.csv
+provenance_sha256,results/data/t12_3_nested_safety_factors.csv,ff671d2251b89ef57507919357e1df9ad450b35389d38f3074a9dcc01deb9bc8,results/data/t12_3_nested_safety_factors.csv
+provenance_sha256,results/data/t12_3_gate.csv,e7a38c8d4148d1e4e44521be793b1a97f9a4b0bcc81e634350794f1d9e351f0a,results/data/t12_3_gate.csv
+provenance_sha256,results/data/t13_frozen_protocol.csv,eb1878e3425ede7a2b599fd20f63550d2fdb23d177264a043d443694907dc650,results/data/t13_frozen_protocol.csv
+provenance_sha256,results/data/t13_frozen_predictions.csv,581a748dca2e5d161890284fca673ed20f2a4fbcbc0ff356d5d31db6ec8ac9c2,results/data/t13_frozen_predictions.csv
+provenance_sha256,results/data/t13_gate.csv,8d6f8484c44c8c26499862c9572b62ae7ec770efdb5a46a232119aa5b0933761,results/data/t13_gate.csv
+provenance_sha256,results/data/t14_frozen_protocol.csv,1bfc1a499fc28ffc47d99c3c9566d8360a9ed3ede1b9a918011132f2a5bce2c6,results/data/t14_frozen_protocol.csv
+provenance_sha256,results/data/t14_frozen_predictions.csv,cb12db65123c694f8e3936a03ca8466829a254e7bcf493e04b22b4dbce39d86c,results/data/t14_frozen_predictions.csv
+provenance_sha256,results/data/t14_gate.csv,715d51a1c3e82242f295de5b184f7d39d3f6297a09565f0dee83f7201221a315,results/data/t14_gate.csv

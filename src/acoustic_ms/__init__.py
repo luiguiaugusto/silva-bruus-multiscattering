@@ -75,6 +75,12 @@ from .scale_out_validation import (
     irregular_scale_template, scale_out_template,
     triangular_compact_template,
 )
+from .large_n_validation import (
+    EXPECTED_LARGE_N_CASE_IDS, LARGE_N_FAMILIES, LARGE_N_PARTICLE_COUNTS,
+    LARGE_N_TRIANGULAR_ROWS, LargeNCase, LargeNGateCriterion,
+    build_large_n_cases, classify_large_n_trend, evaluate_large_n_gate,
+    large_n_template, local_coupling_statistics, local_geometric_coupling,
+)
 from .multipolar_solver import MultipolarNodalSolution, solve_multipolar_nodal
 from .model_d import MultipolarNodalInteractionResult, NodalModelDComparison, compare_nodal_model_d, solve_multipolar_nodal_interaction_forces
 from .multipolar_expansion import MultipolarClusterExpansion, MultipolarConnectedTerm, decompose_multipolar_cluster
@@ -254,4 +260,16 @@ __all__ = [
     "irregular_scale_template",
     "scale_out_template",
     "triangular_compact_template",
+    "EXPECTED_LARGE_N_CASE_IDS",
+    "LARGE_N_FAMILIES",
+    "LARGE_N_PARTICLE_COUNTS",
+    "LARGE_N_TRIANGULAR_ROWS",
+    "LargeNCase",
+    "LargeNGateCriterion",
+    "build_large_n_cases",
+    "classify_large_n_trend",
+    "evaluate_large_n_gate",
+    "large_n_template",
+    "local_coupling_statistics",
+    "local_geometric_coupling",
 ]
