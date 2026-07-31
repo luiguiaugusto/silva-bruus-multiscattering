@@ -67,6 +67,13 @@ from .external_validation import (
     frozen_external_predictions, minimum_two_step_confirmation,
     select_external_validation_cases, successive_change,
 )
+from .scale_out_validation import (
+    EXPECTED_SCALE_OUT_CASE_IDS, IRREGULAR_AMPLITUDE, SCALE_OUT_FAMILIES,
+    SCALE_OUT_PARTICLE_COUNTS, ScaleOutCase, ScaleOutGateCriterion,
+    build_scale_out_cases, evaluate_scale_out_gate, geometric_coupling_sum,
+    irregular_scale_template, scale_out_template,
+    triangular_compact_template,
+)
 from .multipolar_solver import MultipolarNodalSolution, solve_multipolar_nodal
 from .model_d import MultipolarNodalInteractionResult, NodalModelDComparison, compare_nodal_model_d, solve_multipolar_nodal_interaction_forces
 from .multipolar_expansion import MultipolarClusterExpansion, MultipolarConnectedTerm, decompose_multipolar_cluster
@@ -234,4 +241,16 @@ __all__ = [
     "minimum_two_step_confirmation",
     "select_external_validation_cases",
     "successive_change",
+    "EXPECTED_SCALE_OUT_CASE_IDS",
+    "IRREGULAR_AMPLITUDE",
+    "SCALE_OUT_FAMILIES",
+    "SCALE_OUT_PARTICLE_COUNTS",
+    "ScaleOutCase",
+    "ScaleOutGateCriterion",
+    "build_scale_out_cases",
+    "evaluate_scale_out_gate",
+    "geometric_coupling_sum",
+    "irregular_scale_template",
+    "scale_out_template",
+    "triangular_compact_template",
 ]

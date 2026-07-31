@@ -1,0 +1,60 @@
+category,key,value,source
+frozen_rule,base_commit,a0e6d97c45915e5974f10d5f5ee9523070d9876f,T14 preregistration
+frozen_rule,m1_prefactor,4.4964255121671126,T14 preregistration
+frozen_rule,m1_exponent,1.3883601043764593,T14 preregistration
+frozen_rule,m1_safety_factor,2.5699703122019222,T14 preregistration
+frozen_rule,p3_prefactor,14.73950709797405,T14 preregistration
+frozen_rule,p3_exponent,1.4226504975598322,T14 preregistration
+frozen_rule,p3_safety_factor,2.0464420079866286,T14 preregistration
+frozen_rule,comparison,conservative_prediction < tolerance and observed_error < tolerance,T14 preregistration
+frozen_rule,radius,1,T14 preregistration
+frozen_rule,energy_density,1,T14 preregistration
+frozen_rule,k,0.10000000000000001,T14 preregistration
+frozen_rule,ka,0.10000000000000001,T14 preregistration
+frozen_rule,f0,0,T14 preregistration
+frozen_rule,f1,0.80000000000000004,T14 preregistration
+frozen_rule,convergence_tolerance,1.0000000000000001e-05,T14 preregistration
+frozen_rule,minimum_lmax,5,T14 preregistration
+frozen_rule,maximum_lmax,13,T14 preregistration
+frozen_rule,workers_default,1,T14 preregistration
+frozen_rule,required_eligible_all,20,T14 preregistration
+frozen_rule,required_eligible_each_n,10,T14 preregistration
+frozen_rule,required_eligible_each_family,6,T14 preregistration
+frozen_rule,required_eligible_each_level,5,T14 preregistration
+frozen_rule,required_global_factor2,0.80000000000000004,T14 preregistration
+frozen_rule,required_each_n_factor2,0.75,T14 preregistration
+frozen_rule,required_spearman,0.90000000000000002,T14 preregistration
+frozen_rule,required_max_rmse_log,0.69314718055994529,T14 preregistration
+frozen_rule,m2_status,excluded_UNSTABLE_COLLINEARITY,T14 preregistration
+frozen_rule,phase_a_t14_model_e_solves,0,T14 preregistration
+threshold,tolerance_1,0.01,T14 preregistration
+threshold,lambda_max_1,0.0062222482453383283,T14 preregistration
+threshold,rho_l1_1,0.00358282366706918,T14 preregistration
+threshold,tolerance_2,0.050000000000000003,T14 preregistration
+threshold,lambda_max_2,0.019833411059191678,T14 preregistration
+threshold,rho_l1_2,0.011105567812764965,T14 preregistration
+threshold,tolerance_3,0.10000000000000001,T14 preregistration
+threshold,lambda_max_3,0.032675448712630381,T14 preregistration
+threshold,rho_l1_3,0.018077516446208253,T14 preregistration
+selection,lambda_target_1,0.0031111241226691642,T14 preregistration
+selection,lambda_target_2,0.011108933664494051,T14 preregistration
+selection,lambda_target_3,0.025457132710914911,T14 preregistration
+selection,lambda_target_4,0.065350897425260762,T14 preregistration
+geometry,particle_counts,15;28,T14 preregistration
+geometry,families,linear;compact;irregular,T14 preregistration
+geometry,compact,triangular rows q=5 or q=7; centroid zero; minimum distance one,T14 preregistration
+geometry,irregular_amplitude,0.14999999999999999,T14 preregistration
+geometry,irregular_rule,explicit frac((i+1)*sqrt(2/3)) deterministic perturbation; recenter; renormalize,T14 preregistration
+selection,case_ids,t14_n15_linear_level1;t14_n15_linear_level2;t14_n15_linear_level3;t14_n15_linear_level4;t14_n15_compact_level1;t14_n15_compact_level2;t14_n15_compact_level3;t14_n15_compact_level4;t14_n15_irregular_level1;t14_n15_irregular_level2;t14_n15_irregular_level3;t14_n15_irregular_level4;t14_n28_linear_level1;t14_n28_linear_level2;t14_n28_linear_level3;t14_n28_linear_level4;t14_n28_compact_level1;t14_n28_compact_level2;t14_n28_compact_level3;t14_n28_compact_level4;t14_n28_irregular_level1;t14_n28_irregular_level2;t14_n28_irregular_level3;t14_n28_irregular_level4,T14 preregistration
+selection,case_count,24,T14 preregistration
+environment,python,3.12.3,T14 preregistration
+environment,numpy,2.5.1,T14 preregistration
+environment,scipy,1.18.0,T14 preregistration
+environment,matplotlib,3.11.1,T14 preregistration
+provenance_sha256,results/data/t12_3_logo_coefficients.csv,4f63024eebcdbe509d796fc54856d867ee212f95d463a278b45ce44501e068f5,results/data/t12_3_logo_coefficients.csv
+provenance_sha256,results/data/t12_3_nested_safety_factors.csv,ff671d2251b89ef57507919357e1df9ad450b35389d38f3074a9dcc01deb9bc8,results/data/t12_3_nested_safety_factors.csv
+provenance_sha256,results/data/t12_3_gate.csv,e7a38c8d4148d1e4e44521be793b1a97f9a4b0bcc81e634350794f1d9e351f0a,results/data/t12_3_gate.csv
+provenance_sha256,results/data/t13_frozen_protocol.csv,eb1878e3425ede7a2b599fd20f63550d2fdb23d177264a043d443694907dc650,results/data/t13_frozen_protocol.csv
+provenance_sha256,results/data/t13_frozen_predictions.csv,581a748dca2e5d161890284fca673ed20f2a4fbcbc0ff356d5d31db6ec8ac9c2,results/data/t13_frozen_predictions.csv
+provenance_sha256,results/data/t13_gate.csv,8d6f8484c44c8c26499862c9572b62ae7ec770efdb5a46a232119aa5b0933761,results/data/t13_gate.csv
+provenance_sha256,TAREFA_T13_VALIDACAO_EXTERNA_LAMBDA_MAX.md,0f9b82c1780348fe24cf64fb26aa52b507ac044731248cc5629d4cc348e2f444,TAREFA_T13_VALIDACAO_EXTERNA_LAMBDA_MAX.md
