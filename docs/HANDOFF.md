@@ -2121,3 +2121,139 @@ spheres, and the complete interaction force of the present Model E. It does
 not establish universality, other frequencies, negative contrasts, arbitrary
 geometries, dynamics, viscosity, streaming, or walls. T14 remains a separate
 future task.
+
+## T14 — scale-out validation of frozen Lambda-max
+
+### Chronology and implementation
+
+The response-blind phase A was committed as
+`6520173359b29cffa3a3d6432cefafcf17310f69` and pushed to `origin/main`
+before the first T14 Model-E solve. It created the task specification,
+`scale_out_validation.py`, three scripts, preregistration tests, and four blind
+CSVs. Phase B added the single official campaign, result tests, derived
+tables, figure, and this documentation. A serialization-only cache fix was
+needed after the first computed case; no official raw CSV had yet been
+published and no scientific quantity or blind artifact changed.
+
+The sample has 24 cases: 12 each for \(N=15\) and \(N=28\), eight per family
+and six per target level. The physical values are \(a=E_0=1\), \(ka=0.1\),
+\(f_0=0\), and \(f_1=0.8\). Linear, triangular compact, and deterministic
+irregular templates are centered, planar, normalized to unit minimum distance,
+and scaled analytically to the four frozen \(\Lambda_{\max}\) targets.
+
+### Campaign and numerical diagnostics
+
+The sequential campaign (`workers=1`) produced 162 order rows and 516
+particle-force rows. All 24 cases confirmed total, interaction,
+external–scattered, and scattered–scattered channels and were eligible. Final
+orders were five cases at L=6, seven at L=7, six at L=8, three at L=9, one at
+L=10, and two at L=11. No solve exceeded L=11.
+
+Across all order rows, the maximum balanced condition number was
+1.0685477306640647, balanced backward error
+\(4.675035074483183\times10^{-17}\), incident closure
+\(4.395906289090826\times10^{-17}\), scattering closure
+\(4.33178657257686\times10^{-16}\), and force decomposition residual
+\(1.232528360511498\times10^{-16}\). The maximum \(|F_z|\) was zero. The
+largest final system dimension was 1848, recorded peak process memory was
+1,032,216 KiB, and recorded cumulative solve time was 2963.8310701187 s.
+
+### Frozen-prediction results
+
+| model/scope | RMSE log | MAE log | factor-2 fraction | Spearman | worst factor |
+|---|---:|---:|---:|---:|---:|
+| M1 all | 0.343011370242051 | 0.298275154329041 | 1.0 | 0.923685071658958 | 1.770801654598976 |
+| M1 \(N=15\) | 0.370986850641528 | 0.326241864212104 | 1.0 | 0.945531595595981 | 1.770801654598976 |
+| M1 \(N=28\) | 0.312541768219449 | 0.270308444445977 | 1.0 | 0.936642944221318 | 1.765778382477152 |
+| P3 all | 0.314409582355776 | 0.255714075434696 | 1.0 | 0.904347826086957 | 1.918738739670054 |
+| P3 \(N=15\) | 0.315406152386347 | 0.268024171274447 | 1.0 | 0.895104895104895 | 1.847431421543507 |
+| P3 \(N=28\) | 0.313409843481514 | 0.243403979594945 | 1.0 | 0.916083916083916 | 1.918738739670054 |
+
+At 1%, 5%, and 10%, M1 retained blind predicted-safe counts 6, 12, and 18,
+with observed-safe counts 8, 18, and 24. It produced zero false-safe cases;
+the worst errors within predicted-safe regions were 0.002598850242074866,
+0.01121330957997045, and 0.02564715331758862. All sufficiency and scientific
+criteria passed. The literal decision is:
+
+```text
+PASS_T14_SCALE_OUT_FROZEN_LAMBDA_MAX
+GO_T15_SYNTHESIS_AND_MANUSCRIPT
+```
+
+At matched \(\Lambda_{\max}\), the 12 ratios
+\(\varepsilon_{N=28}/\varepsilon_{N=15}\) ranged from
+0.729329016341299 to 1.002844791946528. This is descriptive evidence inside
+the fixed families, not a new fitted size correction.
+
+### Artifacts, determinism, and commands
+
+The phase-A hashes are:
+
+```text
+7ab7e9ee0965ce560dbac5d33a48dad7e3cde1ce83bee73a23a38879a2c60682  results/data/t14_scale_manifest.csv
+cb12db65123c694f8e3936a03ca8466829a254e7bcf493e04b22b4dbce39d86c  results/data/t14_frozen_predictions.csv
+1bfc1a499fc28ffc47d99c3c9566d8360a9ed3ede1b9a918011132f2a5bce2c6  results/data/t14_frozen_protocol.csv
+9b85642f889e92b626da1e15cec39954e2ebbf07419801597c9d874184355200  results/data/t14_prior_artifact_hashes.csv
+```
+
+The phase-B hashes are recorded in the final T14 commit and were reproduced by
+two analysis-only executions in the same environment. The verification
+environment was Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0, and Matplotlib
+3.11.1. Commands included:
+
+```bash
+.venv/bin/python scripts/preregister_t14_scale_out.py
+.venv/bin/python scripts/run_t14_scale_out.py --workers 1
+.venv/bin/python scripts/run_t14_scale_out.py --audit-existing
+.venv/bin/python scripts/run_t14_scale_out.py --analyze-only
+.venv/bin/python -m pytest -q -W error
+git diff --check
+sha256sum results/data/t14_*.csv results/figures/t14_scale_out_validation.png
+```
+
+The 81 prior result artifacts retained path, size, and SHA-256. The four blind
+files stayed identical to phase A. Visual inspection confirmed six populated,
+legible panels, distinct sizes and families, visible identity/tolerance guides,
+and no NaN, infinity, clipped axes, or destructive legend overlap.
+
+### Limitations
+
+The conclusion is restricted to \(N=15,28\), the three prescribed uniformly
+scaled planar families, \(ka=0.1\), \(f_0=0\), \(f_1=0.8\), identical fixed
+fluid spheres, and the complete Model-E interaction force. It does not cover
+negative contrast, other frequencies, arbitrary geometries, viscosity,
+streaming, walls, or dynamics. `GO_T15_SYNTHESIS_AND_MANUSCRIPT` is the next
+gate; T15 was not implemented by T14.
+
+### Official T14 artifact hashes
+
+```text
+c8b70a9ad2f87aeb231c7deab9f5fe43d6308baa6a2013cda5b0a4b97a4fa164  results/data/t14_model_e_convergence.csv
+301aaee1c464d2cb71928d6263a08610b5ae808254c95aa4aaaa2187c1d83186  results/data/t14_forces.csv
+018402f57571ae8295f7218346403f9f5801ec51ca8053f1a8e47d6c25a2e9f2  results/data/t14_case_summary.csv
+dd0334bdb00409bbfb229e01f3c31a2b2cba230e2b9bbe6a3445256e65f8b4dc  results/data/t14_scale_predictions.csv
+690c0aad9b44d2ab619a56ea74042741b49575bfbc780605edffc8fa86cf2e04  results/data/t14_metrics.csv
+e07273b7b973f03fec45df102b906390abb4ff6e0c6952abb679daccc5450ad8  results/data/t14_threshold_audit.csv
+cdb800c2f99b0d085d168a3124c48771d1a8e878cb02284f1bd8e89fbd83ba1d  results/data/t14_matched_scale_pairs.csv
+aad0a941997abd2898c538113137ae43c2fac3e3882e096c909eb99b48e26d7b  results/data/t14_performance.csv
+715d51a1c3e82242f295de5b184f7d39d3f6297a09565f0dee83f7201221a315  results/data/t14_gate.csv
+d54185efa1279d61a769e41f0d53cd165ba853da89ffc0a2e28ffb9e510123ec  results/figures/t14_scale_out_validation.png
+```
+
+### Files created or updated
+
+- `src/acoustic_ms/scale_out_validation.py` and public exports in
+  `src/acoustic_ms/__init__.py`;
+- `scripts/preregister_t14_scale_out.py`, `scripts/run_t14_scale_out.py`, and
+  `scripts/analyze_t14_scale_out.py`;
+- `tests/test_t14_preregistration.py`, `tests/test_t14_scale_out_results.py`,
+  and the future-proof T14 exclusion in `tests/test_t12_3_artifacts.py`;
+- `TAREFA_T14_SCALE_OUT_LAMBDA_MAX.md`, `README.md`, `TASKS.md`,
+  `docs/CONVENTIONS.md`, `docs/DECISIONS.md`, and `docs/HANDOFF.md`;
+- four blind CSVs, the raw convergence CSV, eight derived CSVs, and
+  `results/figures/t14_scale_out_validation.png`.
+
+The phase-A suite reported 425 passing tests. The final suite reported 434
+passing tests with warnings treated as errors. No solver, scattering
+coefficient, force equation, prior result artifact, or local untracked prompt
+was modified or committed.

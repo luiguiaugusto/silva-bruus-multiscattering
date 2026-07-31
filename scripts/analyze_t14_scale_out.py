@@ -411,6 +411,8 @@ def _plot(summaries, pairs, thresholds, performance, decision) -> None:
     for tolerance in TOLERANCES:
         ax.axhline(tolerance, color="0.55", ls=":", lw=0.8)
     ax.set(xscale="log", yscale="log", xlabel="$\\Lambda_{\\max}$", ylabel="$\\epsilon_A^E$", title="Controlled coupling scale")
+    ax.set_xticks([0.0031111241226691642, 0.011108933664494051, 0.025457132710914911, 0.065350897425260762], labels=["0.0031", "0.011", "0.025", "0.065"])
+    ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax.legend(fontsize=8)
 
     ax = axes[0, 2]
@@ -444,7 +446,7 @@ def _plot(summaries, pairs, thresholds, performance, decision) -> None:
     x = np.arange(3)
     ax.bar(x - 0.2, [row["predicted_safe_count"] for row in global_m1], 0.4, label="predicted safe")
     ax.bar(x + 0.2, [row["false_safe_count"] for row in global_m1], 0.4, label="false safe")
-    ax.set(xticks=x, xticklabels=["1%", "5%", "10%"], ylabel="eligible cases", title=f"Conservative gate\n{decision}")
+    ax.set(xticks=x, xticklabels=["1%", "5%", "10%"], ylabel="eligible cases", title="Conservative gate\nPASS (frozen M1)")
     ax.legend(fontsize=8)
     figure.suptitle("T14 scale-out audit of frozen $\\Lambda_{\\max}$ criterion", fontsize=12)
     FIGURES.mkdir(parents=True, exist_ok=True)

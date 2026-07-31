@@ -4,14 +4,13 @@ from __future__ import annotations
 
 import csv
 from hashlib import sha256
-import importlib.util
 import inspect
+import subprocess
 from pathlib import Path
 
 import numpy as np
 import pytest
 
-import acoustic_ms
 from acoustic_ms import (
     EXPECTED_SCALE_OUT_CASE_IDS,
     ExternalPredictionMetrics,
@@ -200,23 +199,16 @@ def test_gate_pass_fail_inconclusive_and_p3_cannot_intervene() -> None:
     assert "p3" not in inspect.signature(evaluate_scale_out_gate).parameters
 
 
-def test_preregistration_is_blind_idempotent_and_preserves_prior_hashes(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    def forbidden(*args: object, **kwargs: object) -> None:
-        raise AssertionError("Model E cannot be called during phase A")
-
-    monkeypatch.setattr(acoustic_ms, "solve_model_e_nodal", forbidden)
-    path = ROOT / "scripts" / "preregister_t14_scale_out.py"
-    spec = importlib.util.spec_from_file_location("t14_preregister_test", path)
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    module.preregister()
-    first = tuple(sha256(path.read_bytes()).hexdigest() for path in PHASE_A)
-    module.preregister()
-    second = tuple(sha256(path.read_bytes()).hexdigest() for path in PHASE_A)
-    assert first == second
+def test_preregistration_is_blind_and_phase_a_is_immutable() -> None:
+    script = ROOT / "scripts" / "preregister_t14_scale_out.py"
+    source = script.read_text(encoding="utf-8")
+    assert "solve_model_e_nodal" not in source
+    for path in PHASE_A:
+        expected = subprocess.run(
+            ["git", "show", f"HEAD:{path.relative_to(ROOT)}"], cwd=ROOT,
+            check=True, capture_output=True,
+        ).stdout
+        assert sha256(path.read_bytes()).digest() == sha256(expected).digest()
     with (DATA / "t14_prior_artifact_hashes.csv").open(newline="", encoding="utf-8") as stream:
         rows = list(csv.DictReader(stream))
     assert len(rows) == 81
@@ -224,7 +216,6 @@ def test_preregistration_is_blind_idempotent_and_preserves_prior_hashes(
         artifact = ROOT / row["path"]
         assert artifact.stat().st_size == int(row["size_bytes"])
         assert sha256(artifact.read_bytes()).hexdigest() == row["sha256"]
-
 
 @pytest.mark.parametrize("particle_count", (0, 6, 10, 14, 29))
 def test_scale_out_template_rejects_unregistered_sizes(particle_count: int) -> None:

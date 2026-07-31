@@ -500,3 +500,31 @@ space. Conservative false-safe means
 \(\widehat\varepsilon_{\mathrm{safe}}<\tau\) while
 \(\varepsilon_A^E\geq\tau\). Mechanism amplitudes remain RMS vector-field
 diagnostics and are not additive scalar force fractions.
+
+## T14 scale-out conventions
+
+The scale-out geometry uses the direct geometric coupling
+
+\[
+\Lambda_{\max}=|f_1|a^3\max_i\sum_{j\ne i}r_{ij}^{-3}.
+\]
+
+For each centered unit-minimum template, define
+\(S_{N,g}=\max_i\sum_{j\ne i}r_{ij}^{-3}\) and apply the analytic scale
+
+\[
+d=\left(\frac{|f_1|S_{N,g}}
+{\Lambda_{\max}^{\mathrm{target}}}\right)^{1/3}.
+\]
+
+This changes particle count and geometric aperture while preserving the
+specified coupling target. The confirmatory response remains
+\(\varepsilon_A^E=\mathcal R(\mathbf F^A-\mathbf F^E_{\mathrm{int}})/
+\mathcal R(\mathbf F^E_{\mathrm{int}})\), in three dimensions. A case enters
+metrics only when the interaction channel has two-step convergence, all
+numerical diagnostics pass, and the error denominator is applicable.
+
+The frozen M1 and diagnostic P3 laws, safety factors, strict inequalities,
+and 1%, 5%, and 10% tolerances are identical to T13. P3 cannot affect the M1
+gate. T14 uses orders \(L=2,\ldots,13\), stops from \(L=5\) only after all
+four force channels are confirmed, and never imputes an unconfirmed force.

@@ -306,7 +306,10 @@ def _save_cache(order: int, rows: list[dict[str, object]]) -> None:
     path = _cache_path(order)
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=CACHE, delete=False) as stream:
         temporary = Path(stream.name)
-        json.dump(rows, stream, separators=(",", ":"))
+        json.dump(
+            rows, stream, separators=(",", ":"),
+            default=lambda value: value.item(),
+        )
     temporary.replace(path)
 
 

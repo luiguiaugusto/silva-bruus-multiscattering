@@ -188,3 +188,21 @@
   audit without repeating all 24 cases.
 - T14 is only recommended by the frozen gate. It is not implemented or
   started by T13.
+
+## T14 decisions
+
+- T14 uses two chronological commits. The response-blind geometry,
+  predictions, protocol, code, and tests were pushed before any of the 24 new
+  Model-E solves. The four blind CSVs remained byte-identical afterward.
+- The M1 coefficients, P3 comparator, safety factors, tolerances, target
+  levels, case IDs, convergence rule, and gate were frozen. No fitting,
+  outlier removal, or post-response selection was performed.
+- The sole reference is the complete three-dimensional Model-E interaction
+  force. P3 is transparent diagnostic evidence and cannot rescue or reject M1.
+- Sufficiency is evaluated before science. All 24 cases were eligible and
+  every literal scientific criterion passed, yielding
+  `PASS_T14_SCALE_OUT_FROZEN_LAMBDA_MAX` and
+  `GO_T15_SYNTHESIS_AND_MANUSCRIPT`.
+- This result supports the frozen rule only for the sampled planar families,
+  positive fixed contrast, \(ka=0.1\), and \(N\leq28\). It does not establish
+  a universal error bound or authorize recalibration within T14.

@@ -92,3 +92,18 @@ mesmo ambiente. O estudo é restrito a duas novas escalas, três formas fixas,
 plano nodal, partículas idênticas e parâmetros canônicos. Um `PASS` valida
 somente essa transferência; um `FAIL` é resultado científico publicável e não
 autoriza recalibração nesta tarefa. T15 não é iniciada automaticamente.
+
+## Resultado executado
+
+A fase A foi publicada no commit
+`6520173359b29cffa3a3d6432cefafcf17310f69` antes de qualquer solve E da
+amostra. Os quatro artefatos cegos permaneceram byte-idênticos. A campanha
+sequencial produziu 162 linhas de ordem, confirmou todos os quatro canais nos
+24 casos e não excedeu L=11. Todos os casos foram elegíveis.
+
+M1 obteve RMSE log global 0.343011370242051, fração dentro de fator 2 igual a
+1.0 e Spearman 0.923685071658958. Houve zero falso seguro nas três tolerâncias
+e as contagens 6/12/18 foram preservadas. A decisão literal foi
+`PASS_T14_SCALE_OUT_FROZEN_LAMBDA_MAX`, com próximo gate
+`GO_T15_SYNTHESIS_AND_MANUSCRIPT`. Nenhum coeficiente foi recalibrado e T15 não
+foi iniciada.

@@ -178,3 +178,22 @@ calling Model E using:
 ```bash
 .venv/bin/python scripts/run_t13_external_validation.py --analyze-only
 ```
+
+## T14: scale-out validation through N=28
+
+T14 preregistered 24 new planar clusters at \(N=15\) and \(N=28\) before
+any corresponding Model-E solve. The unchanged M1 law in
+\(\Lambda_{\max}\) passed its literal scale-out gate: all 24 references were
+eligible, conservative classifications had zero false-safe cases at 1%, 5%,
+and 10%, global log-RMSE was 0.343011370242051, the factor-two fraction was
+1.0, and Spearman was 0.923685071658958. The blind safe counts remained
+6, 12, and 18.
+
+This validates the frozen criterion only for the prescribed linear, compact,
+and irregular planar families at \(ka=0.1\), \(f_0=0\), \(f_1=0.8\), and
+\(N\leq28\). It is not a universal theorem and no coefficient was refitted.
+Reproduce the derived analysis without a Model-E solve using:
+
+```bash
+.venv/bin/python scripts/run_t14_scale_out.py --analyze-only
+```
