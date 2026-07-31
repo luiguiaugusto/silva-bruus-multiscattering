@@ -1448,3 +1448,192 @@ calibration strata with \(N\leq4\). It does not validate the external
 \]
 
 T13 and T14 were not started.
+
+## T12.1 — convergence diagnosis and frozen-rho1 failure analysis
+
+T12.1 is a restricted follow-up to the 28-case T12 calibration audit. It did
+not alter Models A--E, the exact-Mie response, the force observable, the
+balanced solver, \(\rho_1\), the frozen T08 power law, or its thresholds. It
+copied the versioned T12 records for \(L=2,\ldots,13\) and evaluated only ten
+preregistered cases at \(L=14,\ldots,21\) as needed.
+
+### Files
+
+Created:
+
+- `src/acoustic_ms/rho1_model_e_diagnostics.py`;
+- `scripts/analyze_t12_1_rho1_failure.py`;
+- `tests/test_t12_1_diagnostics.py`;
+- `tests/test_t12_1_artifacts.py`;
+- `results/data/t12_1_extended_convergence.csv`;
+- `results/data/t12_1_convergence_summary.csv`;
+- `results/data/t12_1_resolved_comparison.csv`;
+- `results/data/t12_1_mechanism_diagnostics.csv`;
+- `results/data/t12_1_predictor_diagnostics.csv`;
+- `results/data/t12_1_out_of_fold_predictions.csv`;
+- `results/figures/t12_1_rho1_failure_diagnostics.png`;
+- `TAREFA_T12_1_DIAGNOSTICO_CONVERGENCIA_FALHA_RHO1.md`.
+
+Updated: `src/acoustic_ms/__init__.py`, `README.md`, `TASKS.md`,
+`docs/CONVENTIONS.md`, `docs/DECISIONS.md`, and `docs/HANDOFF.md`.
+The three local `PROMPT_*.md` inputs were preserved as untracked user files
+and were not staged.
+
+### Convergence extension
+
+The raw extension has 174 deterministic case-order rows. Its first 12 records
+per case are byte-derived from T12 and carry `source=t12`; newly evaluated
+orders carry `source=t12_1`. The 40-row summary contains one record for every
+case/channel pair. Confirmation requires two successive applicable changes no
+larger than \(10^{-5}\).
+
+All 28 interaction channels are directly confirmed. Twenty-six cases confirm
+all four channels. The only unconfirmed results at the hard cap are the
+scattered--scattered channels of `n2_pair_f1.0_d2.1` and
+`n3_irregular_f1.0_d2.1`; both are classified `unconfirmed_at_21`, not
+“divergent”. Final orders for the ten extended cases are:
+
+| case | final \(L\) | interaction confirmation | all channels |
+|---|---:|---:|:---:|
+| `n2_pair_f1.0_d2.1` | 21 | 20 | no |
+| `n3_compact_f0.8_d2.1` | 20 | 18 | yes |
+| `n3_irregular_f1.0_d2.1` | 21 | 19 | no |
+| `n3_linear_f1.0_d2.1` | 21 | 19 | yes |
+| `n4_irregular_f0.8_d2.1` | 20 | 17 | yes |
+| `n4_linear_f0.8_d2.1` | 21 | 17 | yes |
+| `n3_compact_f0.1_d2.1` | 15 | 12 | yes |
+| `n4_compact_f0.1_d2.1` | 15 | 12 | yes |
+| `n4_irregular_f0.1_d2.1` | 15 | 11 | yes |
+| `n4_linear_f0.1_d2.1` | 15 | 12 | yes |
+
+The linear high-contrast trimer and quartet show oscillatory changes in the
+last five evaluated orders; this is recorded descriptively and does not alter
+the direct two-change rule.
+
+Across the extension, the maximum balanced condition number is
+1.8777295339624336. The maxima of balanced backward error, effective-incident
+closure, scattering closure, and force decomposition residual are respectively
+\(7.41903330032037\times10^{-17}\),
+\(3.654410728345143\times10^{-17}\),
+\(6.770687779265224\times10^{-16}\), and
+\(1.322894305049479\times10^{-16}\). The maximum force-channel \(|F_z|\) is
+exactly zero. Every new solve used `balanced_sqrt`, remained finite, and had
+condition number below 10.
+
+### Signed mechanism diagnostics
+
+With
+
+\[
+C_D=F^D-F^A,\qquad C_M=F^E_{\mathrm{ext-sc}}-F^D,\qquad
+C_S=F^E_{\mathrm{ss}},
+\]
+
+\[
+C=F^E-F^A=C_D+C_M+C_S,
+\]
+
+T12.1 records all pairwise signed cosines, the projections
+\(p_j=\langle C_j,C\rangle/\langle C,C\rangle\), amplitude ratios, and the
+cancellation ratio. The projection identity \(p_D+p_M+p_S=1\) and the vector
+closure are tested. Mechanism fields are inapplicable when any necessary
+channel lacks direct convergence.
+
+The three preregistered special cases show:
+
+- `n2_pair_f1.0_d6.0`: \(\varepsilon_A^E=2.4653935235086007\times10^{-4}\),
+  frozen factor 15.157639966319506, \(R(C_S)/R(C_D)=0.9734004311297458\),
+  \(p_S=12.441623851320271\), and cancellation ratio 49.44646599067913;
+- `n2_pair_f0.8_d2.5`: the 10% false-safe result remains
+  \(\varepsilon_A^E=0.12057318984999543\), with factor 2.575360131418254,
+  \(p_S=0.519679558324466\), and cancellation ratio 1.0069608311364993;
+- `n2_pair_f1.0_d2.1`: after direct interaction confirmation at \(L=20\),
+  the large error persists at \(\varepsilon_A^E=0.38790756344523031\) and
+  frozen factor 3.6574113766652632. Its mechanism decomposition remains
+  inapplicable because the scattered--scattered channel is unconfirmed at 21.
+
+### Predictor diagnostics
+
+P0 is the untouched frozen law
+
+\[
+\widehat\varepsilon_A=2.6353684041458636\rho_1^{1.1088518115798773}.
+\]
+
+P1--P4 are fitted inside each deterministic leave-\((N,\mathrm{family})\)-out
+fold. P1 uses \(\eta\), P2 uses \(\Lambda_{\max}\), P3 recalibrates \(\rho_1\),
+and P4 uses the reference-derived \(\varepsilon_A^D\). All 28 directly
+confirmed interaction cases appear exactly once out of fold for each candidate.
+
+| candidate | RMSE log | median factor | p90 factor | maximum factor | within factor 2 | Spearman |
+|---|---:|---:|---:|---:|---:|---:|
+| P0 frozen \(\rho_1\) | 0.8106033557995027 | 1.6049065112056535 | 2.637524883542658 | 15.157639966319513 | 0.6071428571428571 | 0.9709906951286261 |
+| P1 \(\eta\) | 0.7950905911225619 | 1.311059322494296 | 2.378254419902941 | 35.404797373179854 | 0.8214285714285714 | 0.9299397920087575 |
+| P2 \(\Lambda_{\max}\) | 0.6293890920247307 | 1.3769284227385432 | 1.890186928563853 | 14.554217960790472 | 0.8928571428571429 | 0.9469074986316366 |
+| P3 recalibrated \(\rho_1\) | 0.6458489737104017 | 1.253161254310177 | 1.820045294720189 | 18.43960615363461 | 0.9285714285714286 | 0.9600437876299945 |
+| P4 \(\varepsilon_A^D\) | 0.5610640793133741 | 1.236272533986774 | 1.382567067681843 | 15.37947584862918 | 0.9642857142857143 | 0.9945265462506840 |
+
+P4 is not an independent predictor because it requires the Model-D reference.
+The largest absolute descriptive Spearman correlations of the frozen residual
+are with distance ratio (-0.8549809035587734), cancellation ratio
+(-0.6772649572649572, reference-derived), \(R(C_M)/R(C_D)\)
+(-0.6690598290598290, reference-derived), and \(\rho_1\)
+(0.6382905982905983). These 28 sentinels do not establish a universal
+mechanistic criterion.
+
+All interaction channels and numerical diagnostics pass. P3 has RMSE below
+\(\ln2\), 92.86% of predictions within factor 2, and lies within 0.05 RMSE of
+the best among P1--P3. The preregistered recommendation is therefore
+`READY_T12_2_RHO1_RECALIBRATION_STUDY`. Historical T12 remains `NO-GO_T13`;
+T13 and T14 were not started.
+
+### Artifacts, determinism, and environment
+
+The six CSV row counts are 174, 40, 28, 28, 82, and 140 for extended
+convergence, convergence summary, resolved comparison, mechanisms, predictor
+diagnostics, and out-of-fold predictions. Two explicit `--analyze-only` runs
+preserved the raw extension and reproduced all derived files byte for byte.
+The T12.1 hashes are:
+
+    d41a956e9c58e5d49ab06f94b7574f8c9f987610223f9692e2c1b67297019e23  results/data/t12_1_extended_convergence.csv
+    89addfd05f6d1c33160bd9bc1b3cbb6ff05f93a99dc1ce80c4c7d96a2184cbf0  results/data/t12_1_convergence_summary.csv
+    5097cd7014bac635e09179e5bd4f49a0308dc4f6f02eb7bd76d60f18c2e89f39  results/data/t12_1_resolved_comparison.csv
+    d3a968f322feddb7da9fd9f3fb470564c691b4b4db49ddca65248627e30e4334  results/data/t12_1_mechanism_diagnostics.csv
+    d63c16d216a6235a41d44346e8c1f981e2ffd1ba3977c728713c8c57bd71842f  results/data/t12_1_predictor_diagnostics.csv
+    7686c091a0323d011e79e50ebfe9dc096dc10240ca21c60b0749c9af488ac4d6  results/data/t12_1_out_of_fold_predictions.csv
+    40bd04d570282fd7b6734d943f6f602e3ac6fd4e80f2d4132a235b16f80865dc  results/figures/t12_1_rho1_failure_diagnostics.png
+
+The verification environment is Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0,
+and Matplotlib 3.11.1. The final suite reports **354 passed**, with warnings
+treated as errors. The initial and final SHA-256 manifests of all 47 earlier
+versioned result files are identical.
+
+The sandbox image viewer could not configure its loopback device. Structural
+inspection verified a finite 2860×2090 RGBA raster, full image bounds, no empty
+canvas, and deterministic bytes. The figure uses `constrained_layout=True`,
+populates all four panels, uses log scales only for positive data, and carries
+the prescribed identity, factor-two, and \(10^{-5}\) reference marks.
+
+Commands executed include:
+
+    .venv/bin/python -m pip install -e ".[dev,plot]"
+    .venv/bin/python -m pytest -q -W error
+    .venv/bin/python scripts/analyze_t12_1_rho1_failure.py
+    .venv/bin/python scripts/analyze_t12_1_rho1_failure.py --analyze-only
+    .venv/bin/python scripts/analyze_t12_1_rho1_failure.py --analyze-only
+    sha256sum results/data/t12_1_*.csv results/figures/t12_1_rho1_failure_diagnostics.png
+    git diff --check
+    git status --short
+    git diff --stat
+    git diff --name-only
+
+### Limitations
+
+The diagnosis is limited to the 28 frozen calibration sentinels with
+\(N\leq4\), \(ka=0.1\), positive \(f_1\), fixed planar geometry families,
+identical spheres, and the complete Model-E interaction-force observable. It
+performs no new \(N=6,10\) computation and does not open the external holdout.
+Two scattered--scattered channels remain unconfirmed at \(L=21\), so their
+mechanism diagnostics are intentionally absent. The result is descriptive,
+does not establish a universal error bound, and authorizes only a separately
+specified T12.2 study.

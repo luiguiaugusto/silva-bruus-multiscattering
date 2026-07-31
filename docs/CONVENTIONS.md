@@ -428,3 +428,45 @@ fractions. A ratio is applicable only when its reference scale exceeds the
 global scale-relative tolerance \(128\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}\).
 Otherwise its stored value is zero with an explicit flag and reason; no
 absolute floor is used.
+
+## T12.1 signed-mechanism and predictor diagnostics
+
+Define the signed vector fields
+
+\[
+\mathbf C_D=\mathbf F^D-\mathbf F^A,\qquad
+\mathbf C_M=\mathbf F^E_{\mathrm{ext-sc}}-\mathbf F^D,\qquad
+\mathbf C_S=\mathbf F^E_{\mathrm{ss}},
+\]
+
+\[
+\mathbf C=\mathbf F^E-\mathbf F^A
+=\mathbf C_D+\mathbf C_M+\mathbf C_S.
+\]
+
+Their vector-field inner product is
+
+\[
+\langle\mathbf X,\mathbf Y\rangle
+=\frac1N\sum_i\mathbf X_i\mathbin{\cdot}\mathbf Y_i.
+\]
+
+Cosines use
+\(\mu_{XY}=\langle X,Y\rangle/[\mathcal R(X)\mathcal R(Y)]\), and signed
+projections use
+\(p_X=\langle X,C\rangle/\langle C,C\rangle\), so
+\(p_D+p_M+p_S=1\) when applicable. Amplitude ratios such as
+\(\mathcal R(C_S)/\mathcal R(C_D)\) use the same scale-relative numerical
+nullity convention as T12 and never an absolute floor.
+
+Every fitted candidate uses unweighted least squares in logarithmic space,
+
+\[
+\ln y=\ln C+p\ln x.
+\]
+
+Predictive diagnostics are out-of-fold under deterministic
+leave-\((N,\mathrm{family})\)-out validation. P0 is the unchanged frozen T08
+law; P1, P2, P3, and P4 use respectively \(\eta\),
+\(\Lambda_{\max}\), \(\rho_1\), and \(\varepsilon_A^D\). P4 is explicitly a
+reference-derived diagnostic rather than a standalone validity predictor.

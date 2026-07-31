@@ -123,3 +123,18 @@ T12 sentinel campaign.
 The current scope remains lossless identical fluid spheres in an ideal fluid,
 fixed in the nodal plane. Convergence internal to Model E does not validate the
 empirical \(\rho_1\) thresholds; that transfer study belongs to T12--T14.
+
+## T12--T12.1: sentinel audit and convergence diagnosis
+
+T12 tested the frozen T08 \(\rho_1\) law against 28 preregistered Model-E
+sentinels with \(N\leq4\). T12.1 extends exactly the ten incompletely resolved
+cases through at most \(L_{\max}=21\), without changing Models A--E or any
+earlier artifact. All 28 interaction-force references are now directly
+confirmed; two scattered--scattered channels remain explicitly
+`unconfirmed_at_21`.
+
+Leave-\((N,\mathrm{family})\)-out diagnostics show that a recalibrated
+\(\rho_1\) power law meets the preregistered descriptive targets on this small
+sentinel set. This supports only a separate T12.2 recalibration study. It does
+not validate a universal criterion, does not open the \(N=6,10\) holdout, and
+does not authorize T13 or T14.

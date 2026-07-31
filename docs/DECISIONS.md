@@ -108,3 +108,24 @@
 - The T12 gate is an internal decision about whether a separately authorized
   T13 may start. It is not a universal validation of \(\rho_1\), and T13–T14
   remain outside the scope of this implementation.
+
+## T12.1 decisions
+
+- T12.1 extends exactly ten preregistered T12 calibration sentinels. It copies
+  the immutable \(L=2,\ldots,13\) records and computes only \(L=14,\ldots,21\)
+  as necessary.
+- A channel is confirmed only after two successive applicable relative changes
+  no larger than \(10^{-5}\). Reaching \(L=21\) without this evidence is
+  `unconfirmed_at_21`, never “divergent”.
+- Models A--E, the definition of \(\rho_1\), the T08 fit, its thresholds, and
+  all T01--T12 artifacts remain unchanged.
+- Mechanism analysis is performed on signed vector fields. Cosines,
+  projections, and RMS-amplitude ratios are not additive scalar force
+  fractions.
+- Candidate comparison uses deterministic leave-\((N,\mathrm{family})\)-out
+  validation. No points are discarded and no predictor is augmented after
+  inspecting residuals.
+- The resulting recommendation is
+  `READY_T12_2_RHO1_RECALIBRATION_STUDY`: it authorizes only a separately
+  specified recalibration study on the 28 sentinels. It is not `GO_T13`, does
+  not open the \(N=6,10\) holdout, and is not a universal validity claim.

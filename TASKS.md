@@ -23,3 +23,4 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] T11 -- exact-Mie global Model E with the complete multipolar radiation force.
 - [x] T11.1 -- numerical stabilization and high-precision audit of Model E.
 - [x] T12 -- preregistered Model E sentinel audit of the frozen rho_1 criterion.
+- [x] T12.1 -- Model E convergence extension and diagnosis of the frozen rho_1 failure.
