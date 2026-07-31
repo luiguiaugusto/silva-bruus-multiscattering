@@ -144,3 +144,26 @@
   is `NO_GO_T13_RHO1_NOT_QUANTITATIVE`, even though all other criteria pass.
 - The final fit is retained as a documented candidate, not as an approved
   autonomous criterion. T13, T14, and the \(N=6,10\) holdout remain unopened.
+
+## T12.3 decisions
+
+- T12.3 is statistical post-processing of the 28 frozen, confirmed
+  \(N\leq4\) sentinels. It performs no new acoustic solve and does not read the
+  external \(N=6,10\) holdout.
+- Exactly two candidates are admitted. M1 is an unweighted log-space power law
+  in the geometric sum \(\Lambda_{\max}\). M2 adds \(\rho_1\) and can enter
+  the gate only if M1 fails. P0 and P3 remain frozen baselines.
+- Every decision metric is outer LOGO. A nested LOGO inside the six training
+  groups calibrates one conservative residual factor; the external group
+  enters neither the fit nor this factor. Safety uses the strict comparison
+  \(\widehat\varepsilon_{\mathrm{safe}}<\tau\).
+- The operational M2 identifiability rule is fixed before its gate: singular
+  design, standardized condition above \(10^3\), or simultaneous positive
+  mechanistic exponents in fewer than 80% of outer folds yields
+  `UNSTABLE_COLLINEARITY`. No regularization is introduced.
+- M1 satisfies all preregistered criteria, including zero conservative false
+  safe and the 3/8/12 antivacuity counts. The exact result is
+  `GO_T13_VALIDATE_LAMBDA_MAX`.
+- This result does not validate \(\Lambda_{\max}\) externally. It authorizes
+  only a separately specified T13 using the still unopened \(N=6,10\)
+  holdout. T13 and T14 were not started.

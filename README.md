@@ -147,3 +147,15 @@ interaction-force errors. The candidate improves the frozen T08 calibration,
 but retains one false-safe case at the 10% threshold. The resulting decision is
 `NO_GO_T13_RHO1_NOT_QUANTITATIVE`; no alternative predictor, new force solve,
 or \(N=6,10\) holdout case was evaluated.
+
+## T12.3: grouped mechanistic validity criterion
+
+T12.3 post-processes the same 28 confirmed \(N\leq4\) sentinels with nested
+leave-\((N,\mathrm{family})\)-out validation. The primary candidate uses the
+geometric coupling sum \(\Lambda_{\max}\); a pre-specified bivariate
+\((\Lambda_{\max},\rho_1)\) model is diagnostic. Training-only residual
+margins remove false-safe classifications while retaining the preregistered
+minimum safe coverage, so the literal result is
+`GO_T13_VALIDATE_LAMBDA_MAX`. This means only that \(\Lambda_{\max}\) is a
+candidate for later external validation. T12.3 does not read the \(N=6,10\)
+holdout, run a new force solve, start T13/T14, or establish a universal rule.

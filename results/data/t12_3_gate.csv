@@ -1,0 +1,20 @@
+candidate,criterion,observed,threshold,passed,justification,candidate_pass,m2_collinearity_status,final_decision
+M1,zero_false_safe,0,0,true,zero conservative OOF false-safe cases at all tolerances,true,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M1,antivacuity_3_8_12,27,23,true,"at least 3, 8 and 12 safe cases at 1%, 5% and 10%",true,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M1,rmse_log,0.62938909202473037,0.69314718055994529,true,OOF point RMSE must not exceed ln(2),true,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M1,within_factor_2,0.8928571428571429,0.84999999999999998,true,at least 85% of OOF points within factor two,true,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M1,spearman,0.94690749863163659,0.90000000000000002,true,OOF Spearman must be at least 0.90,true,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M1,outer_inner_folds_valid,1,1,true,all seven outer and nested inner LOGO folds valid,true,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M1,positive_lambda_coefficient,1.3883601043764593,0,true,full and median-fold lambda exponents positive,true,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M1,frozen_integrity_and_no_holdout,1,1,true,"frozen data preserved and no N=6,10 use",true,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M2,zero_false_safe,0,0,true,zero conservative OOF false-safe cases at all tolerances,false,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M2,antivacuity_3_8_12,27,23,true,"at least 3, 8 and 12 safe cases at 1%, 5% and 10%",false,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M2,rmse_log,0.66245756703733627,0.69314718055994529,true,OOF point RMSE must not exceed ln(2),false,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M2,within_factor_2,0.9285714285714286,0.84999999999999998,true,at least 85% of OOF points within factor two,false,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M2,spearman,0.9436234263820471,0.90000000000000002,true,OOF Spearman must be at least 0.90,false,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M2,outer_inner_folds_valid,1,1,true,all seven outer and nested inner LOGO folds valid,false,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M2,positive_lambda_coefficient,1.2395855009880241,0,true,full and median-fold lambda exponents positive,false,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M2,frozen_integrity_and_no_holdout,1,1,true,"frozen data preserved and no N=6,10 use",false,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M2,identifiable_collinearity,0,1,false,M2 must not be UNSTABLE_COLLINEARITY,false,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M2,stable_interpretable_signs,0.5714285714285714,0.80000000000000004,false,both mechanistic exponents positive in at least 80% of outer folds,false,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX
+M2,incremental_value,-0.052540591236218237,0.050000000000000003,false,at least 5% RMSE improvement or strict non-decreasing safe coverage with a gain,false,UNSTABLE_COLLINEARITY,GO_T13_VALIDATE_LAMBDA_MAX

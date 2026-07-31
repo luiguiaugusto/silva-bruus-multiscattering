@@ -1800,3 +1800,163 @@ new physical descriptor. In particular,
 \boxed{\text{candidate calibration}\ne\text{external validation}\ne
 \text{universal criterion}.}
 \]
+
+## T12.3 — grouped mechanistic validity criterion
+
+### Scope and implementation
+
+T12.3 reads only the 28 canonical rows of
+`results/data/t12_1_resolved_comparison.csv`. It performs no Model-A, Model-D
+or Model-E solve and never reads or inspects the external \(N=6,10\) holdout.
+The seven frozen groups are `n2_pair`, `n3_compact`, `n3_irregular`,
+`n3_linear`, `n4_compact`, `n4_irregular`, and `n4_linear`.
+
+Created files:
+
+- `src/acoustic_ms/mechanistic_validity.py`;
+- `scripts/analyze_t12_3_mechanistic_validity.py`;
+- `tests/test_t12_3_mechanistic_validity.py`;
+- `tests/test_t12_3_artifacts.py`;
+- eight `results/data/t12_3_*.csv` tables;
+- `results/figures/t12_3_mechanistic_validity.png`;
+- `TAREFA_T12_3_CRITERIO_MECANISTICO_VALIDACAO_AGRUPADA.md`.
+
+Updated files are `src/acoustic_ms/__init__.py`, `README.md`, `TASKS.md`,
+`docs/DECISIONS.md`, and `docs/HANDOFF.md`. Local `PROMPT_*.md` inputs remain
+untracked and are not part of the change.
+
+The primary candidate is
+
+\[
+\widehat\varepsilon_{M1}=C_\Lambda\Lambda_{\max}^{\alpha_\Lambda},
+\qquad
+\Lambda_{\max}=|f_1|\max_i\sum_{j\ne i}
+\left(\frac{a}{r_{ij}}\right)^3.
+\]
+
+The second candidate is
+
+\[
+\widehat\varepsilon_{M2}=C_{\Lambda\rho}
+\Lambda_{\max}^{\alpha_\Lambda}\rho_1^{\alpha_\rho}.
+\]
+
+M1 precedes M2 because it adds one independent geometric descriptor to the
+failed isolated-\(\rho_1\) criterion without searching combinations. Both use
+ordinary least squares in natural-log coordinates. P0 and P3 are evaluated
+with their frozen coefficients and are never refitted.
+
+Each outer LOGO train has 24 cases and each test has four. Inside every train,
+a six-group LOGO produces 24 honest predictions and
+
+\[
+s=\exp\!\left[\max_j
+(\log\varepsilon_j-\log\widehat\varepsilon_j^{\mathrm{inner}})
+\right],
+\qquad
+\widehat\varepsilon_{\mathrm{safe}}=s\widehat\varepsilon_{\mathrm{OOF}}.
+\]
+
+Safety uses strict inequalities: both predicted and observed safe mean values
+strictly below \(\tau\). A synthetic test changes the held-out group's errors
+by a factor \(10^{12}\) and confirms that its fit, inner predictions, margin,
+and point predictions are unchanged.
+
+### Fits, OOF metrics, and collinearity
+
+Only after the OOF decision, the descriptive complete fits are
+
+\[
+\widehat\varepsilon_{M1}
+=4.4964255121671126\,\Lambda_{\max}^{1.3883601043764593},
+\]
+
+\[
+\widehat\varepsilon_{M2}
+=5.0396777007270535\,
+\Lambda_{\max}^{1.2602714475189609}\rho_1^{0.13234182295409233}.
+\]
+
+| model | RMSE log | MAE log | within factor 2 | within factor 1.5 | Spearman | worst factor |
+|---|---:|---:|---:|---:|---:|---:|
+| P0 | 0.810603355799503 | 0.633003136612883 | 0.607142857142857 | 0.428571428571429 | 0.970990695128626 | 15.1576399663195 |
+| P3 | 0.577854414091078 | 0.336406995083200 | 0.928571428571429 | 0.750000000000000 | 0.970990695128626 | 13.2499440166714 |
+| M1 | 0.629389092024730 | 0.400097164805058 | 0.892857142857143 | 0.714285714285714 | 0.946907498631637 | 14.5542179607905 |
+| M2 | 0.662457567037336 | 0.426097483531842 | 0.928571428571429 | 0.678571428571429 | 0.943623426382047 | 17.3299357001287 |
+
+For M2, the full log-predictor correlation is 0.995454787228431 and the
+standardized design condition is 20.95288536113825. Four of seven outer folds
+have both exponents positive; three flip the sign of \(\alpha_\rho\). The
+group-bootstrap 95% intervals are [-0.0786779184889365,
+3.92257728418912] for \(\alpha_\Lambda\) and [-2.44090704448650,
+1.36092235099522] for \(\alpha_\rho\). M2 is therefore labeled
+`UNSTABLE_COLLINEARITY` under the preregistered fold-identifiability rule.
+
+### Conservative safety audit
+
+| model | tolerance | predicted safe | observed safe | false safe | false unsafe | safe coverage |
+|---|---:|---:|---:|---:|---:|---:|
+| P3 | 1% | 7 | 7 | 0 | 0 | 1.000000000000000 |
+| P3 | 5% | 13 | 14 | 0 | 1 | 0.928571428571429 |
+| P3 | 10% | 14 | 20 | 0 | 6 | 0.700000000000000 |
+| M1 | 1% | 4 | 7 | 0 | 3 | 0.571428571428571 |
+| M1 | 5% | 9 | 14 | 0 | 5 | 0.642857142857143 |
+| M1 | 10% | 14 | 20 | 0 | 6 | 0.700000000000000 |
+| M2 | 1% | 4 | 7 | 0 | 3 | 0.571428571428571 |
+| M2 | 5% | 9 | 14 | 0 | 5 | 0.642857142857143 |
+| M2 | 10% | 14 | 20 | 0 | 6 | 0.700000000000000 |
+
+M1 meets the 3/8/12 minima and has zero false safe. The former 10% false-safe
+case `n2_pair_f0.8_d2.5` has observed error 0.12057318984999543, point M1
+prediction 0.07162592847780698, outer-fold factor 2.1299122614975046, and safe
+prediction 0.15255694330602437. It is now correctly unsafe.
+
+### Gate, artifacts, and determinism
+
+All eight M1 criteria pass. The hierarchical decision is
+
+```text
+GO_T13_VALIDATE_LAMBDA_MAX
+```
+
+M2 is diagnostic because M1 already passes; independently, M2 fails its sign
+stability and incremental-value items. A GO here is a candidate-selection
+result only, not external validation.
+
+The new artifact hashes are:
+
+    a8c081bf93c1a0d46c8cb230b5415648bafb4e2c2d85df4cd03d1f8f8a83e63a  results/data/t12_3_case_influence.csv
+    e7a38c8d4148d1e4e44521be793b1a97f9a4b0bcc81e634350794f1d9e351f0a  results/data/t12_3_gate.csv
+    d429a621f9e1fa99ce3a1c745b9d865b28167866fb9216c890b7234a27f91341  results/data/t12_3_group_bootstrap.csv
+    4f63024eebcdbe509d796fc54856d867ee212f95d463a278b45ce44501e068f5  results/data/t12_3_logo_coefficients.csv
+    8ff189eb43c265dba37f8e823ecbcd09879c5102a0deab356c51407d94ab9ee3  results/data/t12_3_metrics.csv
+    ff671d2251b89ef57507919357e1df9ad450b35389d38f3074a9dcc01deb9bc8  results/data/t12_3_nested_safety_factors.csv
+    c558ac04458044ee95a3a36248a0fab1d46a387be1affc1e9951d5d895a43e04  results/data/t12_3_oof_predictions.csv
+    effb98332c54b1382f7fd9deee9e1e0dbc518f88ac9a747cf951fbb54658d80c  results/data/t12_3_threshold_audit.csv
+    279f8848fa6ab1173c6c8e0b2eceb404c13563db19d336f34df5d80246ac31c5  results/figures/t12_3_mechanistic_validity.png
+
+Two complete executions produced identical bytes. The bootstrap used public
+seed 1203 and 10,000 valid samples in 10,000 attempts. The environment is
+Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0, and Matplotlib 3.11.1. All 61
+versioned earlier artifacts — 54 predating T12.2 and seven from T12.2 — match
+their initial SHA-256 manifest.
+
+Commands include:
+
+    .venv/bin/python -m pip install -e ".[dev,plot]"
+    .venv/bin/python scripts/analyze_t12_3_mechanistic_validity.py
+    .venv/bin/python scripts/analyze_t12_3_mechanistic_validity.py
+    .venv/bin/python -m pytest -q
+    .venv/bin/python -m pytest -q -W error
+    git diff --check
+    git status --short
+    git diff --stat
+    git diff --name-only
+
+### Limitations
+
+This internal candidate-selection result is limited to 28 sentinels with
+\(N\leq4\), \(ka=0.1\), \(f_0=0\), positive sampled contrasts, fixed planar
+families, identical spheres, and the complete Model-E interaction force. The
+sample is small, M2 is strongly correlated, and the bootstrap is descriptive.
+No \(N=6,10\) case, new force solve, T13, or T14 was executed.

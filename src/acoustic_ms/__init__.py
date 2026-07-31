@@ -49,6 +49,14 @@ from .rho1_model_e_recalibration import (
     grouped_bootstrap_calibration, logo_power_law_predictions,
     power_law_threshold,
 )
+from .mechanistic_validity import (
+    MechanisticGateCriterion, MechanisticOofPrediction,
+    MechanisticPowerLawFit, MultiplicativeMetrics, NestedLogoFold,
+    ThresholdAudit, audit_safety_thresholds, evaluate_mechanistic_gate,
+    fit_mechanistic_power_law, fixed_baseline_nested_predictions,
+    multiplicative_metrics, nested_logo_predictions,
+    predict_mechanistic_power_law,
+)
 from .multipolar_solver import MultipolarNodalSolution, solve_multipolar_nodal
 from .model_d import MultipolarNodalInteractionResult, NodalModelDComparison, compare_nodal_model_d, solve_multipolar_nodal_interaction_forces
 from .multipolar_expansion import MultipolarClusterExpansion, MultipolarConnectedTerm, decompose_multipolar_cluster
@@ -185,4 +193,17 @@ __all__ = [
     "grouped_bootstrap_calibration",
     "logo_power_law_predictions",
     "power_law_threshold",
+    "MechanisticGateCriterion",
+    "MechanisticOofPrediction",
+    "MechanisticPowerLawFit",
+    "MultiplicativeMetrics",
+    "NestedLogoFold",
+    "ThresholdAudit",
+    "audit_safety_thresholds",
+    "evaluate_mechanistic_gate",
+    "fit_mechanistic_power_law",
+    "fixed_baseline_nested_predictions",
+    "multiplicative_metrics",
+    "nested_logo_predictions",
+    "predict_mechanistic_power_law",
 ]
