@@ -57,6 +57,15 @@ from .mechanistic_validity import (
     multiplicative_metrics, nested_logo_predictions,
     predict_mechanistic_power_law,
 )
+from .external_validation import (
+    EXPECTED_CASE_IDS, EXTERNAL_STRATA, LAMBDA_TARGETS, TOLERANCES,
+    ExternalGateCriterion, ExternalPredictionMetrics,
+    ExternalThresholdAudit, ExternalValidationCase, FrozenExternalPrediction,
+    audit_external_threshold, canonical_coordinate_hash,
+    evaluate_external_validation_gate, external_prediction_metrics,
+    frozen_external_predictions, minimum_two_step_confirmation,
+    select_external_validation_cases, successive_change,
+)
 from .multipolar_solver import MultipolarNodalSolution, solve_multipolar_nodal
 from .model_d import MultipolarNodalInteractionResult, NodalModelDComparison, compare_nodal_model_d, solve_multipolar_nodal_interaction_forces
 from .multipolar_expansion import MultipolarClusterExpansion, MultipolarConnectedTerm, decompose_multipolar_cluster
@@ -206,4 +215,21 @@ __all__ = [
     "multiplicative_metrics",
     "nested_logo_predictions",
     "predict_mechanistic_power_law",
+    "EXPECTED_CASE_IDS",
+    "EXTERNAL_STRATA",
+    "LAMBDA_TARGETS",
+    "TOLERANCES",
+    "ExternalGateCriterion",
+    "ExternalPredictionMetrics",
+    "ExternalThresholdAudit",
+    "ExternalValidationCase",
+    "FrozenExternalPrediction",
+    "audit_external_threshold",
+    "canonical_coordinate_hash",
+    "evaluate_external_validation_gate",
+    "external_prediction_metrics",
+    "frozen_external_predictions",
+    "minimum_two_step_confirmation",
+    "select_external_validation_cases",
+    "successive_change",
 ]
