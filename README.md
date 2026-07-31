@@ -2,6 +2,12 @@
 
 Python tools for studying acoustic interaction forces between identical spheres in a pressure nodal plane. Models A--C provide the Silva--Bruus, matched Rayleigh pairwise, and global \(L_{\max}=1\) hierarchy; T07 adds balanced multipolar Model D. T11 adds Model E: exact lossless-fluid Mie coefficients, global multiple scattering, and the complete multipolar force including external--scattered and scattered--scattered channels. Earlier A--D APIs and results retain their approved meanings.
 
+T12 audits the frozen T08 \(\rho_1\) law with 28 preregistered Model-E
+sentinels in the calibration domain \(N\leq4\). It uses the complete
+interaction force in three dimensions, does not recalibrate the predictor, and
+does not evaluate the \(N=6,10\) holdout. Sentinel approval is not external
+validation and is not a universal criterion.
+
 ## Setup
 
 ```bash

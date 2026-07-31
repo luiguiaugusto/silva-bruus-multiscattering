@@ -388,3 +388,43 @@ object as \(\mathcal F[c]\). The principal Model-E API requires
 requested truncation; coefficients of order \(L_{\max}+1\) are never
 invented. Convergence requires two consecutive applicable changes not
 exceeding \(10^{-5}\), separately for each force channel.
+
+## T12 Model-E sentinel comparisons
+
+The T12 reference is the interaction force
+
+\[
+\mathbf F^E=\mathbf F^E_{\mathrm{int}}
+=\mathbf F^E_{\mathrm{ext-sc}}+\mathbf F^E_{\mathrm{ss}},
+\]
+
+not the total force. Planar A and D vectors are padded with an explicit zero
+\(z\) component and are compared with complete three-dimensional E vectors.
+For any vector field,
+
+\[
+\mathcal R(\mathbf F)=
+\left[\frac1N\sum_i\lVert\mathbf F_i\rVert_2^2\right]^{1/2}.
+\]
+
+The principal error is
+
+\[
+\varepsilon_A^E=
+\frac{\mathcal R(\mathbf F^A-\mathbf F^E)}{\mathcal R(\mathbf F^E)}.
+\]
+
+The exact signed-vector mechanism identity is
+
+\[
+\mathbf F^E-\mathbf F^A=
+(\mathbf F^D-\mathbf F^A)
++(\mathbf F^E_{\mathrm{ext-sc}}-\mathbf F^D)
++\mathbf F^E_{\mathrm{ss}}.
+\]
+
+Normalized RMS amplitudes of these terms are diagnostics, not additive
+fractions. A ratio is applicable only when its reference scale exceeds the
+global scale-relative tolerance \(128\epsilon_{\mathrm{mach}}F_{\mathrm{scale}}\).
+Otherwise its stored value is zero with an explicit flag and reason; no
+absolute floor is used.

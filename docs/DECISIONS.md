@@ -90,3 +90,21 @@
   explicitly marked unconfirmed.
 - Model E is not a recalibration of \(\rho_1\). T12, its sentinel campaign,
   and the T13--T14 holdout remain unopened.
+
+## T12 decisions
+
+- T12 is a preregistered audit of exactly 28 T08 calibration cases with
+  \(N\leq4\). It neither recalibrates the frozen \(\rho_1\) law nor changes its
+  1%, 5%, and 10% thresholds.
+- The reference is the complete Model-E interaction force, not total force.
+  All comparisons are three-dimensional and retain any computed \(F_z\).
+- Frozen A and D vectors are independently reproduced through their public
+  APIs before any E solve. No T08 sweep or earlier artifact is regenerated.
+- E convergence is channel-specific, uses two applicable consecutive changes
+  below \(10^{-5}\), reaches at least \(L_{\max}=5\), and is capped at 13.
+  Cases reaching the cap without confirmation remain `unconfirmed`.
+- The A–D–E mechanism decomposition is vectorial. RMS mechanism amplitudes
+  cannot be treated as additive force fractions.
+- The T12 gate is an internal decision about whether a separately authorized
+  T13 may start. It is not a universal validation of \(\rho_1\), and T13–T14
+  remain outside the scope of this implementation.

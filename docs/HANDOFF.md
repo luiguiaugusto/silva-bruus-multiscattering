@@ -1252,3 +1252,199 @@ No T12 sentinel was evaluated, no \(\rho_1\) threshold was recalibrated, and
 the T13–T14 holdout remains unopened. With all numerical acceptance criteria
 satisfied, the solver is technically ready for a separately authorized T12;
 this task does not start it.
+
+## T12 — preregistered Model-E sentinel audit of \(\rho_1\)
+
+### Scope and files
+
+T12 evaluates exactly 28 preregistered T08 calibration cases: four \(\rho_1\)
+bands in each of seven \((N,\text{family})\) strata with \(N\leq4\). It does
+not evaluate the \(N=6,10\) holdout, recalibrate the frozen law, alter a force
+model, or regenerate an earlier artifact.
+
+Created:
+
+    src/acoustic_ms/model_e_comparison.py
+    scripts/analyze_t12_model_e_sentinels.py
+    tests/test_t12_sentinels.py
+    tests/test_t12_artifacts.py
+    results/data/t12_sentinel_manifest.csv
+    results/data/t12_model_e_convergence.csv
+    results/data/t12_model_comparison.csv
+    results/data/t12_threshold_audit.csv
+    results/figures/t12_model_e_sentinel_audit.png
+    TAREFA_T12_SENTINELAS_MODELO_E_CRITERIO_RHO1.md
+
+Updated:
+
+    src/acoustic_ms/__init__.py
+    README.md
+    TASKS.md
+    docs/CONVENTIONS.md
+    docs/DECISIONS.md
+    docs/HANDOFF.md
+
+The user-provided prompt files remain untracked and outside the T12 change
+set.
+
+### Reference, convergence, and metrics
+
+The principal reference is the complete three-dimensional interaction force,
+
+\[
+\mathbf F^E=\mathbf F^E_{\mathrm{int}}
+=\mathbf F^E_{\mathrm{ext-sc}}+\mathbf F^E_{\mathrm{ss}}.
+\]
+
+Models A and D are padded with \(F_z=0\); the E component \(F_z\) is retained.
+All force amplitudes use
+
+\[
+\mathcal R(\mathbf F)=
+\left[\frac1N\sum_i\lVert\mathbf F_i\rVert_2^2\right]^{1/2}.
+\]
+
+The audit verifies the signed-vector identity
+
+\[
+\mathbf F^E-\mathbf F^A=
+(\mathbf F^D-\mathbf F^A)
++(\mathbf F^E_{\mathrm{ext-sc}}-\mathbf F^D)
++\mathbf F^E_{\mathrm{ss}}.
+\]
+
+The 28 frozen A and D vectors were reproduced through public APIs with
+`rtol=5e-12, atol=5e-14` before E was evaluated. Each E case ran from
+\(L_{\max}=2\) through at least 5 and stopped only after two applicable
+successive changes no larger than \(10^{-5}\) in all four force channels, or
+at the cap \(L_{\max}=13\). The raw table contains 289 case-order rows.
+The final suite reports **328 passed**, with warnings treated as errors.
+
+Interaction converged for 22/28 cases. All four channels converged for 18/28.
+The six interaction-unconfirmed cases, all retained at \(L_{\max}=13\), are:
+
+- `n2_pair_f1.0_d2.1`;
+- `n3_compact_f0.8_d2.1`;
+- `n3_irregular_f1.0_d2.1`;
+- `n3_linear_f1.0_d2.1`;
+- `n4_irregular_f0.8_d2.1`;
+- `n4_linear_f0.8_d2.1`.
+
+Four additional cases confirm interaction but not scattered–scattered and are
+therefore ineligible for the mechanism decomposition. They are classified as
+`unconfirmed`, never divergent.
+
+### Numerical diagnostics
+
+Across all calculated orders:
+
+| diagnostic | maximum |
+|---|---:|
+| \(\kappa_2(A_q)\) | 1.8619902606818648 |
+| balanced backward error | \(1.0426962134786671\times10^{-16}\) |
+| physical closure error | \(6.912079812246232\times10^{-16}\) |
+| force-channel decomposition residual | \(1.322894305049479\times10^{-16}\) |
+
+The maximum relative A–D–E identity residual is
+\(3.175205390812495\times10^{-14}\), and the maximum interaction \(|F_z|\)
+is exactly zero. Every solve used `balanced_sqrt`; all numerical diagnostics
+satisfy their computational tolerances.
+
+### Frozen prediction and threshold audit
+
+The unchanged prediction is
+
+\[
+\widehat\varepsilon_A=2.6353684041458636\,
+\rho_1^{1.1088518115798773}.
+\]
+
+Among the 22 threshold-eligible sentinels:
+
+| tolerance | predicted safe | observed safe | false safe | false unsafe | worst predicted-safe error |
+|---:|---:|---:|---:|---:|---:|
+| 1% | 7 | 7 | 0 | 0 | 0.005814217887209692 |
+| 5% | 14 | 14 | 0 | 0 | 0.049538760108543481 |
+| 10% | 21 | 20 | 1 | 0 | 0.12057318984999543 |
+
+The 10% false-safe case is `n2_pair_f0.8_d2.5`. There is no false safe at
+5%. Stratified records by \(N\) and family are preserved in the audit CSV.
+
+Frozen-law performance over 22 applicable predictions is:
+
+| metric | value |
+|---|---:|
+| log-space RMSE | 0.7810049747126869 |
+| median multiplicative factor | 1.4773270018337583 |
+| 90th-percentile factor | 2.5519818159527858 |
+| maximum factor | 15.157639966319506 |
+| fraction within factor 2 | 0.7272727272727273 |
+| Spearman | 0.9503105590062113 |
+
+The largest applicable normalized amplitudes are 0.11598562790520174 for
+\(X_{D-A}\), 0.005971980174515004 for \(X_{\mathrm{Mie/ext-sc}}\), and
+0.11924421121442162 for \(X_{\mathrm{ss}}\). They are not additive fractions.
+
+### Gate result
+
+`t12_gate_supported=false` and the recommendation is `NO-GO_T13`. Three gate
+conditions failed: interaction coverage is 78.57%, below 80%; log-space RMSE
+exceeds \(\ln2\); and only 72.73% of applicable predictions are within a
+factor 2. Numerical diagnostics pass, the 5% threshold has predicted-safe
+coverage, and it has no false safe. The failed scientific gate does not negate
+computational completion and no parameter was changed to force approval.
+
+### Determinism, environment, and commands
+
+The verification environment is Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0,
+and Matplotlib 3.11.1. The campaign and two explicit `--analyze-only` runs use
+no random state and produced byte-identical derived artifacts.
+
+Direct image display was unavailable because the sandbox could not configure
+its loopback device. Safe raster inspection found a finite 2750×2090 RGB
+image, 1,953 distinct colors, populated content in all four panels, and clear
+outer margins. No invalid pixels or empty panels were detected; labels and
+layout are generated with `constrained_layout=True`.
+
+Commands include:
+
+    .venv/bin/python -m pip install -e ".[dev,plot]"
+    .venv/bin/python scripts/analyze_t12_model_e_sentinels.py
+    .venv/bin/python scripts/analyze_t12_model_e_sentinels.py --analyze-only
+    .venv/bin/python scripts/analyze_t12_model_e_sentinels.py --analyze-only
+    .venv/bin/python -m pytest -q
+    .venv/bin/python -m pytest -q -W error
+    git diff --check
+    git status --short
+    git diff --stat
+    git diff --name-only
+    sha256sum results/data/t12_*.csv results/figures/t12_model_e_sentinel_audit.png
+
+Official T12 artifact hashes in this environment are:
+
+    a46cf99bee4802ce42e29d5a9970c9fb8da7ae63940fa772ee2e9dc5f77befe1  results/data/t12_sentinel_manifest.csv
+    a1cf482541c5d95fc5145d8a01a0e69c39fae737070094e0e03071175aaf8524  results/data/t12_model_e_convergence.csv
+    3fd672da68099a264c36497ca7b6ee548f5e6430a4d9ea0f493b1f06fdd5cf91  results/data/t12_model_comparison.csv
+    a33544c8040693f6be7607c8ecce28a33c9bfd0ab58034dd98bad09b3e88a516  results/data/t12_threshold_audit.csv
+    3ad7ab8569640e98e86bf405e3740630ccf043941aa3c83c7d66145ff1124059  results/figures/t12_model_e_sentinel_audit.png
+
+The initial and final manifests of all earlier versioned result files are
+identical.
+
+### Limitations
+
+The result applies only to identical fixed spheres in an ideal unbounded
+fluid, the nodal plane, \(ka=0.1\), sampled positive contrasts, and seven fixed
+calibration strata with \(N\leq4\). It does not validate the external
+\(N=6,10\) holdout and is not a universal criterion:
+
+\[
+\boxed{
+\text{approval in }N\leq4
+\ne
+\text{external validation in }N=6,10
+\ne
+\text{universal criterion}.
+\]
+
+T13 and T14 were not started.
