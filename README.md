@@ -197,3 +197,33 @@ Reproduce the derived analysis without a Model-E solve using:
 ```bash
 .venv/bin/python scripts/run_t14_scale_out.py --analyze-only
 ```
+
+## T14.1: frozen confirmation through N=105
+
+T14.1 preregistered 24 further planar clusters at \(N=45\) and \(N=105\),
+covering the linear, compact, and deterministic irregular families at four
+fixed \(\Lambda_{\max}\) levels. Commit
+`538142b638dd59768d26bd16809b1def83bfdf8c` was pushed before any T14.1
+Model-E response was computed. The unchanged M1 law then passed the literal
+large-\(N\) gate with 24/24 eligible cases, no false-safe case at 1%, 5%, or
+10%, log-RMSE 0.30428741758101263, factor-two fraction 1.0, and Spearman
+0.94931497265256559.
+
+The matched \(N=105\) to \(N=45\) ratios have median 0.9726740263654879 and
+90th percentile 0.9993974374579226, giving the preregistered descriptive
+classification `NO_SYSTEMATIC_DETERIORATION`. This is confirmation only for
+the two deterministic sizes, three prescribed planar families,
+\(ka=0.1\), \(f_0=0\), and \(f_1=0.8\); it is not a universal error bound and
+does not recalibrate M1 or P3. The literal next gate is
+`GO_T15_SYNTHESIS_AND_MANUSCRIPT`, but T15 has not been started.
+
+The response-free analysis can be repeated from the frozen CSVs with:
+
+```bash
+MPLCONFIGDIR=/tmp/t14_1_mpl \
+  .venv/bin/python scripts/run_t14_1_large_n.py --analyze-only
+```
+
+For the verified Matplotlib 3.11.1 environment, `/tmp/t14_1_mpl/matplotlibrc`
+contains `text.usetex: True` only to render the already frozen plot label; it does not affect
+any numerical result or CSV.

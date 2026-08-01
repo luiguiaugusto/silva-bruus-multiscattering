@@ -2257,3 +2257,187 @@ The phase-A suite reported 425 passing tests. The final suite reported 434
 passing tests with warnings treated as errors. No solver, scattering
 coefficient, force equation, prior result artifact, or local untracked prompt
 was modified or committed.
+
+## T14.1 — frozen Lambda-max confirmation at N=45 and N=105
+
+### Chronology, scope, and files
+
+The response-blind phase was committed and pushed as
+`538142b638dd59768d26bd16809b1def83bfdf8c` at
+2026-07-31T19:53:48-03:00 with message
+`chore: preregister T14.1 large-N confirmation`. The official raw campaign was
+published afterward, at 2026-08-01T02:23:05-03:00. The runner verified the
+phase-A artifact and code hashes before every solve and before the independent
+audit.
+
+Phase A created `src/acoustic_ms/large_n_validation.py`, public exports,
+three T14.1 scripts, `tests/test_t14_1_preregistration.py`, the tracked task
+specification, and five blind CSVs. Phase B created
+`tests/test_t14_1_large_n_results.py`, the raw convergence table, nine derived
+CSVs, and the six-panel figure, and updated `README.md`, `TASKS.md`, and the
+three project documents. No solver, force equation, scattering module, prior
+result artifact, or untracked local prompt was modified.
+
+The 24 IDs are ordered as \(N=45\) followed by \(N=105\); within each size the
+families are `linear`, `compact`, and `irregular`, and each family uses levels
+1--4. Thus there are 12 cases per size, eight per family, and six per level.
+The fixed parameters are \(a=E_0=1\), \(ka=0.1\), \(f_0=0\), and \(f_1=0.8\).
+The four targets are
+\(0.0031111241226691642\), \(0.011108933664494051\),
+\(0.025457132710914911\), and \(0.065350897425260762\).
+
+### Eligibility and convergence
+
+All 24 cases are eligible; no case was imputed or discarded. The raw CSV has
+160 case-order rows and every final record has stop reason
+`all_channels_confirmed`. Final orders were:
+
+| \(N\) | family | levels 1, 2, 3, 4 |
+|---:|---|---|
+| 45 | linear | 7, 8, 9, 11 |
+| 45 | compact | 6, 6, 7, 8 |
+| 45 | irregular | 6, 7, 8, 9 |
+| 105 | linear | 7, 8, 9, 11 |
+| 105 | compact | 6, 6, 7, 8 |
+| 105 | irregular | 6, 7, 8, 9 |
+
+The distribution is six cases each at orders 6, 7, and 8, four at order 9,
+and two at order 11. No order above 11 was required. The maximum balanced
+condition number was 1.0686882116757186; balanced backward error
+2.6187917511006806e-17; incident closure 3.675972359325286e-17; scattering
+closure 2.4097473269235716e-16; force-decomposition residual
+4.416726258397735e-17; and \(\max|F_z|=0\). The largest separately recorded
+unbalanced physical residual was 0.13760124781707805 at the highest-order
+linear case; it is not a gate quantity under the frozen protocol and did not
+replace the well-scaled backward-error checks.
+
+### Frozen predictions and conservative audit
+
+| model/scope | points | RMSE log | MAE log | median factor | p90 factor | max factor | factor-2 fraction | Spearman |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| M1 all | 24 | 0.30428741758101263 | 0.23669628490332037 | 1.2046241646800737 | 1.6396919856038026 | 1.7739199789282882 | 1.0 | 0.94931497265256559 |
+| M1 \(N=45\) | 12 | 0.2998410355482452 | 0.23502815152638434 | 1.1864058238291151 | 1.6349136797379165 | 1.731476807303588 | 1.0 | 0.92307692307692313 |
+| M1 \(N=105\) | 12 | 0.30866975620815057 | 0.23836441828025645 | 1.223885454113065 | 1.6347465097734948 | 1.7739199789282882 | 1.0 | 0.9370629370629372 |
+| P3 all | 24 | 0.3601285659000717 | 0.29504890872259426 | 1.243448773777605 | 1.9217733481305757 | 2.1182135331549041 | 0.95833333333333337 | 0.95739130434782604 |
+| P3 \(N=45\) | 12 | 0.33540151142667074 | 0.27237639966812593 | 1.2040499398257227 | 1.8495175063754974 | 1.9365364006767223 | 1.0 | 0.965034965034965 |
+| P3 \(N=105\) | 12 | 0.3832636091350044 | 0.31772141777706248 | 1.3109937094506292 | 1.9073497456343025 | 2.1182135331549041 | 0.91666666666666663 | 0.97202797202797209 |
+
+For M1 at 1%, 5%, and 10%, the blind predicted-safe counts remained 6, 12,
+and 18; observed-safe counts were 12, 18, and 24. False-safe counts were zero
+at all thresholds, false-unsafe counts were six, and the worst observed errors
+inside the predicted-safe sets were 0.0023131458140526213,
+0.0095783633650698419, and 0.023309356560246079. The per-size predicted counts
+were 3, 6, and 9 versus observed counts 6, 9, and 12, also with zero false
+safe. P3 is diagnostic and did not intervene in the M1 decision.
+
+### Local coupling and matched-size trend
+
+Uniform dilation preserves each family's normalized local-coupling structure.
+For \(N=45\),
+\(\overline\Lambda/\Lambda_{\max}\) is 0.9705928566009828,
+0.7574142282928984, and 0.5993644550204902 for linear, compact, and irregular;
+the corresponding fractions above \(0.9\Lambda_{\max}\) are
+0.9555555555555556, 0.4, and 0.022222222222222223. For \(N=105\), the ratios
+are 0.9871539952996681, 0.8057047053727496, and 0.6524956283739974, with
+fractions 0.9809523809523809, 0.4857142857142857, and
+0.05714285714285714.
+
+The 12 ratios \(R_{105/45}\), ordered by linear, compact, irregular and levels
+1--4, are:
+
+| family | L1 | L2 | L3 | L4 |
+|---|---:|---:|---:|---:|
+| linear | 0.9990943696202368 | 0.9993171534249062 | 0.9994060093099823 | 0.9993202907893857 |
+| compact | 0.8591892364233161 | 0.8987970339956127 | 0.9249101055695469 | 0.9760737958144303 |
+| irregular | 0.9284137282405170 | 0.9640561987628187 | 0.9692742569165456 | 1.0001866386186442 |
+
+Their median is 0.9726740263654879, linear-method 90th percentile
+0.9993974374579226, minimum 0.8591892364233161, and maximum
+1.0001866386186442. Only one ratio exceeds 1; none exceeds 1.10 or 1.25. The
+frozen descriptive classification is `NO_SYSTEMATIC_DETERIORATION`. The
+combined 48-row table retains the \(N=15\to28\to45\to105\) sequence without
+refitting M1.
+
+### Cost, gate, audit, and determinism
+
+The sequential campaign used one worker and one BLAS thread. It accumulated
+23209.431251620874 case-seconds over 160 orders. The slowest case took
+7431.875041276799 s and the slowest order 3384.133216622984 s. The maximum
+final balanced dimension was 6930, peak process memory 7393840 KiB, and the
+largest conservative memory estimate 9220780800 bytes. No resource precheck
+failed.
+
+Every sufficiency and scientific gate item passed. The exact result is:
+
+```text
+PASS_T14_1_LARGE_N_FROZEN_LAMBDA_MAX
+GO_T15_SYNTHESIS_AND_MANUSCRIPT
+NO_SYSTEMATIC_DETERIORATION
+```
+
+The independent post-revelation audit recalculated and passed these six final
+orders: `t14_1_n45_linear_level1`, `t14_1_n45_compact_level3`,
+`t14_1_n45_irregular_level4`, `t14_1_n105_linear_level2`,
+`t14_1_n105_compact_level4`, and `t14_1_n105_irregular_level1`. Two
+analysis-only executions were byte-identical and did not call Model E. The
+figure was rendered with the installed TeX backend because the analyzer source
+was frozen before revelation; visual inspection confirmed six populated,
+legible panels, distinct \(N=45\)/\(N=105\) encodings, visible reference
+guides, no clipped axes, and no NaN or infinity. The final suite reported
+464 passed in 89.03 s with warnings treated as errors.
+
+The verification environment was Python 3.12.3, NumPy 2.5.1, SciPy 1.18.0,
+Matplotlib 3.11.1, scipy-openblas 0.3.33.112.0, an AMD Ryzen 9 9950X, and
+186 GiB visible RAM. Commands included:
+
+```bash
+.venv/bin/python scripts/preregister_t14_1_large_n.py
+.venv/bin/python scripts/run_t14_1_large_n.py --resume --workers 1 --blas-threads 1
+.venv/bin/python scripts/run_t14_1_large_n.py --audit-existing --blas-threads 1
+MPLCONFIGDIR=/tmp/t14_1_mpl .venv/bin/python scripts/run_t14_1_large_n.py --analyze-only
+.venv/bin/python -m pytest -q -W error
+git diff --check
+sha256sum results/data/t14_1_*.csv results/figures/t14_1_large_n_validation.png
+```
+
+### Official T14.1 artifact hashes
+
+The five blind phase-A hashes are:
+
+```text
+5b5bb22e92d26f2b74177f97e8b1b9f59857074f8b9309bf51edd59cf1c2daa5  results/data/t14_1_large_n_manifest.csv
+8f3d93e2f84afaa96a487ac25ce6db25de57a16e47d925de518e5e17f4df0410  results/data/t14_1_local_coupling.csv
+0708f1d31b34ae8d210c9f686e08e71cc1085d00027ebd7d92c42f90443d7041  results/data/t14_1_frozen_predictions.csv
+b0586ec363a919586661a4f9f28e4427cf9d36e99c4f4beb54b1d07d6f7e1f72  results/data/t14_1_frozen_protocol.csv
+b07a733f83ea5e3ca88bf4527a7481fd2996113a916a0e3ff37c974523ebd440  results/data/t14_1_prior_artifact_hashes.csv
+```
+
+The phase-B hashes are:
+
+```text
+da476135a66167f1907c99318f7132510d18de9fdaf208fc99e7080d86775f75  results/data/t14_1_model_e_convergence.csv
+a03bc3ca119184a4a08c0fbd753a2c4074e8a159a90610e8df2fb1762f863df4  results/data/t14_1_forces.csv
+655db6b204b4bb56733f721502f0ffcf32744c031f80f9ee059752fc1b7b3048  results/data/t14_1_case_summary.csv
+57a266fafdfaee8b9b902b9b5a7ff163a1cf8ff568d532201d51e239e38422f0  results/data/t14_1_large_n_predictions.csv
+f4bb337201b55d4f52d2613490dda372cfe5968299d254a5d050435735d53498  results/data/t14_1_metrics.csv
+d4e168992f656ff2ad6cb1fab9af31febeac5f9d4aa75791f4c8f94fa45aa6be  results/data/t14_1_threshold_audit.csv
+b52276cae020284c2a0dc5c04aea4be41dcb575af06b2ba8f33643a7fba73ce4  results/data/t14_1_matched_large_n_pairs.csv
+424845ed783cb43f67a79def3e4a194056daee71207e2e06d5e32e18f8c38816  results/data/t14_1_combined_scale_sequence.csv
+838c55e3a78431313dfcf5a4f5e2daa2d67f2c3b34ca902eaa9b85e0a8102752  results/data/t14_1_performance.csv
+88f9b2730f92f938a2f58818fb3e9577a90dbb4ea1ce03a62d2a3672e278e55c  results/data/t14_1_gate.csv
+5ae33fc8327e44f80edb7f3d65ade7652ded891bb9f2c4526e3756ee08923dbc  results/figures/t14_1_large_n_validation.png
+```
+
+All 95 artifacts recorded from T01--T14 retained their exact path, size, and
+SHA-256. The five blind files also remained byte-identical after revelation.
+
+### Scientific limitations
+
+The confirmation covers only two deterministic large sizes, the three
+prescribed planar template families, four coupling levels, \(ka=0.1\),
+\(f_0=0\), \(f_1=0.8\), positive contrast, identical fixed fluid spheres,
+an ideal unbounded fluid, and the approved complete Model-E interaction
+force. It does not cover arbitrary geometries, negative contrast, other
+frequencies, viscosity, streaming, walls, or dynamics; it is not a theorem or
+a universal error guarantee. M1 and P3 were not recalibrated. T15 was not
+started.

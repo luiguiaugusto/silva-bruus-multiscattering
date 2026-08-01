@@ -528,3 +528,45 @@ The frozen M1 and diagnostic P3 laws, safety factors, strict inequalities,
 and 1%, 5%, and 10% tolerances are identical to T13. P3 cannot affect the M1
 gate. T14 uses orders \(L=2,\ldots,13\), stops from \(L=5\) only after all
 four force channels are confirmed, and never imputes an unconfirmed force.
+
+## T14.1 large-\(N\) confirmation conventions
+
+T14.1 retains the frozen T12.3--T14 response and predictor definitions. For
+each particle,
+
+\[
+\Lambda_i=|f_1|\sum_{j\ne i}\left(\frac{a}{r_{ij}}\right)^3,
+\qquad
+\Lambda_{\max}=\max_i\Lambda_i,
+\]
+
+and the confirmatory response is
+
+\[
+\varepsilon_A^E=
+\frac{\operatorname{RMS}(\mathbf F^A-\mathbf F^E_{\mathrm{int}})}
+{\operatorname{RMS}(\mathbf F^E_{\mathrm{int}})}.
+\]
+
+The complete ordered vector \(\{\Lambda_i\}\), its SHA-256, minimum, mean,
+median, standard deviation, percentiles 10 and 90, maximum,
+\(\overline\Lambda/\Lambda_{\max}\), fraction satisfying
+\(\Lambda_i\ge0.9\Lambda_{\max}\), and first maximizing index are frozen
+before Model-E evaluation. Each fixed template is uniformly scaled to one of
+the same four T13--T14 targets.
+
+Convergence uses every integer order \(L_{\max}=2,3,\ldots,13\), never stops
+before order 5, and requires two successive applicable changes no larger than
+\(10^{-5}\) for total, interaction, external--scattered, and
+scattered--scattered channels. The order-level numerical gate uses the
+`balanced_sqrt` solver, balanced condition number below 10, balanced backward
+error and all three closure/decomposition errors below \(10^{-12}\), finite
+outputs, consistent mode dimension, and planar symmetry. The separately
+recorded physical residual of the unbalanced equation is diagnostic and is
+not substituted for this preregistered balanced gate.
+
+A case is eligible only after the campaign and interaction convergence are
+confirmed, the final numerical diagnostics pass, the A--E denominator is
+applicable, and every phase-A coordinate, coupling, prediction, protocol, and
+hash identity remains intact. No missing response is imputed. M1 alone is
+confirmatory; P3 remains diagnostic and cannot change the gate.

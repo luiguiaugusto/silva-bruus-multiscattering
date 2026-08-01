@@ -206,3 +206,27 @@
 - This result supports the frozen rule only for the sampled planar families,
   positive fixed contrast, \(ka=0.1\), and \(N\leq28\). It does not establish
   a universal error bound or authorize recalibration within T14.
+
+## T14.1 decisions
+
+- T14.1 used two chronological commits. The complete response-blind code,
+  24-case manifest, local-coupling vectors, M1/P3 predictions, protocol, and
+  95 prior-artifact hashes were pushed in commit
+  `538142b638dd59768d26bd16809b1def83bfdf8c` before the first T14.1 Model-E
+  solve.
+- The sample contains exactly 12 cases at \(N=45\) and 12 at \(N=105\), with
+  eight per family and six per target level. No case, coefficient, margin,
+  tolerance, convergence rule, or gate was changed after response revelation.
+- The Model-E campaign used one worker and one BLAS thread. All 24 cases were
+  eligible, all numerical gates passed, and the independent six-case
+  post-revelation audit reproduced the official final-order results.
+- M1 passed every literal criterion, yielding
+  `PASS_T14_1_LARGE_N_FROZEN_LAMBDA_MAX` and
+  `GO_T15_SYNTHESIS_AND_MANUSCRIPT`. P3 remains reported as a comparator only.
+- The matched-size diagnostic is `NO_SYSTEMATIC_DETERIORATION`; it is
+  descriptive and does not add an \(N\)-dependent term to M1.
+- The conclusion is limited to the prescribed deterministic planar families,
+  \(N=45,105\), \(ka=0.1\), \(f_0=0\), \(f_1=0.8\), identical spheres, and
+  the approved complete Model-E interaction force. It is not a universal
+  theorem, does not authorize extrapolation or recalibration, and does not
+  start T15.
