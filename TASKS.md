@@ -29,3 +29,5 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] T13 -- external validation of the frozen Lambda_max criterion on N=6 and N=10 clusters.
 - [x] T14 -- scale-out validation of the frozen Lambda_max criterion on N=15 and N=28 clusters.
 - [x] T14.1 -- frozen Lambda_max confirmation at N=45 and N=105.
+- [x] T14/P0 -- methodological freeze and canonical paper-pipeline contracts;
+  P1 remains unopened.

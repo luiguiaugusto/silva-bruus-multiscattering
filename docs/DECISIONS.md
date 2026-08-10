@@ -230,3 +230,30 @@
   the approved complete Model-E interaction force. It is not a universal
   theorem, does not authorize extrapolation or recalibration, and does not
   start T15.
+
+## Paper redesign P0 decisions
+
+- P0 inventories the actual checkout at post-T14.1 even though its original
+  specification says post-T13. No later evidence is erased or relabeled.
+- T01–T14.1 artifacts remain immutable. Their paper-protocol labels are
+  `exploratory`, `development`, or `legacy_validation`; only a future
+  response-blind P1–P6 campaign may be `confirmatory_new`.
+- `docs/PAPER_CONFIRMATORY_PROTOCOL.md` is deliberately
+  `DRAFT — NOT FROZEN`. P0 introduces no scientific parameter, fit,
+  tolerance, force result or campaign.
+- The editorial name \(B_E\) is reserved for a future sum of independently
+  converged isolated Model-E dimer interaction forces. Historical B and
+  \(B_L\) retain their approved meanings.
+- P1 must be the canonical dimer benchmark. Model-E connected terms and any
+  \(\Phi_E^{(5)}\) implementation remain deferred until P1 passes and P2 is
+  separately frozen.
+- New data have three immutable levels: raw solver output, derived analysis
+  data and plot-ready data. Legacy CSVs are adapted into new files and are
+  never rewritten.
+- Manifest examples use JSON syntax with a `.yaml` suffix because JSON is a
+  YAML subset. The P0 validator uses only the standard library and the
+  versioned lightweight schema subset.
+- `diagnostic-v1` is a reversible Matplotlib `rc_context`, not a final journal
+  style. It supports one-/two-column physical sizes and PDF/SVG/PNG output.
+- The P0 gate is `GO_P1_WITH_CONDITIONS`: scientific TBDs, B_E validation and
+  a timed dimer pilot must precede any P1 campaign.

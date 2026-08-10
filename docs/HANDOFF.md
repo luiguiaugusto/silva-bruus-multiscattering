@@ -2441,3 +2441,42 @@ force. It does not cover arbitrary geometries, negative contrast, other
 frequencies, viscosity, streaming, walls, or dynamics; it is not a theorem or
 a universal error guarantee. M1 and P3 were not recalibrated. T15 was not
 started.
+
+## T14/P0 — methodological freeze and paper pipeline
+
+P0 started from commit
+`e98080da520ec4f1f36b41ece2b76bc281df3a92`. The checkout already contained
+completed T14/T14.1 evidence and a mixed user worktree with relocated task
+records and two untracked PDFs. Those pre-existing changes remain outside P0.
+
+P0 performed no acoustic solve, fit, recalibration or scientific campaign.
+It created the four `docs/PAPER_*.md` products, `campaigns/` schemas and
+templates, `src/acoustic_ms/paper_pipeline.py`,
+`src/acoustic_ms/plot_style.py` and their two test modules.
+
+The manifest validator checks structural rules plus \(ka=k\,radius\),
+multipole-order ordering, unique case IDs, planned-only `TBD` hashes and
+panel-source references
+(`src/acoustic_ms/paper_pipeline.py::validate_manifest`). The graphic layer
+uses STIX Two/STIX with a safe serif fallback, 89/183 mm widths, 9 pt axes,
+8 pt ticks/legend, accessible color/marker redundancy and reversible
+PDF/SVG/PNG export
+(`src/acoustic_ms/plot_style.py::diagnostic_style`,
+`save_diagnostic_figure`).
+
+The baseline suite passed 464 tests in 87.93 s. The focused P0 suite passed 14
+tests, including valid examples, deliberately invalid mutations, reversible
+rc state, noninteractive exports and byte-identical repeated PDF/SVG/PNG
+writes. The final full suite passed **478 tests in 88.04 s** with warnings
+treated as errors. The explicit 95-artifact preregistration audit also passed,
+and `results/` plus `papers/` had no diff.
+
+There is no complete-dimer \(B_E\) aggregator, Model-E subset
+inclusion–exclusion or \(\Phi_E^{(3..5)}\) API. Existing connected expansions
+apply only to C or D. P1 is therefore the canonical dimer benchmark and P2
+remains unopened.
+
+Existing timing tables provide no dimer unit cost. Measured references are
+18.30 s/order for T14 and 145.06 s/order for T14.1; they are not dimer bounds.
+P1 must start with a timed preregistered pilot. The P0 recommendation is
+`GO_P1_WITH_CONDITIONS`.

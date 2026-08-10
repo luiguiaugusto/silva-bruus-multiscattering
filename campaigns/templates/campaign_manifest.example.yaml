@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0.0",
+  "campaign_id": "p1_example_not_executable",
+  "title": "Illustrative P1 dimer manifest — parameters not frozen",
+  "classification": "confirmatory_new",
+  "status": "planned",
+  "created_utc": "2026-08-10T12:00:00Z",
+  "provenance": {
+    "git_commit": "e98080da520ec4f1f36b41ece2b76bc281df3a92",
+    "task": "T14/P0",
+    "manifest_sha256": "TBD"
+  },
+  "physical": {
+    "radius_m": 1.0,
+    "k_rad_m": 0.1,
+    "ka": 0.1,
+    "energy_density_j_m3": 1.0,
+    "f0": 0.0,
+    "f1": 0.8,
+    "temporal_convention": "exp(-i omega t)"
+  },
+  "geometry": {
+    "plane": "pressure_nodal",
+    "coordinate_units": "m",
+    "coordinate_frame": "centered Cartesian xyz",
+    "positions_source": "TBD before P1 preregistration"
+  },
+  "numerical": {
+    "model": "E",
+    "lmax_min": 2,
+    "lmax_max": 13,
+    "convergence_tolerance": 0.00001,
+    "consecutive_passes": 2,
+    "failure_policy": "retain every case and record explicit status/reason"
+  },
+  "cases": [
+    {
+      "case_id": "p1_example_dimer_001",
+      "particle_count": 2,
+      "family": "canonical_dimer",
+      "enabled": false,
+      "parameters": {"distance_ratio": "TBD"}
+    }
+  ],
+  "outputs": {
+    "raw": "campaigns/p1/data_raw.csv",
+    "derived": "campaigns/p1/data_derived.csv",
+    "plot_ready": "campaigns/p1/data_plot.csv",
+    "failure_log": "campaigns/p1/failures.csv"
+  }
+}

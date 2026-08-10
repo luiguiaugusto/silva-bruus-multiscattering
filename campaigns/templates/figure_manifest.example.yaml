@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "figure_id": "p1_example_figure",
+  "title": "Illustrative canonical dimer benchmark",
+  "created_utc": "2026-08-10T12:00:00Z",
+  "provenance": {
+    "git_commit": "e98080da520ec4f1f36b41ece2b76bc281df3a92",
+    "campaign_manifest": "campaigns/templates/campaign_manifest.example.yaml",
+    "generator": "TBD before P1"
+  },
+  "style_profile": "diagnostic-v1",
+  "formats": ["pdf", "svg", "png"],
+  "output_stem": "campaigns/p1/figures/p1_example_figure",
+  "source_tables": [
+    {
+      "table_id": "p1_plot",
+      "level": "plot_ready",
+      "path": "campaigns/p1/data_plot.csv",
+      "sha256": "TBD"
+    }
+  ],
+  "panels": [
+    {
+      "panel_id": "a",
+      "label": "(a)",
+      "title": "Model comparison",
+      "source_table": "p1_plot",
+      "x": "distance_ratio",
+      "y": "force_radial_normalized",
+      "filters": {"case_status": "eligible"},
+      "transformations": ["none"]
+    }
+  ]
+}
