@@ -16,13 +16,15 @@ from typing import Any, Mapping
 
 
 class ManifestValidationError(ValueError):
-    """Raised when a manifest does not satisfy its frozen P0 schema."""
+    """Raised when a manifest does not satisfy its versioned paper schema."""
 
 
-_SCHEMA_BY_KIND = {
-    "campaign": "campaign_manifest.schema.json",
-    "figure": "figure_manifest.schema.json",
+_CAMPAIGN_SCHEMA_BY_VERSION = {
+    "1.0.0": "campaign_manifest.schema.json",
+    "1.1.0": "campaign_manifest.v1.1.schema.json",
 }
+_FIGURE_SCHEMA = "figure_manifest.schema.json"
+_MANIFEST_KINDS = ("campaign", "figure")
 
 
 def load_json_yaml(path: str | Path) -> dict[str, Any]:
@@ -116,7 +118,7 @@ def _validate(value: object, schema: Mapping[str, Any], path: str) -> list[str]:
 def validate_manifest(
     manifest: Mapping[str, Any], schema: Mapping[str, Any]
 ) -> None:
-    """Validate one mapping against the supported P0 JSON-Schema subset."""
+    """Validate one mapping against the supported JSON-Schema subset."""
 
     errors = _validate(manifest, schema, "$")
     schema_id = str(schema.get("$id", ""))
@@ -130,19 +132,12 @@ def validate_manifest(
             abs_tol=0.0,
         ):
             errors.append("$.physical.ka: must equal radius_m * k_rad_m")
-        numerical = manifest["numerical"]
-        if numerical["lmax_min"] > numerical["lmax_max"]:
-            errors.append("$.numerical: lmax_min must not exceed lmax_max")
-        case_ids = [case["case_id"] for case in manifest["cases"]]
-        if len(case_ids) != len(set(case_ids)):
-            errors.append("$.cases: case_id values must be unique")
-        if (
-            manifest["status"] != "planned"
-            and manifest["provenance"]["manifest_sha256"] == "TBD"
-        ):
-            errors.append(
-                "$.provenance.manifest_sha256: TBD is allowed only for planned status"
-            )
+        errors.extend(_campaign_common_errors(manifest))
+    if not errors and schema_id.endswith(
+        "/campaign_manifest.v1.1.schema.json"
+    ):
+        errors.extend(_campaign_common_errors(manifest))
+        errors.extend(_campaign_v1_1_errors(manifest))
     if not errors and schema_id.endswith("/figure_manifest.schema.json"):
         table_ids = {table["table_id"] for table in manifest["source_tables"]}
         for index, panel in enumerate(manifest["panels"]):
@@ -154,6 +149,170 @@ def validate_manifest(
         raise ManifestValidationError("manifest validation failed:\n- " + "\n- ".join(errors))
 
 
+def _campaign_common_errors(manifest: Mapping[str, Any]) -> list[str]:
+    """Return semantic errors shared by campaign schema versions."""
+
+    errors: list[str] = []
+    numerical = manifest["numerical"]
+    if numerical["lmax_min"] > numerical["lmax_max"]:
+        errors.append("$.numerical: lmax_min must not exceed lmax_max")
+    case_ids = [case["case_id"] for case in manifest["cases"]]
+    if len(case_ids) != len(set(case_ids)):
+        errors.append("$.cases: case_id values must be unique")
+    if (
+        manifest["status"] != "planned"
+        and manifest["provenance"]["manifest_sha256"] == "TBD"
+    ):
+        errors.append(
+            "$.provenance.manifest_sha256: TBD is allowed only for planned status"
+        )
+    return errors
+
+
+def _campaign_v1_1_errors(manifest: Mapping[str, Any]) -> list[str]:
+    """Return per-case physical and ordering errors introduced in version 1.1."""
+
+    errors: list[str] = []
+    cases = list(manifest["cases"])
+    radius = float(manifest["physical"]["radius_m"])
+    numerical = manifest["numerical"]
+    minimum_stop = int(numerical["minimum_stop_lmax"])
+    if not (
+        int(numerical["lmax_min"])
+        <= minimum_stop
+        <= int(numerical["lmax_max"])
+    ):
+        errors.append(
+            "$.numerical.minimum_stop_lmax: must lie within the lmax range"
+        )
+
+    orders = [case["case_order"] for case in cases]
+    expected_orders = list(range(1, len(cases) + 1))
+    if orders != expected_orders:
+        errors.append(
+            "$.cases: case_order values must be contiguous and match list order"
+        )
+    if manifest["status"] == "planned" and any(case["enabled"] for case in cases):
+        errors.append("$.cases: planned campaigns must keep every case disabled")
+
+    by_id = {case["case_id"]: case for case in cases}
+    finite_fields = ("ka", "k_rad_m", "f0", "f1", "distance_ratio", "theta_rad")
+    for index, case in enumerate(cases):
+        path = f"$.cases[{index}]"
+        parameters = case["parameters"]
+        if any(
+            not math.isfinite(float(parameters[field]))
+            for field in finite_fields
+        ):
+            errors.append(f"{path}.parameters: physical values must be finite")
+            continue
+
+        expected_ka = radius * float(parameters["k_rad_m"])
+        if not math.isclose(
+            float(parameters["ka"]),
+            expected_ka,
+            rel_tol=64.0 * sys.float_info.epsilon,
+            abs_tol=0.0,
+        ):
+            errors.append(
+                f"{path}.parameters.ka: must equal physical.radius_m * k_rad_m"
+            )
+
+        f0 = float(parameters["f0"])
+        f1 = float(parameters["f1"])
+        material_model = parameters["material_model"]
+        f0_applicable = parameters["f0_applicable"]
+        if f0 >= 1.0:
+            errors.append(f"{path}.parameters.f0: API value must be smaller than 1")
+        if material_model == "fluid":
+            if not f0_applicable:
+                errors.append(
+                    f"{path}.parameters.f0_applicable: fluid material requires true"
+                )
+            if not -2.0 < f1 < 1.0:
+                errors.append(
+                    f"{path}.parameters.f1: fluid material requires -2 < f1 < 1"
+                )
+        if material_model == "rigid":
+            if f1 != 1.0:
+                errors.append(
+                    f"{path}.parameters.f1: rigid material requires f1=1"
+                )
+            if f0_applicable:
+                errors.append(
+                    f"{path}.parameters.f0_applicable: rigid material requires false"
+                )
+            if f0 != 0.0:
+                errors.append(
+                    f"{path}.parameters.f0: rigid API sentinel must be zero"
+                )
+
+        role = parameters["evidence_role"]
+        twin_id = parameters["twin_case_id"]
+        include = parameters["include_in_scientific_tables"]
+        if role == "primary" and twin_id is not None:
+            errors.append(f"{path}.parameters.twin_case_id: primary case requires null")
+        if role in ("rotational_audit", "resource_pilot") and include:
+            errors.append(
+                f"{path}.parameters.include_in_scientific_tables: "
+                f"{role} must be false"
+            )
+        if role == "resource_pilot" and twin_id is not None:
+            errors.append(
+                f"{path}.parameters.twin_case_id: resource pilot requires null"
+            )
+        if role == "rotational_audit":
+            if twin_id is None:
+                errors.append(
+                    f"{path}.parameters.twin_case_id: rotational audit requires a twin"
+                )
+                continue
+            twin = by_id.get(twin_id)
+            if twin is None:
+                errors.append(
+                    f"{path}.parameters.twin_case_id: unknown case {twin_id!r}"
+                )
+                continue
+            if twin_id == case["case_id"]:
+                errors.append(f"{path}.parameters.twin_case_id: case cannot twin itself")
+                continue
+            twin_parameters = twin["parameters"]
+            if twin_parameters["evidence_role"] != "primary":
+                errors.append(
+                    f"{path}.parameters.twin_case_id: twin must be a primary case"
+                )
+            matching_fields = (
+                "ka", "k_rad_m", "material_id", "material_model", "f0",
+                "f0_applicable", "f1", "distance_ratio",
+            )
+            if any(
+                parameters[field] != twin_parameters[field]
+                for field in matching_fields
+            ):
+                errors.append(
+                    f"{path}.parameters.twin_case_id: twin physical parameters differ"
+                )
+            if not math.isclose(
+                float(twin_parameters["theta_rad"]),
+                0.0,
+                rel_tol=0.0,
+                abs_tol=0.0,
+            ):
+                errors.append(
+                    f"{path}.parameters.twin_case_id: twin theta_rad must be zero"
+                )
+            if math.isclose(
+                float(parameters["theta_rad"]),
+                float(twin_parameters["theta_rad"]),
+                rel_tol=0.0,
+                abs_tol=0.0,
+            ):
+                errors.append(
+                    f"{path}.parameters.theta_rad: audit must rotate its twin"
+                )
+    return errors
+
+
 def validate_manifest_file(
     manifest_path: str | Path,
     *,
@@ -162,11 +321,20 @@ def validate_manifest_file(
 ) -> dict[str, Any]:
     """Load and validate a campaign or figure manifest, returning its mapping."""
 
-    if kind not in _SCHEMA_BY_KIND:
-        raise ValueError(f"kind must be one of {sorted(_SCHEMA_BY_KIND)}")
+    if kind not in _MANIFEST_KINDS:
+        raise ValueError(f"kind must be one of {list(_MANIFEST_KINDS)}")
     if schema_directory is None:
         schema_directory = Path(__file__).resolve().parents[2] / "campaigns" / "schemas"
-    schema = load_json_yaml(Path(schema_directory) / _SCHEMA_BY_KIND[kind])
     manifest = load_json_yaml(manifest_path)
+    if kind == "campaign":
+        version = str(manifest.get("schema_version", ""))
+        schema_name = _CAMPAIGN_SCHEMA_BY_VERSION.get(version)
+        if schema_name is None:
+            raise ManifestValidationError(
+                f"unsupported campaign schema_version {version!r}"
+            )
+    else:
+        schema_name = _FIGURE_SCHEMA
+    schema = load_json_yaml(Path(schema_directory) / schema_name)
     validate_manifest(manifest, schema)
     return manifest

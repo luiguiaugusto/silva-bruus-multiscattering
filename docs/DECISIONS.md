@@ -258,19 +258,30 @@
 - The P0 gate is `GO_P1_WITH_CONDITIONS`: scientific TBDs, B_E validation and
   a timed dimer pilot must precede any P1 campaign.
 
-## P1.1 draft-governance decisions
+## P1.1 frozen decisions
 
 - P0 was finalized by GitHub PR #1 at merge commit
   `926e639fe2d327eacd09a2542208500891399687`; its 17-file scope changed no
   file under `results/` or `papers/`.
-- P1.1 is a decision-audit draft, not a scientific freeze. The parameter,
-  material, geometry, case-count, multipole, convergence, failure and resource
-  choices in `docs/P1_1_DIMER_DECISION_RECORD.md` remain
-  `DECISION_REQUIRED` for Luigui/ChatGPT Work.
-- `campaigns/p1/campaign_manifest.yaml` is the sole P1 manifest. It is
-  `status=planned`, contains one disabled schema placeholder and cannot be
-  used as a case list. Its numeric fields are schema-valid placeholders, not
-  approved scientific values.
+- P1.1 freezes \(ka=\{0.05,0.1\}\), six ordered material cases, eight
+  separations, 96 primary zero-angle dimers and six \(\pi/4\) covariance
+  audits balanced across both \(ka\) values and the separation extremes.
+  `campaigns/p1/campaign_manifest.yaml` contains the exact 102 IDs and
+  immutable order.
+- The rigid boundary uses `material_model=rigid`, `f1=1` and
+  `f0_applicable=false`. Its stored finite `f0=0` is only an API sentinel, not
+  a physical contrast.
+- Campaign schema `1.1.0` moves `ka`, `k_rad_m`, material, contrasts,
+  separation and angle to each case while retaining campaign constants and
+  policies globally. Schema `1.0.0` remains accepted unchanged.
+- Orders 2--21, minimum stop 5, all-applicable-channel two-step convergence,
+  established numerical gates and the no-imputation failure policy are
+  approved. The common-order \(B_E\) audit is assigned to P1.3.
+- `campaigns/p1/pilot_manifest.yaml` is a separate disabled `development`
+  manifest for the rigid \(ka=0.1,d/a=2.1,\theta=0\) resource pilot. Its force
+  is prohibited from P1.6 scientific tables.
+- Resource ceilings remain explicitly provisional: one worker/thread, 4 GiB
+  per case, 30 minutes per case and 12 hours total.
 - P1.1 adds no `B_E` code, solver runner, force output or campaign response.
-  P1.2--P1.6 remain unopened, and P1 stays at `HOLD_P1` until a dedicated
-  response-blind decision/freeze commit resolves the pending rows.
+  All 103 cases across the two manifests remain disabled, hashes remain `TBD`
+  until P1.4, and the gate is `HOLD_P1 — P1.2, P1.3 AND P1.4 REQUIRED`.

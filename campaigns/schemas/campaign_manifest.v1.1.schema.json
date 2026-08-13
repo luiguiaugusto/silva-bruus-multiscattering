@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acoustic-ms.local/schemas/campaign_manifest.v1.1.schema.json",
+  "title": "Acoustic MS per-case physical campaign manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "campaign_id", "title", "classification", "status",
+    "created_utc", "provenance", "physical", "geometry", "numerical",
+    "resources", "cases", "outputs"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.1.0"},
+    "campaign_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "title": {"type": "string", "minLength": 1},
+    "classification": {
+      "type": "string",
+      "enum": ["exploratory", "development", "legacy_validation", "confirmatory_new"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "preregistered", "running", "complete", "archived"]
+    },
+    "created_utc": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["git_commit", "task", "manifest_sha256"],
+      "properties": {
+        "git_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "task": {"type": "string", "minLength": 1},
+        "manifest_sha256": {"type": "string", "pattern": "^(TBD|[0-9a-f]{64})$"}
+      }
+    },
+    "physical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["radius_m", "energy_density_j_m3", "temporal_convention"],
+      "properties": {
+        "radius_m": {"type": "number", "exclusiveMinimum": 0},
+        "energy_density_j_m3": {"type": "number", "minimum": 0},
+        "temporal_convention": {"type": "string", "const": "exp(-i omega t)"}
+      }
+    },
+    "geometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plane", "coordinate_units", "coordinate_frame", "positions_source"],
+      "properties": {
+        "plane": {"type": "string", "const": "pressure_nodal"},
+        "coordinate_units": {"type": "string", "const": "m"},
+        "coordinate_frame": {"type": "string", "minLength": 1},
+        "positions_source": {"type": "string", "minLength": 1}
+      }
+    },
+    "numerical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model", "lmax_min", "lmax_max", "minimum_stop_lmax",
+        "convergence_tolerance", "consecutive_passes", "required_channels",
+        "require_all_applicable_channels", "failure_policy"
+      ],
+      "properties": {
+        "model": {"type": "string", "enum": ["A", "B_E", "C", "D", "E"]},
+        "lmax_min": {"type": "integer", "minimum": 1},
+        "lmax_max": {"type": "integer", "minimum": 1},
+        "minimum_stop_lmax": {"type": "integer", "minimum": 1},
+        "convergence_tolerance": {"type": "number", "exclusiveMinimum": 0},
+        "consecutive_passes": {"type": "integer", "minimum": 1},
+        "required_channels": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["total", "interaction", "external_scattered", "scattered_scattered"]
+          }
+        },
+        "require_all_applicable_channels": {"type": "boolean"},
+        "failure_policy": {"type": "string", "minLength": 1}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "worker_count", "blas_threads", "peak_rss_bytes_per_case",
+        "wall_seconds_per_case", "wall_seconds_campaign", "limits_status"
+      ],
+      "properties": {
+        "worker_count": {"type": "integer", "minimum": 1},
+        "blas_threads": {"type": "integer", "minimum": 1},
+        "peak_rss_bytes_per_case": {"type": "integer", "minimum": 1},
+        "wall_seconds_per_case": {"type": "number", "exclusiveMinimum": 0},
+        "wall_seconds_campaign": {"type": "number", "exclusiveMinimum": 0},
+        "limits_status": {"type": "string", "enum": ["provisional", "frozen"]}
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id", "case_order", "particle_count", "family", "enabled",
+          "parameters"
+        ],
+        "properties": {
+          "case_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+          "case_order": {"type": "integer", "minimum": 1},
+          "particle_count": {"type": "integer", "minimum": 2},
+          "family": {"type": "string", "minLength": 1},
+          "enabled": {"type": "boolean"},
+          "parameters": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ka", "k_rad_m", "material_id", "material_model", "f0",
+              "f0_applicable", "f1", "distance_ratio", "theta_rad",
+              "evidence_role", "twin_case_id", "include_in_scientific_tables"
+            ],
+            "properties": {
+              "ka": {"type": "number", "exclusiveMinimum": 0},
+              "k_rad_m": {"type": "number", "exclusiveMinimum": 0},
+              "material_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+              "material_model": {"type": "string", "enum": ["fluid", "rigid"]},
+              "f0": {"type": "number"},
+              "f0_applicable": {"type": "boolean"},
+              "f1": {"type": "number"},
+              "distance_ratio": {"type": "number", "minimum": 2},
+              "theta_rad": {"type": "number"},
+              "evidence_role": {
+                "type": "string",
+                "enum": ["primary", "rotational_audit", "resource_pilot"]
+              },
+              "twin_case_id": {"type": ["string", "null"], "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+              "include_in_scientific_tables": {"type": "boolean"}
+            }
+          }
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw", "derived", "plot_ready", "failure_log"],
+      "properties": {
+        "raw": {"type": "string", "minLength": 1},
+        "derived": {"type": "string", "minLength": 1},
+        "plot_ready": {"type": "string", "minLength": 1},
+        "failure_log": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

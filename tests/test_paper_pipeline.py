@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
 from pathlib import Path
 
 import pytest
@@ -16,33 +17,22 @@ from acoustic_ms.paper_pipeline import (
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS = ROOT / "campaigns" / "schemas"
 TEMPLATES = ROOT / "campaigns" / "templates"
-P1_MANIFEST = ROOT / "campaigns" / "p1" / "campaign_manifest.yaml"
+MULTICASE_EXAMPLE = TEMPLATES / "campaign_manifest.multicase.example.yaml"
 
 
 @pytest.mark.parametrize(
-    ("name", "kind"),
+    ("name", "kind", "version"),
     [
-        ("campaign_manifest.example.yaml", "campaign"),
-        ("figure_manifest.example.yaml", "figure"),
+        ("campaign_manifest.example.yaml", "campaign", "1.0.0"),
+        ("campaign_manifest.multicase.example.yaml", "campaign", "1.1.0"),
+        ("figure_manifest.example.yaml", "figure", "1.0.0"),
     ],
 )
-def test_manifest_examples_satisfy_their_schemas(name: str, kind: str) -> None:
+def test_manifest_examples_satisfy_their_schemas(
+    name: str, kind: str, version: str
+) -> None:
     document = validate_manifest_file(TEMPLATES / name, kind=kind)
-    assert document["schema_version"] == "1.0.0"
-
-
-def test_p1_1_manifest_is_valid_planned_and_fully_disabled() -> None:
-    document = validate_manifest_file(P1_MANIFEST, kind="campaign")
-    assert document["status"] == "planned"
-    assert document["provenance"]["manifest_sha256"] == "TBD"
-    assert document["cases"]
-    assert all(not case["enabled"] for case in document["cases"])
-    assert all(
-        case["parameters"]["decision_state"] == "DECISION_REQUIRED"
-        and case["parameters"]["execution_authorized"] is False
-        and case["parameters"]["not_a_frozen_case_id"] is True
-        for case in document["cases"]
-    )
+    assert document["schema_version"] == version
 
 
 def test_campaign_schema_rejects_missing_required_provenance() -> None:
@@ -92,6 +82,71 @@ def test_campaign_semantic_mutations_fail(mutator, message: str) -> None:
     mutator(document)
     with pytest.raises(ManifestValidationError, match=message):
         validate_manifest(document, schema)
+
+
+@pytest.mark.parametrize(
+    ("mutator", "message"),
+    [
+        (
+            lambda value: value["cases"][0]["parameters"].update({"ka": 0.2}),
+            r"physical\.radius_m \* k_rad_m",
+        ),
+        (
+            lambda value: value["cases"][1].update({"case_order": 1}),
+            "case_order",
+        ),
+        (
+            lambda value: value["cases"][0].update({"enabled": True}),
+            "planned campaigns",
+        ),
+        (
+            lambda value: value["cases"][1]["parameters"].update(
+                {"twin_case_id": "missing_case"}
+            ),
+            "unknown case",
+        ),
+        (
+            lambda value: value["cases"][0]["parameters"].update(
+                {
+                    "material_model": "rigid",
+                    "f1": 1.0,
+                    "f0_applicable": True,
+                }
+            ),
+            "rigid material requires false",
+        ),
+        (
+            lambda value: value["cases"][0]["parameters"].update(
+                {
+                    "material_model": "rigid",
+                    "f0": 0.2,
+                    "f1": 1.0,
+                    "f0_applicable": False,
+                }
+            ),
+            "rigid API sentinel must be zero",
+        ),
+        (
+            lambda value: value["numerical"].update({"minimum_stop_lmax": 22}),
+            "minimum_stop_lmax",
+        ),
+    ],
+)
+def test_campaign_v1_1_semantic_mutations_fail(mutator, message: str) -> None:
+    document = load_json_yaml(MULTICASE_EXAMPLE)
+    schema = load_json_yaml(SCHEMAS / "campaign_manifest.v1.1.schema.json")
+    mutator(document)
+    with pytest.raises(ManifestValidationError, match=message):
+        validate_manifest(document, schema)
+
+
+def test_validator_rejects_unknown_campaign_schema_version(tmp_path: Path) -> None:
+    document = load_json_yaml(MULTICASE_EXAMPLE)
+    document["schema_version"] = "1.2.0"
+    manifest = tmp_path / "unknown.yaml"
+    manifest.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(ManifestValidationError, match="unsupported"):
+        validate_manifest_file(manifest, kind="campaign")
 
 
 def test_figure_schema_rejects_duplicate_or_unknown_formats() -> None:

@@ -1,14 +1,14 @@
 # Paper execution plan
 
-Status: **P1.1 decision-audit draft** based on the merged P0 contracts. P1 is
-disabled; no P1 solve is authorized by this file.
+Status: **P1.1 decisions frozen; P1 disabled pending P1.2--P1.4**. No P1
+solve is authorized by this file.
 
 P0 was merged through PR #1 at merge commit
 `926e639fe2d327eacd09a2542208500891399687`. The P1.1 decision surface is
-recorded in `docs/P1_1_DIMER_DECISION_RECORD.md`; every scientific selection
-there remains `DECISION_REQUIRED`. The valid planned manifest at
-`campaigns/p1/campaign_manifest.yaml` contains one disabled schema placeholder,
-not a frozen campaign case.
+recorded in `docs/P1_1_DIMER_DECISION_RECORD.md`. The `1.1.0` confirmatory
+manifest freezes 102 ordered IDs, while a separate `development` manifest
+freezes the one-case resource pilot. Every case remains disabled and both
+hashes remain `TBD` until P1.4.
 
 ## Dependency chain
 
@@ -41,10 +41,12 @@ Only measured historical numbers are used:
 
 There is no existing per-order dimer timing table. Therefore P1 cost is not
 given a fabricated point estimate. For planning only, \(n_c n_L\times18.30\)
-seconds is a measured large-cluster arithmetic reference, not a dimer bound;
-the dimer count \(n_c\) and evaluated-order count \(n_L\) are **TBD**. The
-first P1 pilot must record assembly/solve/postprocess time and peak memory
-before the full preregistered grid is released.
+seconds is a measured large-cluster arithmetic reference, not a dimer bound.
+P1 freezes 102 confirmatory cases and at most 20 evaluated orders per case,
+or 2,040 case-order evaluations. The corresponding 10.37 h arithmetic
+comparison is not a dimer estimate. The separate development pilot must record
+assembly/solve/postprocess time and peak memory before the confirmatory grid is
+enabled.
 
 ## P1 — canonical dimer benchmark
 
@@ -52,24 +54,28 @@ Hypothesis: a sum of independently converged complete Model-E dimers provides
 a well-defined \(B_E\), and \(B_E-A\) isolates intrapair rescattering while
 preserving signs, symmetries and the E interaction-force convention.
 
-Parameters/sampling: \(ka\), \(f_0\), \(f_1\), separations, orientations,
-material cases, order caps and sample count are **TBD**.
+Parameters/sampling: 96 primary cases are
+\(2\;ka\times6\) material cases \(\times8\) separations at \(\theta=0\);
+six \(\theta=\pi/4\) covariance audits give 102 total. Orders are 2--21 with
+minimum stop 5 and two consecutive passes in every applicable channel.
 
 Small tasks:
 
-1. **P1.1 decision record** — draft prepared for scientific audit. It records
-   evidence, admissible options, recommendations and costs for all P1 TBDs,
-   but resolves none of them and freezes no case ID. Completion requires a
-   later explicit Luigui/ChatGPT Work decision commit.
+1. **P1.1 decision record** — complete. Scientific choices, 102 IDs/order,
+   schema 1.1, failure policy and provisional resource limits are frozen while
+   every case remains disabled.
 2. **P1.2 B_E API** — add an importable complete-dimer-sum routine under
    `src/acoustic_ms`; preserve historical B.
 3. **P1.3 formula/validation tests** — isolated dimer identity, permutation,
    action–reaction where physically applicable, rotation/reflection, limiting
-   behavior, non-overlap and invalid inputs.
-4. **P1.4 blind manifest** — materialize schema-valid campaign/figure
-   manifests, hashes and disabled-to-enabled transition in a dedicated commit.
-5. **P1.5 timed pilot** — one preregistered case to validate resources and
-   serialization; changing science after its response requires a new version.
+   behavior, non-overlap and invalid inputs; include the deferred common-order
+   sensitivity audit for independently converged pairs.
+4. **P1.4 blind manifest** — generate final hashes, audit the frozen IDs and
+   perform any authorized disabled-to-enabled transition in a dedicated
+   response-blind commit.
+5. **P1.5 timed pilot** — execute only the separate `development` rigid case
+   at \(ka=0.1,d/a=2.1,\theta=0\); its force cannot enter P1.6 scientific
+   tables.
 6. **P1.6 campaign and analysis** — execute once, retain all cases, run
    deterministic analysis twice and evaluate G1.
 
@@ -271,6 +277,6 @@ paper's claim scope.
 
 ## Current P1.1 gate
 
-`HOLD_P1 — DECISION_REQUIRED`. P1.2 through P1.6 remain unopened. No
-`B_E` implementation, solver call, force, result artifact, campaign enablement
-or protocol freeze is authorized by the P1.1 draft.
+`HOLD_P1 — P1.2, P1.3 AND P1.4 REQUIRED`. P1.2 through P1.6 remain
+unopened. No `B_E` implementation, solver call, force, result artifact,
+campaign enablement or final manifest hash is authorized by P1.1.
