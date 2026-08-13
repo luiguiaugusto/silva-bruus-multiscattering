@@ -16,6 +16,7 @@ from acoustic_ms.paper_pipeline import (
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS = ROOT / "campaigns" / "schemas"
 TEMPLATES = ROOT / "campaigns" / "templates"
+P1_MANIFEST = ROOT / "campaigns" / "p1" / "campaign_manifest.yaml"
 
 
 @pytest.mark.parametrize(
@@ -28,6 +29,20 @@ TEMPLATES = ROOT / "campaigns" / "templates"
 def test_manifest_examples_satisfy_their_schemas(name: str, kind: str) -> None:
     document = validate_manifest_file(TEMPLATES / name, kind=kind)
     assert document["schema_version"] == "1.0.0"
+
+
+def test_p1_1_manifest_is_valid_planned_and_fully_disabled() -> None:
+    document = validate_manifest_file(P1_MANIFEST, kind="campaign")
+    assert document["status"] == "planned"
+    assert document["provenance"]["manifest_sha256"] == "TBD"
+    assert document["cases"]
+    assert all(not case["enabled"] for case in document["cases"])
+    assert all(
+        case["parameters"]["decision_state"] == "DECISION_REQUIRED"
+        and case["parameters"]["execution_authorized"] is False
+        and case["parameters"]["not_a_frozen_case_id"] is True
+        for case in document["cases"]
+    )
 
 
 def test_campaign_schema_rejects_missing_required_provenance() -> None:

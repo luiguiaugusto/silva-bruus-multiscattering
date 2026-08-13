@@ -31,3 +31,6 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] T14.1 -- frozen Lambda_max confirmation at N=45 and N=105.
 - [x] T14/P0 -- methodological freeze and canonical paper-pipeline contracts;
   P1 remains unopened.
+- [ ] P1.1 -- canonical-dimer decision record. Audit draft prepared with all
+  scientific selections marked `DECISION_REQUIRED`; campaign remains disabled
+  and P1.2--P1.6 remain unopened.

@@ -6,6 +6,13 @@ P0 records the decision surface; it does not preregister P1, open a new
 sample, or generate a scientific response. Every item marked **TBD** must be
 resolved in a versioned protocol before the associated campaign starts.
 
+P1.1 audit status (2026-08-13):
+`docs/P1_1_DIMER_DECISION_RECORD.md` inventories the dimer choices and marks
+each unresolved scientific item `DECISION_REQUIRED`. The companion
+`campaigns/p1/campaign_manifest.yaml` is valid but planned and disabled; its
+single case is a schema placeholder, not a frozen case ID. This addition does
+not change the protocol status, preregister P1, or authorize a solve.
+
 ## Paper question and intended answer
 
 Question: when and why does the pairwise nodal Silva–Bruus interaction cease

@@ -1,6 +1,14 @@
 # Paper execution plan
 
-Status: P0 planning document. No P1 solve is authorized by this file.
+Status: **P1.1 decision-audit draft** based on the merged P0 contracts. P1 is
+disabled; no P1 solve is authorized by this file.
+
+P0 was merged through PR #1 at merge commit
+`926e639fe2d327eacd09a2542208500891399687`. The P1.1 decision surface is
+recorded in `docs/P1_1_DIMER_DECISION_RECORD.md`; every scientific selection
+there remains `DECISION_REQUIRED`. The valid planned manifest at
+`campaigns/p1/campaign_manifest.yaml` contains one disabled schema placeholder,
+not a frozen campaign case.
 
 ## Dependency chain
 
@@ -49,8 +57,10 @@ material cases, order caps and sample count are **TBD**.
 
 Small tasks:
 
-1. **P1.1 decision record** — resolve all P1 TBDs and freeze case IDs,
-   convergence/quality limits and failure policy.
+1. **P1.1 decision record** — draft prepared for scientific audit. It records
+   evidence, admissible options, recommendations and costs for all P1 TBDs,
+   but resolves none of them and freezes no case ID. Completion requires a
+   later explicit Luigui/ChatGPT Work decision commit.
 2. **P1.2 B_E API** — add an importable complete-dimer-sum routine under
    `src/acoustic_ms`; preserve historical B.
 3. **P1.3 formula/validation tests** — isolated dimer identity, permutation,
@@ -258,3 +268,9 @@ paper's claim scope.
 - record a timed dimer pilot because no dimer cost measurement exists;
 - preserve the mixed pre-P0 user worktree outside P1 staging;
 - do not treat T13–T14.1 as `confirmatory_new`.
+
+## Current P1.1 gate
+
+`HOLD_P1 — DECISION_REQUIRED`. P1.2 through P1.6 remain unopened. No
+`B_E` implementation, solver call, force, result artifact, campaign enablement
+or protocol freeze is authorized by the P1.1 draft.

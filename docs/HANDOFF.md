@@ -2480,3 +2480,35 @@ Existing timing tables provide no dimer unit cost. Measured references are
 18.30 s/order for T14 and 145.06 s/order for T14.1; they are not dimer bounds.
 P1 must start with a timed preregistered pilot. The P0 recommendation is
 `GO_P1_WITH_CONDITIONS`.
+
+## P1.1 — canonical-dimer decision audit draft
+
+P0 was finalized through GitHub PR #1. Its head remained
+`893577fb9f2745ee6cd1d0d6deea9cb9276a6fa4`, the diff contained exactly 17
+files and no path under `results/` or `papers/`, and GitHub created merge commit
+`926e639fe2d327eacd09a2542208500891399687` on `main`.
+
+P1.1 was prepared on `agent/p1-1-decision-record` in an isolated worktree so
+the 30 pre-existing local changes in the primary checkout remained untouched.
+`docs/P1_1_DIMER_DECISION_RECORD.md` records evidence, admissible options,
+recommendations and cost effects for size parameter, contrasts, materials,
+separations, orientations, case count/IDs, multipole policy, convergence,
+quality, failures, resources, pilot and reproducibility. Fifteen selections
+remain `DECISION_REQUIRED`; the observable/normalization/classification row is
+fixed by P0 contracts.
+
+`campaigns/p1/campaign_manifest.yaml` is the sole new P1 manifest. It validates
+against schema 1.0.0, has `status=planned`, contains exactly one disabled
+placeholder and explicitly denies execution. Its numeric fields are schema
+placeholders, not frozen scientific choices or a usable case list.
+
+P1.1 implemented no `B_E`, called no campaign solver, generated no force, and
+changed no file under `results/` or `papers/`. P1.2--P1.6 remain unopened and
+the gate is `HOLD_P1 — DECISION_REQUIRED` pending scientific audit.
+
+The focused manifest suite passed **12 tests in 0.53 s**. The complete suite
+passed **479 tests in 90.00 s** with warnings treated as errors. An initial
+isolated-worktree run found the expected missing `.venv` path in one legacy
+subprocess test; linking the existing repository environment into the
+worktree and rerunning produced the clean result above, after which the
+temporary link was removed.

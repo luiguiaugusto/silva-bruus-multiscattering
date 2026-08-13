@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "campaign_id": "p1_dimer_decision_draft",
+  "title": "P1 canonical dimer — disabled P1.1 decision placeholder",
+  "classification": "confirmatory_new",
+  "status": "planned",
+  "created_utc": "2026-08-13T14:03:44Z",
+  "provenance": {
+    "git_commit": "926e639fe2d327eacd09a2542208500891399687",
+    "task": "P1.1 decision-record draft; no campaign authorization",
+    "manifest_sha256": "TBD"
+  },
+  "physical": {
+    "radius_m": 1.0,
+    "k_rad_m": 0.1,
+    "ka": 0.1,
+    "energy_density_j_m3": 1.0,
+    "f0": 0.0,
+    "f1": 0.8,
+    "temporal_convention": "exp(-i omega t)"
+  },
+  "geometry": {
+    "plane": "pressure_nodal",
+    "coordinate_units": "m",
+    "coordinate_frame": "centered Cartesian xyz",
+    "positions_source": "DECISION_REQUIRED; no coordinates or generator frozen"
+  },
+  "numerical": {
+    "model": "E",
+    "lmax_min": 2,
+    "lmax_max": 13,
+    "convergence_tolerance": 0.00001,
+    "consecutive_passes": 2,
+    "failure_policy": "disabled placeholder; execution forbidden while any DECISION_REQUIRED remains"
+  },
+  "cases": [
+    {
+      "case_id": "p1_draft_placeholder_disabled",
+      "particle_count": 2,
+      "family": "decision_placeholder",
+      "enabled": false,
+      "parameters": {
+        "decision_record": "docs/P1_1_DIMER_DECISION_RECORD.md",
+        "decision_state": "DECISION_REQUIRED",
+        "execution_authorized": false,
+        "not_a_frozen_case_id": true,
+        "schema_numeric_values_are_placeholders": true
+      }
+    }
+  ],
+  "outputs": {
+    "raw": "campaigns/p1/data_raw.csv",
+    "derived": "campaigns/p1/data_derived.csv",
+    "plot_ready": "campaigns/p1/data_plot.csv",
+    "failure_log": "campaigns/p1/failures.csv"
+  }
+}

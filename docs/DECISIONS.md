@@ -257,3 +257,20 @@
   style. It supports one-/two-column physical sizes and PDF/SVG/PNG output.
 - The P0 gate is `GO_P1_WITH_CONDITIONS`: scientific TBDs, B_E validation and
   a timed dimer pilot must precede any P1 campaign.
+
+## P1.1 draft-governance decisions
+
+- P0 was finalized by GitHub PR #1 at merge commit
+  `926e639fe2d327eacd09a2542208500891399687`; its 17-file scope changed no
+  file under `results/` or `papers/`.
+- P1.1 is a decision-audit draft, not a scientific freeze. The parameter,
+  material, geometry, case-count, multipole, convergence, failure and resource
+  choices in `docs/P1_1_DIMER_DECISION_RECORD.md` remain
+  `DECISION_REQUIRED` for Luigui/ChatGPT Work.
+- `campaigns/p1/campaign_manifest.yaml` is the sole P1 manifest. It is
+  `status=planned`, contains one disabled schema placeholder and cannot be
+  used as a case list. Its numeric fields are schema-valid placeholders, not
+  approved scientific values.
+- P1.1 adds no `B_E` code, solver runner, force output or campaign response.
+  P1.2--P1.6 remain unopened, and P1 stays at `HOLD_P1` until a dedicated
+  response-blind decision/freeze commit resolves the pending rows.
