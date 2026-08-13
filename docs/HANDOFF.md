@@ -2480,3 +2480,47 @@ Existing timing tables provide no dimer unit cost. Measured references are
 18.30 s/order for T14 and 145.06 s/order for T14.1; they are not dimer bounds.
 P1 must start with a timed preregistered pilot. The P0 recommendation is
 `GO_P1_WITH_CONDITIONS`.
+
+## P1.1 — canonical-dimer decisions frozen, cases disabled
+
+P0 was finalized through GitHub PR #1. Its head remained
+`893577fb9f2745ee6cd1d0d6deea9cb9276a6fa4`, the diff contained exactly 17
+files and no path under `results/` or `papers/`, and GitHub created merge commit
+`926e639fe2d327eacd09a2542208500891399687` on `main`.
+
+The scientific review of draft PR #2 was applied on
+`agent/p1-1-decision-record` while the 30 pre-existing local changes remained
+unstaged and outside scope. `docs/P1_1_DIMER_DECISION_RECORD.md` now records
+the approved physical grid, exact ordering, convergence/failure policy,
+provisional resources, separate pilot and reproducibility audits. The
+remaining gate is procedural: P1.2 and P1.3 must implement and audit future
+`B_E` work, while P1.4 must generate final manifest hashes and authorize any
+enablement.
+
+Schema `1.1.0` is additive and keeps campaign constants at the manifest level
+while requiring `ka`, `k_rad_m`, `material_id`, `material_model`, `f0`,
+`f0_applicable`, `f1`, `distance_ratio` and `theta_rad` per case. The validator
+routes versions explicitly; schema `1.0.0` and its example remain valid without
+reinterpretation. Semantic checks cover per-case `ka=k a`, contiguous order,
+planned-case disablement, rigid-sentinel handling and rotational-audit twins.
+
+`campaigns/p1/campaign_manifest.yaml` freezes 102 unique ordered IDs: 96
+primary cases from two `ka` values, six materials and eight separations at
+zero angle, followed by six `pi/4` rotational audits linked to zero-angle
+twins. Every case is disabled and the final hash remains `TBD` for P1.4. The
+separate `campaigns/p1/pilot_manifest.yaml` contains one disabled
+`development` rigid case at `ka=0.1`, `d/a=2.1`, `theta=0`; it is explicitly
+excluded from future P1.6 scientific tables.
+
+The frozen numerical policy evaluates orders 2--21, forbids stopping before
+5 and requires two consecutive convergence passes in all applicable channels.
+Resources remain provisional at one worker, one BLAS thread, 4 GiB/case,
+30 min/case and 12 h total. Two no-solver regenerations and the six rotational
+audits are assigned to later authorized execution. The common-order `B_E`
+audit remains assigned to P1.3.
+
+This revision implemented no `B_E`, called no solver, executed neither pilot
+nor campaign, generated no force and changed no path under `results/` or
+`papers/`. P1.2--P1.6 remain unopened. The focused manifest suite passed
+**26 tests in 0.52 s**; the complete suite passed **493 tests in 87.08 s** with
+warnings treated as errors.

@@ -6,6 +6,13 @@ P0 records the decision surface; it does not preregister P1, open a new
 sample, or generate a scientific response. Every item marked **TBD** must be
 resolved in a versioned protocol before the associated campaign starts.
 
+P1.1 status (2026-08-13): `docs/P1_1_DIMER_DECISION_RECORD.md` freezes the
+dimer decisions and 102 ordered confirmatory IDs. The compatible schema
+`1.1.0` stores physical sweep values per case. The confirmatory manifest and
+the separate one-case `development` pilot manifest are valid, planned and
+fully disabled; final hashes and enablement remain deferred to P1.4. This does
+not authorize a solve.
+
 ## Paper question and intended answer
 
 Question: when and why does the pairwise nodal Silva–Bruus interaction cease
@@ -43,8 +50,9 @@ complete multipolar interaction force
 
 The paper must not generalize to antinodal excitation, arbitrary off-plane
 centers, viscosity, streaming, walls, elasticity, absorption, nonspherical
-particles, contact, torque, trajectories, or dynamics. Ranges of \(ka\),
-contrast, \(N\), geometry families and separation for P1–P6 are **TBD**.
+particles, contact, torque, trajectories, or dynamics. P1's \(ka\), material,
+separation and orientation grid is frozen in the P1.1 record; corresponding
+ranges for P2–P6 remain **TBD**.
 
 ## Scientific claims to test
 
@@ -82,7 +90,7 @@ motivate design and appear as `exploratory`, `development`, or
 
 | Campaign | Role and hypothesis | Inputs/outputs | Evidence and stop condition |
 |---|---|---|---|
-| P1 — canonical dimer benchmark | Build and validate \(B_E\); test C1–C2 before any cluster campaign. | Input grid, material values and orientation set: **TBD**. Output raw E channels, A, B_E, convergence, identity and plot-ready dimer table. | Independent limiting/symmetry checks, channel convergence and deterministic artifacts. Stop on G1 pass or explicit redesign; do not begin P2 on silent partial success. |
+| P1 — canonical dimer benchmark | Build and validate \(B_E\); test C1–C2 before any cluster campaign. | Frozen input: 96 primary dimers plus six rotational audits; separate development pilot excluded from scientific tables. Output raw E channels, A, B_E, convergence, identity and plot-ready dimer table. | Independent limiting/symmetry checks, channel convergence and deterministic artifacts. Stop on G1 pass or explicit redesign; do not begin P2 on silent partial success. |
 | P2 — connected complete-force hierarchy | Build common-protocol Model-E subset expansion; test C3–C4. | Particle counts, families and maximum connected order: **TBD**. Output subset ledger, \(\Phi_E^{(n)}\), reconstruction and cost table. | Every subset retained; common convergence policy; exact signed reconstruction. Stop if cost or unresolved subsets make the declared order infeasible. |
 | P3 — criterion development and freeze | Compare preregistered predictor candidates and freeze one law; test development part of C5. | Development groups, candidate transforms and sample size: **TBD**. Output OOF predictions, coefficients, margins and frozen manifest. | Leakage-safe grouped validation and identifiability checks. Stop after one prespecified hierarchy; no post-hoc search. |
 | P4 — locked internal verification | Verify the frozen law and A/B_E/E decomposition on a response-blind locked set; test C3 and internal C6. | Locked cases/tolerances/coverage minima: **TBD**. Output eligibility ledger, threshold audit and gate. | Sufficiency precedes science. Any refit ends confirmation and returns to a separately named development cycle. |
@@ -140,9 +148,9 @@ Established E convergence requires two consecutive applicable relative
 changes no larger than \(10^{-5}\), separately for total, interaction,
 external–scattered and scattered–scattered channels
 (`docs/CONVENTIONS.md`; channels from
-`src/acoustic_ms/model_e.py::solve_model_e_nodal`). Reuse in P1–P5 is
-provisional; minimum/cap orders and required channels are **TBD**, but P0 does
-not change the established tolerance.
+`src/acoustic_ms/model_e.py::solve_model_e_nodal`). P1 evaluates every integer
+order 2--21, never stops before 5 and requires the rule in every applicable
+channel. Policies for P2–P5 remain **TBD**.
 
 For every attempted case:
 
@@ -190,8 +198,10 @@ Exact numerical thresholds are **TBD** unless already physical identities.
 
 Luigui and ChatGPT Work must decide:
 
-1. P1 grid, orientations, contrasts, \(ka\) and convergence-order policy.
-2. B_E behavior when isolated pairs converge at different \(L_{\max}\).
+1. P1.1 is resolved: grid, orientations, materials, \(ka\), ordered IDs and
+   convergence policy are frozen but disabled until P1.4.
+2. P1 uses independently confirmed pair orders; the common-order sensitivity
+   audit is assigned to P1.3.
 3. P2 counts/families/subset reuse and feasibility of \(\Phi_E^{(5)}\).
 4. Which prior data may inform P3 and exact group/split construction.
 5. Predictor hierarchy, fit, safety factor, tolerances and coverage minima.

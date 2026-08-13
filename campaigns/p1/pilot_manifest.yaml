@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.1.0",
+  "campaign_id": "p1_dimer_resource_pilot",
+  "title": "P1 rigid worst-cost resource pilot — separate development evidence",
+  "classification": "development",
+  "status": "planned",
+  "created_utc": "2026-08-13T15:00:00Z",
+  "provenance": {
+    "git_commit": "feaab6b352996c1001ecaefea0afd978b46754e2",
+    "task": "P1.1 D14 pilot selection; execution remains disabled",
+    "manifest_sha256": "TBD"
+  },
+  "physical": {
+    "radius_m": 1,
+    "energy_density_j_m3": 1,
+    "temporal_convention": "exp(-i omega t)"
+  },
+  "geometry": {
+    "plane": "pressure_nodal",
+    "coordinate_units": "m",
+    "coordinate_frame": "centered Cartesian xyz",
+    "positions_source": "r1=(-1.05,0,0), r2=(1.05,0,0); fixed development pilot only"
+  },
+  "numerical": {
+    "model": "E",
+    "lmax_min": 2,
+    "lmax_max": 21,
+    "minimum_stop_lmax": 5,
+    "convergence_tolerance": 0.00001,
+    "consecutive_passes": 2,
+    "required_channels": [
+      "total",
+      "interaction",
+      "external_scattered",
+      "scattered_scattered"
+    ],
+    "require_all_applicable_channels": true,
+    "failure_policy": "retain every attempt; no imputation or physics/tolerance/solver retry; record controlled stage and reason"
+  },
+  "resources": {
+    "worker_count": 1,
+    "blas_threads": 1,
+    "peak_rss_bytes_per_case": 4294967296,
+    "wall_seconds_per_case": 1800,
+    "wall_seconds_campaign": 43200,
+    "limits_status": "provisional"
+  },
+  "cases": [
+    {
+      "case_id": "p1_pilot_rigid_ka010_d0210_t000",
+      "case_order": 1,
+      "particle_count": 2,
+      "family": "resource_pilot",
+      "enabled": false,
+      "parameters": {
+        "ka": 0.1,
+        "k_rad_m": 0.1,
+        "material_id": "rigid_boundary",
+        "material_model": "rigid",
+        "f0": 0,
+        "f0_applicable": false,
+        "f1": 1,
+        "distance_ratio": 2.1,
+        "theta_rad": 0,
+        "evidence_role": "resource_pilot",
+        "twin_case_id": null,
+        "include_in_scientific_tables": false
+      }
+    }
+  ],
+  "outputs": {
+    "raw": "campaigns/p1/pilot/data_raw.csv",
+    "derived": "campaigns/p1/pilot/data_derived.csv",
+    "plot_ready": "campaigns/p1/pilot/data_plot.csv",
+    "failure_log": "campaigns/p1/pilot/failures.csv"
+  }
+}

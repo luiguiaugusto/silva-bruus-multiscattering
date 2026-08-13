@@ -1,0 +1,98 @@
+{
+  "schema_version": "1.1.0",
+  "campaign_id": "p1_multicase_example",
+  "title": "Illustrative per-case physical campaign — disabled",
+  "classification": "development",
+  "status": "planned",
+  "created_utc": "2026-08-13T15:00:00Z",
+  "provenance": {
+    "git_commit": "feaab6b352996c1001ecaefea0afd978b46754e2",
+    "task": "P1.1 schema 1.1 example",
+    "manifest_sha256": "TBD"
+  },
+  "physical": {
+    "radius_m": 1.0,
+    "energy_density_j_m3": 1.0,
+    "temporal_convention": "exp(-i omega t)"
+  },
+  "geometry": {
+    "plane": "pressure_nodal",
+    "coordinate_units": "m",
+    "coordinate_frame": "centered Cartesian xyz",
+    "positions_source": "deterministic centered dimer from per-case distance_ratio and theta_rad"
+  },
+  "numerical": {
+    "model": "E",
+    "lmax_min": 2,
+    "lmax_max": 21,
+    "minimum_stop_lmax": 5,
+    "convergence_tolerance": 0.00001,
+    "consecutive_passes": 2,
+    "required_channels": [
+      "total",
+      "interaction",
+      "external_scattered",
+      "scattered_scattered"
+    ],
+    "require_all_applicable_channels": true,
+    "failure_policy": "retain every attempt and record explicit stage and reason"
+  },
+  "resources": {
+    "worker_count": 1,
+    "blas_threads": 1,
+    "peak_rss_bytes_per_case": 4294967296,
+    "wall_seconds_per_case": 1800,
+    "wall_seconds_campaign": 43200,
+    "limits_status": "provisional"
+  },
+  "cases": [
+    {
+      "case_id": "example_dimer_primary_t000",
+      "case_order": 1,
+      "particle_count": 2,
+      "family": "canonical_dimer",
+      "enabled": false,
+      "parameters": {
+        "ka": 0.1,
+        "k_rad_m": 0.1,
+        "material_id": "fluid_f000_f1080",
+        "material_model": "fluid",
+        "f0": 0.0,
+        "f0_applicable": true,
+        "f1": 0.8,
+        "distance_ratio": 2.5,
+        "theta_rad": 0.0,
+        "evidence_role": "primary",
+        "twin_case_id": null,
+        "include_in_scientific_tables": true
+      }
+    },
+    {
+      "case_id": "example_dimer_audit_t045",
+      "case_order": 2,
+      "particle_count": 2,
+      "family": "rotational_covariance_audit",
+      "enabled": false,
+      "parameters": {
+        "ka": 0.1,
+        "k_rad_m": 0.1,
+        "material_id": "fluid_f000_f1080",
+        "material_model": "fluid",
+        "f0": 0.0,
+        "f0_applicable": true,
+        "f1": 0.8,
+        "distance_ratio": 2.5,
+        "theta_rad": 0.7853981633974483,
+        "evidence_role": "rotational_audit",
+        "twin_case_id": "example_dimer_primary_t000",
+        "include_in_scientific_tables": false
+      }
+    }
+  ],
+  "outputs": {
+    "raw": "campaigns/example/data_raw.csv",
+    "derived": "campaigns/example/data_derived.csv",
+    "plot_ready": "campaigns/example/data_plot.csv",
+    "failure_log": "campaigns/example/failures.csv"
+  }
+}

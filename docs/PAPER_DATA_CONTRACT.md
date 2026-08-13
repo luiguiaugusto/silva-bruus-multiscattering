@@ -1,6 +1,10 @@
 # Paper data and figure contract
 
-Schema version: `1.0.0`
+Data-table schema version: `1.0.0`
+
+Campaign manifest schemas: legacy single-physical `1.0.0` and compatible
+per-case-physical `1.1.0`. The validator routes by `schema_version`; no
+`1.0.0` manifest is reinterpreted.
 
 ## Immutable levels
 
@@ -75,9 +79,14 @@ Every raw row or its lossless one-to-one case table must provide:
 - provenance: `git_commit`, `campaign_manifest_path`,
   `campaign_manifest_sha256`, `schema_version` and `created_utc`.
 
-`ka` and (`radius_m`, `k_rad_m`) must be consistent; sweeps may not treat
-\(ka\), \(kd\), and \(d/a\) as independent (`docs/CONVENTIONS.md`). A future
-runner must validate this before solving.
+`ka` and (`radius_m`, `k_rad_m`) must be consistent per case; sweeps may not
+treat \(ka\), \(kd\), and \(d/a\) as independent (`docs/CONVENTIONS.md`).
+Schema `1.1.0` enforces that relation per case. A rigid case stores
+`material_model=rigid`, `f1=1` and `f0_applicable=false`; its finite `f0`
+value is an API sentinel and is not a physical contrast. These manifest
+fields do not silently revise data-table schema `1.0.0`: a future P1
+serialization task must either carry them in a lossless one-to-one case table
+or introduce an explicitly versioned table contract before producing data.
 
 ## Forces and normalizations
 

@@ -257,3 +257,31 @@
   style. It supports one-/two-column physical sizes and PDF/SVG/PNG output.
 - The P0 gate is `GO_P1_WITH_CONDITIONS`: scientific TBDs, B_E validation and
   a timed dimer pilot must precede any P1 campaign.
+
+## P1.1 frozen decisions
+
+- P0 was finalized by GitHub PR #1 at merge commit
+  `926e639fe2d327eacd09a2542208500891399687`; its 17-file scope changed no
+  file under `results/` or `papers/`.
+- P1.1 freezes \(ka=\{0.05,0.1\}\), six ordered material cases, eight
+  separations, 96 primary zero-angle dimers and six \(\pi/4\) covariance
+  audits balanced across both \(ka\) values and the separation extremes.
+  `campaigns/p1/campaign_manifest.yaml` contains the exact 102 IDs and
+  immutable order.
+- The rigid boundary uses `material_model=rigid`, `f1=1` and
+  `f0_applicable=false`. Its stored finite `f0=0` is only an API sentinel, not
+  a physical contrast.
+- Campaign schema `1.1.0` moves `ka`, `k_rad_m`, material, contrasts,
+  separation and angle to each case while retaining campaign constants and
+  policies globally. Schema `1.0.0` remains accepted unchanged.
+- Orders 2--21, minimum stop 5, all-applicable-channel two-step convergence,
+  established numerical gates and the no-imputation failure policy are
+  approved. The common-order \(B_E\) audit is assigned to P1.3.
+- `campaigns/p1/pilot_manifest.yaml` is a separate disabled `development`
+  manifest for the rigid \(ka=0.1,d/a=2.1,\theta=0\) resource pilot. Its force
+  is prohibited from P1.6 scientific tables.
+- Resource ceilings remain explicitly provisional: one worker/thread, 4 GiB
+  per case, 30 minutes per case and 12 hours total.
+- P1.1 adds no `B_E` code, solver runner, force output or campaign response.
+  All 103 cases across the two manifests remain disabled, hashes remain `TBD`
+  until P1.4, and the gate is `HOLD_P1 — P1.2, P1.3 AND P1.4 REQUIRED`.
