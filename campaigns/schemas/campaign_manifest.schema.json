@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acoustic-ms.local/schemas/campaign_manifest.schema.json",
+  "title": "Acoustic MS campaign manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "campaign_id", "title", "classification", "status",
+    "created_utc", "provenance", "physical", "geometry", "numerical",
+    "cases", "outputs"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0.0"},
+    "campaign_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "title": {"type": "string", "minLength": 1},
+    "classification": {
+      "type": "string",
+      "enum": ["exploratory", "development", "legacy_validation", "confirmatory_new"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "preregistered", "running", "complete", "archived"]
+    },
+    "created_utc": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["git_commit", "task", "manifest_sha256"],
+      "properties": {
+        "git_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "task": {"type": "string", "minLength": 1},
+        "manifest_sha256": {"type": "string", "pattern": "^(TBD|[0-9a-f]{64})$"}
+      }
+    },
+    "physical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["radius_m", "k_rad_m", "ka", "energy_density_j_m3", "f0", "f1", "temporal_convention"],
+      "properties": {
+        "radius_m": {"type": "number", "exclusiveMinimum": 0},
+        "k_rad_m": {"type": "number", "exclusiveMinimum": 0},
+        "ka": {"type": "number", "exclusiveMinimum": 0},
+        "energy_density_j_m3": {"type": "number", "minimum": 0},
+        "f0": {"type": "number"},
+        "f1": {"type": "number"},
+        "temporal_convention": {"type": "string", "const": "exp(-i omega t)"}
+      }
+    },
+    "geometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plane", "coordinate_units", "coordinate_frame", "positions_source"],
+      "properties": {
+        "plane": {"type": "string", "const": "pressure_nodal"},
+        "coordinate_units": {"type": "string", "const": "m"},
+        "coordinate_frame": {"type": "string", "minLength": 1},
+        "positions_source": {"type": "string", "minLength": 1}
+      }
+    },
+    "numerical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "lmax_min", "lmax_max", "convergence_tolerance", "consecutive_passes", "failure_policy"],
+      "properties": {
+        "model": {"type": "string", "enum": ["A", "B_E", "C", "D", "E"]},
+        "lmax_min": {"type": "integer", "minimum": 1},
+        "lmax_max": {"type": "integer", "minimum": 1},
+        "convergence_tolerance": {"type": "number", "exclusiveMinimum": 0},
+        "consecutive_passes": {"type": "integer", "minimum": 1},
+        "failure_policy": {"type": "string", "minLength": 1}
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "particle_count", "family", "enabled", "parameters"],
+        "properties": {
+          "case_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+          "particle_count": {"type": "integer", "minimum": 2},
+          "family": {"type": "string", "minLength": 1},
+          "enabled": {"type": "boolean"},
+          "parameters": {"type": "object"}
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw", "derived", "plot_ready", "failure_log"],
+      "properties": {
+        "raw": {"type": "string", "minLength": 1},
+        "derived": {"type": "string", "minLength": 1},
+        "plot_ready": {"type": "string", "minLength": 1},
+        "failure_log": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

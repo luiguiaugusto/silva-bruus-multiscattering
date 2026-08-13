@@ -7,6 +7,8 @@ Lmax=1 and local evaluation through ell=2; T05 compares A/B/C trimers; T06 adds 
 T11.1 stabilizes Model E with a square-root-balanced linear solve; T12 adds
 three-dimensional sentinel comparison metrics without recalibrating rho_1; T13 externally validates the frozen Lambda_max criterion on N=6 and N=10 holdouts.
 T14 validates its frozen scale-out on N=15 and N=28 without recalibration.
+T14/P0 adds only paper-pipeline contracts and reversible diagnostic styling;
+it changes no scientific model or solver.
 """
 
 from .contrasts import dipole_contrast, monopole_contrast
@@ -80,6 +82,15 @@ from .large_n_validation import (
     LARGE_N_TRIANGULAR_ROWS, LargeNCase, LargeNGateCriterion,
     build_large_n_cases, classify_large_n_trend, evaluate_large_n_gate,
     large_n_template, local_coupling_statistics, local_geometric_coupling,
+)
+from .paper_pipeline import (
+    ManifestValidationError, load_json_yaml, validate_manifest,
+    validate_manifest_file,
+)
+from .plot_style import (
+    ACCESSIBLE_COLORS, MM_PER_INCH, ONE_COLUMN_MM, REDUNDANT_MARKERS,
+    TWO_COLUMN_MM, diagnostic_rc_context, diagnostic_style, figure_size,
+    millimetres_to_inches, save_diagnostic_figure,
 )
 from .multipolar_solver import MultipolarNodalSolution, solve_multipolar_nodal
 from .model_d import MultipolarNodalInteractionResult, NodalModelDComparison, compare_nodal_model_d, solve_multipolar_nodal_interaction_forces
@@ -272,4 +283,18 @@ __all__ = [
     "large_n_template",
     "local_coupling_statistics",
     "local_geometric_coupling",
+    "ManifestValidationError",
+    "load_json_yaml",
+    "validate_manifest",
+    "validate_manifest_file",
+    "ACCESSIBLE_COLORS",
+    "MM_PER_INCH",
+    "ONE_COLUMN_MM",
+    "REDUNDANT_MARKERS",
+    "TWO_COLUMN_MM",
+    "diagnostic_rc_context",
+    "diagnostic_style",
+    "figure_size",
+    "millimetres_to_inches",
+    "save_diagnostic_figure",
 ]
