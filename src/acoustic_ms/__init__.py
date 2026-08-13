@@ -8,7 +8,8 @@ T11.1 stabilizes Model E with a square-root-balanced linear solve; T12 adds
 three-dimensional sentinel comparison metrics without recalibrating rho_1; T13 externally validates the frozen Lambda_max criterion on N=6 and N=10 holdouts.
 T14 validates its frozen scale-out on N=15 and N=28 without recalibration.
 T14/P0 adds only paper-pipeline contracts and reversible diagnostic styling;
-it changes no scientific model or solver.
+P1.2 adds the independently converged complete-dimer Model-E baseline B_E
+without changing historical B or B_L.
 """
 
 from .contrasts import dipole_contrast, monopole_contrast
@@ -33,7 +34,14 @@ from .mie_scattering import (
 )
 from .mie_multiparticle import MieMultiparticleSolution, solve_mie_multiparticle_nodal
 from .complete_force import complete_radiation_force_from_bsc
-from .model_e import ModelENodalResult, solve_model_e_nodal
+from .model_e import (
+    ModelENodalResult, ModelENumericalDiagnostics,
+    evaluate_model_e_numerical_diagnostics, solve_model_e_nodal,
+)
+from .model_be import (
+    ModelBEChannelConvergence, ModelBEChannelStep, ModelBEPairRecord,
+    ModelBEResult, solve_model_be_nodal,
+)
 from .model_e_comparison import (
     ModelEForceComparison, compare_model_e_forces, normalized_rms_error_xyz,
     rms_vector_magnitude_xyz, symmetric_rms_error_xyz,
@@ -133,6 +141,11 @@ __all__ = [
     "MultipolarNodalSolution",
     "MieMultiparticleSolution",
     "ModelENodalResult",
+    "ModelENumericalDiagnostics",
+    "ModelBEChannelConvergence",
+    "ModelBEChannelStep",
+    "ModelBEPairRecord",
+    "ModelBEResult",
     "ModelEForceComparison",
     "PowerLawFit",
     "angular_errors_degrees",
@@ -201,6 +214,8 @@ __all__ = [
     "solve_multipolar_nodal_interaction_forces",
     "solve_mie_multiparticle_nodal",
     "solve_model_e_nodal",
+    "evaluate_model_e_numerical_diagnostics",
+    "solve_model_be_nodal",
     "spherical_hankel1",
     "spectral_radius_l1",
     "two_step_converged",

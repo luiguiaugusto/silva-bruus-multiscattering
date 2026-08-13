@@ -1,7 +1,7 @@
 # Paper execution plan
 
-Status: **P1.1 decisions frozen; P1 disabled pending P1.2--P1.4**. No P1
-solve is authorized by this file.
+Status: **P1.2 API complete; P1 disabled pending P1.3--P1.4**. No pilot,
+campaign or production solve is authorized by this file.
 
 P0 was merged through PR #1 at merge commit
 `926e639fe2d327eacd09a2542208500891399687`. The P1.1 decision surface is
@@ -9,6 +9,11 @@ recorded in `docs/P1_1_DIMER_DECISION_RECORD.md`. The `1.1.0` confirmatory
 manifest freezes 102 ordered IDs, while a separate `development` manifest
 freezes the one-case resource pilot. Every case remains disabled and both
 hashes remain `TBD` until P1.4.
+
+P1.1 was finalized through PR #2 at merge commit
+`4a5b58408dc40302568758b2bdea54701beb4747`. P1.2 adds only the importable
+\(B_E\) orchestration API, reusable Model-E numerical gates and fake-solver
+unit tests.
 
 ## Dependency chain
 
@@ -64,8 +69,10 @@ Small tasks:
 1. **P1.1 decision record** — complete. Scientific choices, 102 IDs/order,
    schema 1.1, failure policy and provisional resource limits are frozen while
    every case remains disabled.
-2. **P1.2 B_E API** — add an importable complete-dimer-sum routine under
-   `src/acoustic_ms`; preserve historical B.
+2. **P1.2 B_E API** — complete. The importable complete-dimer-sum routine
+   independently converges isolated Model-E pairs, retains a deterministic
+   failure ledger and exposes a global vector only when all pairs are
+   eligible; historical B and \(B_L\) are unchanged.
 3. **P1.3 formula/validation tests** — isolated dimer identity, permutation,
    action–reaction where physically applicable, rotation/reflection, limiting
    behavior, non-overlap and invalid inputs; include the deferred common-order
@@ -275,8 +282,8 @@ paper's claim scope.
 - preserve the mixed pre-P0 user worktree outside P1 staging;
 - do not treat T13–T14.1 as `confirmatory_new`.
 
-## Current P1.1 gate
+## Current P1.2 gate
 
-`HOLD_P1 — P1.2, P1.3 AND P1.4 REQUIRED`. P1.2 through P1.6 remain
-unopened. No `B_E` implementation, solver call, force, result artifact,
-campaign enablement or final manifest hash is authorized by P1.1.
+`GO_P1.3 — P1.3 AND P1.4 REQUIRED BEFORE EXECUTION`. P1.3 through P1.6
+remain unopened. P1.2 authorizes no pilot, campaign, production force, result
+artifact, manifest enablement or final manifest hash.

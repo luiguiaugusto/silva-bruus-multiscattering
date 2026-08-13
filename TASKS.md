@@ -34,3 +34,7 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] P1.1 -- canonical-dimer decisions, schema 1.1 and 102 ordered IDs
   frozen; confirmatory and development-pilot cases remain disabled, hashes
   remain deferred to P1.4, and P1.2--P1.6 remain unopened.
+- [x] P1.2 -- importable independently converged complete-dimer \(B_E\) API,
+  deterministic pair ledger, all-or-nothing eligibility and injected-solver
+  unit tests; historical B/\(B_L\), disabled manifests and result trees remain
+  unchanged, and P1.3--P1.6 remain unopened.
