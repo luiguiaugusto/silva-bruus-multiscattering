@@ -46,3 +46,7 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] P1.4 -- exact-byte response-blind SHA-256 locks published for both P1
   manifests; all 102 confirmatory cases remain disabled and only the separate
   P1.5 resource-pilot case is enabled. No pilot, campaign or response ran.
+- [ ] P1.5 -- response-blind timed-pilot runner frozen and tested only with
+  injected fake solvers. Atomic single-use publication, resource limits,
+  environment/timing ledger and deterministic no-solver derivation are ready;
+  the one real pilot attempt has not yet run.

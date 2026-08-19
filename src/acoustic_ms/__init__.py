@@ -96,6 +96,11 @@ from .paper_pipeline import (
     manifest_file_sha256, manifest_sha256, validate_executable_manifest_file,
     validate_manifest, validate_manifest_file, verify_manifest_sha256,
 )
+from .p1_pilot import (
+    PilotConfiguration, PilotExecutionError, PilotExecutionSummary,
+    derive_p1_5_artifacts, execute_p1_5_pilot, load_p1_5_configuration,
+    verify_p1_5_derivations,
+)
 from .plot_style import (
     ACCESSIBLE_COLORS, MM_PER_INCH, ONE_COLUMN_MM, REDUNDANT_MARKERS,
     TWO_COLUMN_MM, diagnostic_rc_context, diagnostic_style, figure_size,
@@ -308,6 +313,13 @@ __all__ = [
     "validate_manifest",
     "validate_manifest_file",
     "verify_manifest_sha256",
+    "PilotConfiguration",
+    "PilotExecutionError",
+    "PilotExecutionSummary",
+    "derive_p1_5_artifacts",
+    "execute_p1_5_pilot",
+    "load_p1_5_configuration",
+    "verify_p1_5_derivations",
     "ACCESSIBLE_COLORS",
     "MM_PER_INCH",
     "ONE_COLUMN_MM",
