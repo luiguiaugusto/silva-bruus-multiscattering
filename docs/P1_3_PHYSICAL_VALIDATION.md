@@ -248,3 +248,175 @@ de `.venv` na worktree temporária (`533 passed, 2 failed`). Um symlink ignorado
 para o ambiente virtual existente removeu essa falha; a repetição isolada e a
 suíte final demonstram que ela não era regressão do repositório. Nenhum warning
 foi emitido e nenhum arquivo versionado em `results/` ou `papers/` mudou.
+
+## P1.3a — pré-registro da decomposição hierárquica
+
+### Classificação e proveniência
+
+Classificação: **`development_followup`**. Este protocolo é posterior à
+observação da falha G7 e, portanto, não é response-blind. Ele foi escrito e
+publicado antes de qualquer novo solve da P1.3a. Somente a documentação e
+helpers/testes de auditoria podem mudar; APIs de produção permanecerão
+inalteradas.
+
+O G7 original permanece congelado sem qualquer alteração retroativa:
+
+| Parâmetro/resultado original | Valor preservado |
+|---|---:|
+| `d/a`, `f0`, `f1` | `2.7`, `0`, `0.35` |
+| `ka` | `0.04`, `0.02` |
+| erro relativo observado | `2.4624040583e-2`, `2.4774407641e-2` |
+| envelope congelado | `(ka)^2`: `1.6e-3`, `4.0e-4` |
+| razão baixo/alto | aproximadamente `1.0061`, fora de `[0.15,0.35]` |
+| decisão | **FAIL / `NO_GO_P1.4`** |
+
+Nenhuma tolerância desse gate será alterada. Caso a P1.3a demonstre que ele
+compara objetos não equivalentes, o teste será apenas classificado como
+`xfail(strict=True)`, mantendo parâmetros e asserts originais visíveis.
+
+### Casos e orientação
+
+Os quatro casos `development_followup` usam `a=1 m`, `E_0=1 J/m^3`,
+`d/a=2.7`, `f0=0`, `f1=0.35` e `ka=(0.08,0.04,0.02,0.01)`. Para tornar a
+seleção de `m` inequívoca, os centros ficam em `(-1.35,0,0)` e
+`(1.35,0,0)`. O escalar reportado é a força na partícula esquerda projetada
+na direção da partícula direita; atração é positiva. A covariância rotacional
+já auditada em G3 liga esta representação ao dímero oblíquo original, sem
+alterar sua força radial.
+
+Nenhum desses rótulos ou resultados pertence aos 102 casos confirmatórios.
+
+### Identidade de reflexão e espaços modais
+
+Será verificada diretamente, com `spherical_harmonic`, a identidade
+
+`Y_l^m(pi-theta,phi)=(-1)^(l+m)Y_l^m(theta,phi)`
+
+para todo `0<=l<=5`, `-l<=m<=l` e os pontos
+`(theta,phi)=(0.37,0.23),(0.91,1.17),(1.42,2.03)`. O orçamento absoluto é
+`512*epsilon_64*max(1,|Y_l^m|)`.
+
+Em `L=5` ficam congelados:
+
+- espaço planar completo `P={(l,m): l+m ímpar}`;
+- espaço reduzido do artigo `R={(l,m): l ímpar, m par}`;
+- complemento permitido removido por `R`,
+  `Q={(2,+-1),(4,+-1),(4,+-3)}`.
+
+O helper de auditoria montará o mesmo sistema balanceado por translações já
+existente, apenas selecionando `P` ou `R`, e reconstruirá BSCs completos com
+zeros fora do espaço. Não será criada API de produção. Para `R`, a solução
+global de duas partículas também será comparada ao ramo reduzido de uma
+partícula já usado por `test_t07_article_formula.py`.
+
+Para cada `ka` serão registrados, por espaço e modelo de coeficiente:
+
+- norma L2 dos coeficientes espalhados totais;
+- norma L2 dos coeficientes no setor `Q` e sua razão com a norma total;
+- força de interação, externo--espalhado e espalhado--espalhado;
+- contribuição modal definida como `F(P)-F(R)` no mesmo observável,
+  `L` e coeficiente. Essa diferença inclui corretamente realimentação e termos
+  cruzados; não será apresentada como soma independente de forças de modos.
+
+### Pontes congeladas
+
+Cada linha da cadeia altera somente um aspecto. Serão guardados os valores
+assinados e, entre cada par, erro absoluto, erro relativo simétrico e ordem
+empírica em `ka`:
+
+1. `E_conv:interaction -> E_conv:external_scattered`: isola o canal
+   espalhado--espalhado.
+2. `E_conv:external_scattered -> E_L5:Mie:P:external_scattered`: isola a ordem
+   convergida versus `L=5`.
+3. `E_L5:Mie:P -> E_L5:Mie:R`: isola o complemento modal `Q` com coeficientes
+   Mie exatos.
+4. `E_L5:Mie:R -> E_L5:Rayleigh:R`: isola coeficientes Mie versus Apêndice A
+   no mesmo espaço, ordem e funcional de força completa.
+5. `E_L5:Rayleigh:R:complete -> E_L5:Rayleigh:R:Appendix-B`: isola a
+   aproximação do funcional externo--espalhado usada na redução do artigo.
+6. `E_L5:Rayleigh:R:Appendix-B -> Eq.(30)`: isola a expressão fechada e sua
+   truncagem em `ka`.
+
+Em paralelo serão calculadas as pontes `Mie:P -> Rayleigh:P` e
+`Rayleigh:P -> Rayleigh:R`, tanto para força completa quanto para o funcional
+externo--espalhado do Modelo D, evitando atribuir ao coeficiente uma diferença
+que venha do espaço modal ou do observável.
+
+A soma assinada das seis diferenças deve reconstruir
+`E_conv:interaction-Eq.(30)` dentro de `T_num`. Isso é um gate de fechamento,
+não um ajuste dos tamanhos individuais.
+
+### Métricas e critérios congelados
+
+Mantêm-se `R`, `Delta_abs`, `Delta_rel` e
+`T_num(S)=(5e-10+512*epsilon_64)S` definidos no protocolo original. Para uma
+sequência positiva de erros em halvings de `ka`, a ordem local é
+
+`p_i=log(error(ka_i)/error(ka_i/2))/log(2)`.
+
+Se um erro estiver abaixo de `T_num`, sua ordem será marcada não aplicável, não
+forçada a zero. As tolerâncias abaixo são fixadas antes da resposta P1.3a:
+
+1. **Harmônicos.** Todas as identidades de reflexão devem respeitar o orçamento
+   de `512 epsilon` acima.
+2. **Reprodução do solver.** O helper `Mie:P:L5` deve reproduzir cada canal do
+   Model E de produção em `L=5` com `Delta_abs<=T_num`. A identidade
+   `interaction=external_scattered+scattered_scattered` deve obedecer o mesmo
+   orçamento.
+3. **Apêndice A.** Para cada `l=1,...,5`, o erro complexo relativo entre
+   coeficientes Mie e Rayleigh deve diminuir e a inclinação de mínimos
+   quadrados nos quatro `ka` deve satisfazer `|p-2|<=0.05`, reutilizando o
+   critério assintótico já estabelecido em T10.
+4. **Redução do artigo.** No espaço `R`, o helper global e o ramo reduzido
+   independente do artigo devem concordar em seu funcional comum dentro de
+   `T_num`.
+5. **Truncagem da Eq. (30).** Somente após espaço, `L`, coeficientes e
+   observável estarem equivalentes, o erro do ramo reduzido para a Eq. (30)
+   deve diminuir; cada ordem local aplicável deve pertencer a `[1.7,2.3]` e a
+   inclinação global deve pertencer ao mesmo intervalo. Nenhum limite
+   percentual é imposto.
+6. **Paridade física.** A redução para apenas `l` ímpar será considerada
+   inválida para o Model E planar completo se o setor `Q` tiver norma resolvida
+   (`>512 epsilon` da norma total) e `|F(P)-F(R)|>T_num` nos pontos
+   `ka=0.04,0.02`. Se ambos forem nulos dentro desses orçamentos, a redução será
+   considerada válida nesses casos. Não se presume o resultado.
+7. **Fechamento hierárquico.** A cadeia telescópica deve reconstruir o G7 em
+   cada `ka` com erro `<=T_num`; sinal ou normalização não explicados reprovam
+   a P1.3a.
+8. **Diagnósticos.** Todos os solves Model E e helpers devem ser finitos, com
+   resíduos/fechamentos `<=1e-12` e condição balanceada `<10`.
+
+### Nova auditoria de ordem comum
+
+O caso `DEV-N3-MIXED-ORDER` usa exatamente `a=1 m`, `E_0=1 J/m^3`,
+`ka=0.1`, `f0=0`, `f1=1` e posições
+`(0,0,0)`, `(2.1,0,0)`, `(0,8,0)`. Ele é de desenvolvimento e não pode
+alimentar a campanha.
+
+Cada par converge independentemente com o protocolo original (`L=2,...,21`,
+parada mínima 5, tolerância `1e-5`, duas mudanças finais). O gate exige:
+
+- todos os pares elegíveis e pelo menos duas ordens finais distintas;
+- recálculo dos três pares na maior ordem observada, na ordem do ledger;
+- diagnósticos comuns aprovados;
+- `Delta_abs(independente,comum) <=
+  (10*1e-5+512*epsilon_64)S`, exatamente o orçamento já congelado.
+
+### Regra para classificação do G7 e decisão
+
+O G7 original só receberá `xfail(strict=True)` se: identidade de reflexão,
+reprodução do solver, equivalência do ramo reduzido, truncagem da Eq. (30) e
+fechamento telescópico passarem; e o setor `Q` demonstrar que os objetos do G7
+são não equivalentes. A razão científica deverá constar no marcador e neste
+documento. Caso contrário, a falha continuará normal.
+
+- `GO_P1.4`: decomposição completa, todos os gates equivalentes e auditoria de
+  ordens distintas aprovados.
+- `GO_P1.4_WITH_CONDITIONS`: causa física demonstrada, somente limitação não
+  crítica claramente delimitada.
+- `NO_GO_P1.4`: qualquer sinal, normalização, paridade ou força permanecer sem
+  explicação.
+
+### Evidência P1.3a
+
+`PENDING_FIRST_P1_3A_SOLVE`
