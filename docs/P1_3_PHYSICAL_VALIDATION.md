@@ -419,7 +419,7 @@ documento. Caso contrário, a falha continuará normal.
 
 ### Evidência P1.3a
 
-`PENDING_FIRST_P1_3A_SOLVE`
+Os resultados quantitativos são registrados após a emenda cronológica abaixo.
 
 ### Emenda P1.3a-1 — fallback de ordem comum
 
@@ -441,3 +441,147 @@ finais distintas, recálculo de todos os pares na maior ordem, diagnósticos
 aprovados e orçamento `(10*1e-5+512*epsilon_64)S`. O fallback não apaga a falha
 do candidato rígido e, mesmo se passar, esta limitação impede `GO_P1.4` sem
 condições.
+
+
+### Resultados observados P1.3a
+
+#### Proveniência e identidade de reflexão
+
+O pré-registro P1.3a foi publicado em `8bdc1dc` antes dos solves desta
+auditoria. A emenda do fallback foi publicada em `72ec1f6`, depois da
+resposta negativa do candidato rígido e antes do primeiro solve alternativo.
+Ambos continuam classificados como `development_followup`.
+
+Nos 108 valores complexos avaliados, a identidade
+`Y_l^m(pi-theta,phi)=(-1)^(l+m)Y_l^m(theta,phi)` teve erro absoluto máximo
+`7.2164496601e-16`, contra orçamento máximo `1.1368683772e-13`: **PASS**.
+Para um campo antissimétrico através do plano nodal, ela exige `l+m` ímpar;
+não exige separadamente `l` ímpar. Portanto os modos de `Q`, com `l` par
+e `m` ímpar, são permitidos pela simetria. A redução do Apêndice B para
+`l` ímpar, `m` par é uma aproximação adicional, não uma consequência da
+identidade de reflexão para o espaço planar completo.
+
+#### Canais, ordem fixa e expressão fechada
+
+Todos os quatro dímeros convergiram em `L=12`. A tabela usa a força radial
+assinada na partícula esquerda; `F_int`, `F_ES` e `F_SS` são,
+respectivamente, interação total, externo--espalhado e
+espalhado--espalhado do Model E convergido. `F_ES(L5,P,Mie)` fixa apenas a
+ordem, e `F_30` é a expressão fechada existente.
+
+| `ka` | `F_int` | `F_ES` | `F_SS` | `F_ES(L5,P,Mie)` | `F_30` |
+|---:|---:|---:|---:|---:|---:|
+| 0.08 | 4.5381318656e-2 | 4.4549648323e-2 | 8.3167033241e-4 | 4.4547562218e-2 | 4.4291443165e-2 |
+| 0.04 | 4.5143447827e-2 | 4.4323280222e-2 | 8.2016760465e-4 | 4.4321199927e-2 | 4.4031833736e-2 |
+| 0.02 | 4.5084570613e-2 | 4.4267277936e-2 | 8.1729267683e-4 | 4.4265199050e-2 | 4.3967627082e-2 |
+| 0.01 | 4.5069888619e-2 | 4.4253314625e-2 | 8.1657399374e-4 | 4.4251236089e-2 | 4.3951619235e-2 |
+
+A implementação existente avalia, sem reimplementação,
+`F_30=4*pi*a^2*f1^2*E0*chi^4*[3*A0/D0*(cos(x)+x*sin(x)) +`
+`A2/(5*D0)*x^2*cos(x)]`, com `chi=a/d`, `x=kd` e `A0,A2,D0`
+das Eqs. (30b--d). Ela retém as funções trigonométricas da forma fechada, mas
+é o resultado analítico multipolar truncado em quinta ordem; o primeiro resto
+relativo observado no ramo equivalente é `O((ka)^2)`.
+
+#### Pontes e ordens empíricas
+
+Em todas as listas abaixo, a ordem de pontos é `ka=(.08,.04,.02,.01)`; as
+três ordens locais correspondem aos halvings sucessivos. `p_abs/g` e
+`p_rel/g` dão a lista local e a inclinação global. Assim nenhuma lei de
+potência é atribuída a uma ponte cujo erro é numericamente nulo.
+
+| Ponte | `Delta_abs` | `Delta_rel` | `p_abs / global` | `p_rel / global` |
+|---|---|---|---|---|
+| interação -> ES (canal SS) | [8.31670e-4,8.20168e-4,8.17293e-4,8.16574e-4] | [1.83263e-2,1.81680e-2,1.81280e-2,1.81180e-2] | [0.02009,0.00507,0.00127] / 0.00844 | [0.01251,0.00318,0.00080] / 0.00527 |
+| ES convergido -> `L=5,Mie,P` | [2.08610e-6,2.08030e-6,2.07889e-6,2.07854e-6] | [4.68265e-5,4.69346e-5,4.69621e-5,4.69690e-5] | [0.00402,0.00098,0.00024] / 0.00167 | [-0.00333,-0.00085,-0.00021] / -0.00140 |
+| `Mie:P -> Mie:R` | [3.03173e-4,3.01012e-4,3.00476e-4,3.00342e-4] | [6.80559e-3,6.79159e-3,6.78809e-3,6.78721e-3] | [0.01032,0.00257,0.00064] / 0.00432 | [0.00297,0.00074,0.00019] / 0.00125 |
+| `Mie:R -> App.A:R` | [7.41546e-5,1.84200e-5,4.59764e-6,1.14895e-6] | [1.67322e-3,4.18268e-4,1.04565e-4,2.61410e-5] | [2.00927,2.00230,2.00058] / 2.00387 | [2.00013,2.00003,2.00001] / 2.00005 |
+| `App.A:R:complete -> Appendix-B` | [8.75829e-6,2.18386e-6,5.45610e-7,1.36380e-7] | [1.97621e-4,4.95898e-5,1.24089e-5,3.10293e-6] | [2.00377,2.00094,2.00024] / 2.00158 | [1.99462,1.99867,1.99967] / 1.99776 |
+| `Appendix-B:R -> Eq.(30)` | [1.83428e-5,4.59075e-6,1.14801e-6,2.87022e-7] | [4.13968e-4,1.04249e-4,2.61096e-5,6.53036e-6] | [1.99841,1.99960,1.99990] / 1.99933 | [1.98948,1.99738,1.99935] / 1.99560 |
+| `Mie:P -> App.A:P` | [7.48971e-5,1.86040e-5,4.64355e-6,1.16042e-6] | [1.67846e-3,4.19577e-4,1.04892e-4,2.62228e-5] | [2.00930,2.00231,2.00058] / 2.00389 | [2.00013,2.00003,2.00001] / 2.00005 |
+| `App.A:P -> App.A:R`, funcional completo | [3.03915e-4,3.01196e-4,3.00522e-4,3.00354e-4] | [6.81081e-3,6.79289e-3,6.78841e-3,6.78729e-3] | [0.01297,0.00323,0.00081] / 0.00542 | [0.00380,0.00095,0.00024] / 0.00159 |
+| `App.A:P -> App.A:R`, Appendix-B | [3.03818e-4,3.01171e-4,3.00516e-4,3.00352e-4] | [6.80997e-3,6.79269e-3,6.78836e-3,6.78728e-3] | [0.01262,0.00314,0.00079] / 0.00528 | [0.00367,0.00092,0.00023] / 0.00154 |
+| ramo global `R` -> ramo estrito | [0,0,0,1.39e-17] | [0,0,0,3.16e-16] | n/a | n/a |
+| ramo estrito -> Eq. (30) | [1.83428e-5,4.59075e-6,1.14801e-6,2.87022e-7] | [4.13968e-4,1.04249e-4,2.61096e-5,6.53036e-6] | [1.99841,1.99960,1.99990] / 1.99933 | [1.98948,1.99738,1.99935] / 1.99560 |
+
+O comportamento `O((ka)^2)` aparece apenas depois de igualar observável,
+`L=5`, espaço `R` e coeficientes do Apêndice A. Antes disso, os canais SS,
+a diferença `L=12 -> 5` e principalmente `P -> R` tendem a constantes
+relativas; exigir `O((ka)^2)` nessas pontes seria cientificamente inválido.
+
+Os erros dos coeficientes Mie exatos contra o Apêndice A também confirmam que
+essa ponte, isoladamente, tem ordem relativa dois:
+
+| `l` | erro absoluto em `ka=(.08,.04,.02,.01)` | erro relativo | `p_rel` global |
+|---:|---|---|---:|
+| 1 | [2.488e-8,7.768e-10,2.427e-11,7.583e-13] | [8.329e-4,2.081e-4,5.200e-5,1.300e-5] | 2.00051 |
+| 2 | [1.238e-11,9.675e-14,7.560e-16,5.906e-18] | [7.810e-4,1.954e-4,4.885e-5,1.221e-5] | 1.99962 |
+| 3 | [2.029e-15,3.965e-18,7.744e-21,1.513e-23] | [6.435e-4,1.609e-4,4.023e-5,1.006e-5] | 1.99982 |
+| 4 | [1.811e-19,8.847e-23,4.320e-26,2.109e-29] | [5.405e-4,1.351e-4,3.379e-5,8.447e-6] | 1.99987 |
+| 5 | [1.035e-23,1.263e-27,1.542e-31,1.883e-35] | [4.643e-4,1.161e-4,2.903e-5,7.257e-6] | 1.99989 |
+
+
+#### Setor `l` par, `m` ímpar e fechamento
+
+Os coeficientes abaixo são a norma do vetor espalhado Mie exato no setor
+`Q`, incluindo as duas partículas. `Delta F_Q` é a contribuição operacional
+pré-registrada `F_ES(P)-F_ES(R)`, que inclui realimentação e termos cruzados.
+
+| `ka` | `||b_Q||_2` | `||b_Q||_2/||b_P||_2` | `Delta F_Q` | `Delta F_Q/F(P)` |
+|---:|---:|---:|---:|---:|
+| 0.08 | 3.89482e-8 | 1.48933e-4 | 3.03173e-4 | 6.80559e-3 |
+| 0.04 | 2.42216e-9 | 7.40611e-5 | 3.01012e-4 | 6.79159e-3 |
+| 0.02 | 1.51198e-10 | 3.69804e-5 | 3.00476e-4 | 6.78809e-3 |
+| 0.01 | 9.44695e-12 | 1.84840e-5 | 3.00342e-4 | 6.78721e-3 |
+
+Em `ka=.04,.02`, tanto a razão de coeficientes quanto a força excedem por
+muitas ordens os respectivos pisos numéricos. Logo a redução para apenas
+`l` ímpar **não é válida para o Model E planar completo**, embora seja
+internamente consistente como o espaço aproximado `R` do artigo. Essa é a
+origem modal do platô principal do G7; não há erro de sinal ou normalização.
+
+A soma assinada das seis pontes reconstruiu
+`F_int(Model E)-F_30` com erro de fechamento exatamente zero nos quatro
+pontos. O helper `Mie:P:L5` reproduziu todos os canais do solver de produção
+dentro de `T_num`; a decomposição `F_int=F_ES+F_SS` fechou exatamente. O
+maior número de condição balanceado foi `1.03556`; erros backward ficaram
+abaixo de `3.7e-17`, fechamentos abaixo de `1.2e-16` e resíduos do ramo
+estrito abaixo de `2.1e-16`. Todos os gates numéricos passaram.
+
+#### Auditoria de ordem comum e decisão
+
+| Caso | Elegível | ordens independentes | ordem comum | `Delta_abs` | orçamento |
+|---|---|---|---:|---:|---:|
+| `DEV-N3-MIXED-ORDER` | não; par (0,1) falhou convergência em `L=21` | [21,7,7] | não aplicável | não aplicável | não aplicável |
+| `DEV-N3-MIXED-ORDER-FALLBACK` | sim | [12,7,7] | 12 | 3.69210e-16 | 3.69271e-6 |
+
+No candidato inicial rígido, o par próximo terminou com mudanças finais
+`1.84e-6` (interação), `1.17e-7` (ES) e `7.50e-6` (SS), mas não obteve
+duas confirmações finais simultâneas antes do limite; sua falha permanece
+explícita e nenhuma força parcial foi usada. No fallback, os três diagnósticos
+em ordem comum passaram (`cond<=1.03556`) e o erro ficou dez ordens abaixo
+do orçamento. O gate de ordens distintas foi efetivamente exercitado.
+
+O G7 original continua com os mesmos parâmetros, valores e asserts e permanece
+uma falha científica da comparação originalmente proposta. Como a
+decomposição demonstrou que seus objetos não são equivalentes, ele é
+classificado como `xfail(strict=True)` com justificativa explícita; os gates
+corrigidos do ramo equivalente passam com ordem relativa global `1.99560`.
+
+Decisão P1.3a: **`GO_P1.4_WITH_CONDITIONS`**. A discrepância de sinal,
+normalização, paridade e força foi completamente decomposta e o fallback de
+ordens distintas passou. A condição não crítica é que o caso rígido
+`ka=.1,d/a=2.1,f1=1` não confirma a janela final dentro de `L<=21`; ele não
+pode ser usado como evidência elegível nem extrapolado ao piloto. Nenhuma
+atividade da P1.4 foi iniciada.
+
+
+#### Verificação P1.3a
+
+- Focado final com warnings como erros:
+  `20 passed, 1 xfailed` em `596.18 s`.
+- Suíte completa com warnings como erros:
+  `546 passed, 1 xfailed` em `682.70 s`.
+- O único `xfail` é o G7 original preservado; nenhum warning foi emitido.
+- Nenhum arquivo versionado em `results/`, `papers/`, manifestos, Modelos
+  B/`B_L` ou APIs de produção foi alterado.

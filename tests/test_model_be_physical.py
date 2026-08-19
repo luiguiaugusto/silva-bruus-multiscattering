@@ -6,6 +6,7 @@ from functools import lru_cache
 import json
 
 import numpy as np
+import pytest
 
 from acoustic_ms import (
     corrected_nodal_pair_forces,
@@ -367,6 +368,13 @@ def test_null_channels_are_inapplicable_and_exactly_zero() -> None:
     assert all(not channel.confirmed for channel in record.convergence)
 
 
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "P1.3a shows G7 compares full-space exact-Mie total interaction with "
+        "the article-reduced external-scattered asymptotic Eq. (30)"
+    ),
+)
 def test_corrected_fifth_order_formula_in_frozen_asymptotic_domain() -> None:
     analytic = _physical_evidence()["analytic"]
     high = analytic["DEV-GEO"]
