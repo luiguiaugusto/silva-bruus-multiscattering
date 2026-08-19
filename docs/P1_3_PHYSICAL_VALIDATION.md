@@ -420,3 +420,24 @@ documento. Caso contrário, a falha continuará normal.
 ### Evidência P1.3a
 
 `PENDING_FIRST_P1_3A_SOLVE`
+
+### Emenda P1.3a-1 — fallback de ordem comum
+
+Classificação: **`development_followup` pós-resposta**. O primeiro solve do
+caso `DEV-N3-MIXED-ORDER` mostrou o resultado global inelegível: o par rígido
+próximo `(0,1)`, com `d/a=2.1`, não confirmou convergência até `L=21`. Esse
+resultado e a reprovação do candidato inicial ficam preservados; não se soma
+uma força parcial e não se aumenta `Lmax`.
+
+Antes de qualquer solve alternativo, fica congelado
+`DEV-N3-MIXED-ORDER-FALLBACK`, com `a=1 m`, `E_0=1 J/m^3`, posições
+`(0,0,0)`, `(2.7,0,0)`, `(0,8,0)`, `ka=0.04`, `f0=0`, `f1=0.35`. Ele reutiliza
+o dímero próximo da própria hierarquia P1.3a e acrescenta somente os dois pares
+distantes necessários ao teste de agregação.
+
+Aplicam-se sem alteração: convergência independente em `L=2,...,21`, parada
+mínima 5, tolerância `1e-5`, duas mudanças finais, pelo menos duas ordens
+finais distintas, recálculo de todos os pares na maior ordem, diagnósticos
+aprovados e orçamento `(10*1e-5+512*epsilon_64)S`. O fallback não apaga a falha
+do candidato rígido e, mesmo se passar, esta limitação impede `GO_P1.4` sem
+condições.
