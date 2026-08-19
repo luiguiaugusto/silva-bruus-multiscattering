@@ -141,6 +141,36 @@ class SettlingPairSolver(FakePairSolver):
         return result
 
 
+class NonMonotonicPairSolver(FakePairSolver):
+    def __call__(
+        self,
+        positions: object,
+        k: float,
+        radius: float,
+        energy: float,
+        f0: float,
+        f1: float,
+        order: int,
+    ) -> SimpleNamespace:
+        result = super().__call__(positions, k, radius, energy, f0, f1, order)
+        scale = 1.0 if order <= 4 else 2.0
+        for attribute in (
+            "total_forces_xyz",
+            "interaction_forces_xyz",
+            "external_scattered_forces_xyz",
+        ):
+            setattr(result, attribute, scale * getattr(result, attribute))
+        return result
+
+
+def _interaction_convergence(record):
+    return next(
+        channel
+        for channel in record.convergence
+        if channel.channel == "interaction"
+    )
+
+
 def _solve(solver: FakePairSolver, **kwargs):
     return solve_model_be_nodal(
         POSITIONS,
@@ -223,6 +253,67 @@ def test_each_pair_converges_to_its_own_final_order() -> None:
         )
         for record in result.pair_ledger
     ) == (4, 6, 4)
+
+
+def test_reopened_final_window_does_not_authorize_stop() -> None:
+    solver = NonMonotonicPairSolver()
+    result = solve_model_be_nodal(
+        POSITIONS[:2],
+        0.1,
+        1.0,
+        1.0,
+        0.0,
+        0.8,
+        lmax_max=6,
+        solver=solver,
+    )
+
+    record = result.pair_ledger[0]
+    interaction = _interaction_convergence(record)
+    assert record.final_lmax == 6
+    assert record.attempted_lmax == (2, 3, 4, 5, 6)
+    assert interaction.confirmation_lmax == 4
+    assert all(step.applicable for step in interaction.history[-2:])
+    assert interaction.history[-2].successive_change > 1.0e-5
+    assert interaction.history[-1].successive_change <= 1.0e-5
+    assert not interaction.confirmed
+    assert any(
+        channel.applicable and not channel.confirmed
+        for channel in record.convergence
+    )
+    assert not result.eligible
+    assert result.forces_xyz is None
+
+
+def test_reopened_channel_stops_only_after_final_window_reconfirms() -> None:
+    solver = NonMonotonicPairSolver()
+    result = solve_model_be_nodal(
+        POSITIONS[:2],
+        0.1,
+        1.0,
+        1.0,
+        0.0,
+        0.8,
+        lmax_max=8,
+        solver=solver,
+    )
+
+    record = result.pair_ledger[0]
+    interaction = _interaction_convergence(record)
+    assert record.final_lmax == 7
+    assert record.attempted_lmax == (2, 3, 4, 5, 6, 7)
+    assert interaction.confirmation_lmax == 4
+    assert all(step.applicable for step in interaction.history[-2:])
+    assert all(
+        step.successive_change <= 1.0e-5
+        for step in interaction.history[-2:]
+    )
+    assert interaction.confirmed
+    assert result.eligible
+    assert all(
+        not channel.applicable or channel.confirmed
+        for channel in record.convergence
+    )
 
 
 def test_solver_failure_is_explicit_and_later_pairs_are_still_audited() -> None:

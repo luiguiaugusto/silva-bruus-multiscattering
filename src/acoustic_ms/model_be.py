@@ -46,7 +46,11 @@ class ModelBEChannelStep:
 
 @dataclass(frozen=True)
 class ModelBEChannelConvergence:
-    """Independent convergence summary for one dimer force channel."""
+    """Independent convergence summary for one dimer force channel.
+
+    ``confirmed`` describes only the two most recent changes at the current
+    order.  ``confirmation_lmax`` retains the first historical confirmation.
+    """
 
     channel: str
     applicable: bool
@@ -170,12 +174,19 @@ def _channel_convergence(
             orders,
             tolerance=tolerance,
         )
+        final_confirmed = bool(
+            len(changes) >= 2
+            and applicable[-2]
+            and applicable[-1]
+            and changes[-2] <= tolerance
+            and changes[-1] <= tolerance
+        )
         final = steps[-1]
         summaries.append(
             ModelBEChannelConvergence(
                 channel=channel,
                 applicable=any(applicable),
-                confirmed=confirmation > 0,
+                confirmed=final_confirmed,
                 confirmation_lmax=confirmation or None,
                 final_successive_change=final.successive_change,
                 final_absolute_change=final.absolute_change,

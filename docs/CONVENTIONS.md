@@ -419,6 +419,12 @@ channels have each closed two consecutive applicable normalized RMS changes
 at or below \(10^{-5}\). A numerically null channel retains
 `applicable=false` and does not fabricate a relative error.
 
+At every evaluated order, `confirmed` describes only the final two changes:
+both must be applicable and at or below the tolerance simultaneously for all
+applicable channels. An earlier passing window does not remain confirmed if a
+later order varies again. `confirmation_lmax` separately retains the first
+historical passing window for auditability.
+
 The final pair result must also pass the established Model-E gates:
 `balanced_sqrt`, finite force/coefficient/diagnostic values, balanced
 condition number below 10, balanced backward error and the three

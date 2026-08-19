@@ -296,9 +296,12 @@
   Model-E `interaction_forces_xyz` from every isolated unordered pair
   \(i<j\), preserving original particle orientation and index association.
 - Pair order is lexicographic and deterministic. Each pair converges
-  independently over orders 2--21, cannot stop before 5, and requires two
-  consecutive passes for every applicable force channel. Numerically null
-  channels retain explicit non-applicability.
+  independently over orders 2--21 and cannot stop before 5. At the current
+  order, `confirmed` requires that the two most recent changes be applicable
+  and pass simultaneously in every applicable channel; an older passing
+  window cannot survive a later variation. Numerically null channels retain
+  explicit non-applicability and remain exempt. `confirmation_lmax` preserves
+  only the first historical passing window for auditability.
 - The established Model-E finite, conditioning, residual, mode-dimension and
   planar gates are centralized in
   `evaluate_model_e_numerical_diagnostics` and reused; their scientific

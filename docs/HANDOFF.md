@@ -2553,6 +2553,15 @@ before order 5. The final interaction-force rows are associated directly with
 particles \(i\) and \(j\); no action--reaction assumption or frame rotation is
 introduced.
 
+The P1.2 follow-up fixes the distinction between historical and current
+convergence. `confirmation_lmax` retains the first historical two-step pass,
+whereas `confirmed` is true only when the two most recent changes at the
+current order are both applicable and within tolerance. The solver stops only
+when all applicable channels are simultaneously confirmed in that final
+window. A nonmonotonic fake channel that first confirms at order 4, varies at
+order 5 and stays fixed thereafter is unconfirmed at the cap 6; with one more
+unchanged step it reconfirms and stops at order 7.
+
 `ModelBEResult` returns the global \(B_E\) vector only when all pairs are
 eligible. Its deterministic ledger retains each pair's individual dimer
 forces, attempted/evaluated/final/failed orders, channel histories,
@@ -2566,12 +2575,12 @@ thresholds. Position, physical parameter, order, tolerance, rigid sentinel,
 non-overlap and planarity checks run before pair evaluation. Historical Model
 B in `comparison.py` and \(B_L\) in `transferability.py` were not modified.
 
-The P1.2-specific suite uses only injected fake solvers and passed **31 tests
-in 0.54 s**. It covers vector accumulation, original orientation,
+The P1.2-specific suite uses only injected fake solvers and passed **33 tests
+in 0.57 s**. It covers vector accumulation, original orientation,
 lexicographic pair order, independent final orders, null-channel
 applicability, deterministic repetition, local and malformed-solver failures,
 all-or-nothing global eligibility, input validation, and every established
-numerical gate. The complete repository suite passed **524 tests in 89.66 s**
+numerical gate. The complete repository suite passed **526 tests in 97.16 s**
 with warnings treated as errors.
 
 No pilot, campaign or production calculation ran. All confirmatory and
