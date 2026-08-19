@@ -2633,3 +2633,37 @@ retained without imputation.
 No P1.5 pilot or P1.6 campaign was executed, and no file under `results/` or
 `papers/` was created or modified. The handoff decision is
 `GO_P1.5_PILOT`; stop before pilot execution for audit.
+
+
+## P1.5 single timed resource pilot
+
+PR #5 was verified at head
+`3cd606ad35053d7d63214e7b3306270ae933939a` with 12 scoped files and merged
+as `f89a291d08420b2ddc7270bedbb28f7112671ce8`. The P1.5 runner, fake-solver
+tests and pre-response protocol were then committed and pushed as
+`a5a2a9c58f5e65b7986e24c7c64879246d946131` before any real solve.
+
+The exact frozen command executed once. It evaluated orders 2--21 and ended
+`unconfirmed_at_21`, `converged=false`, `eligible=false`, with no retry or
+retuning. Total, interaction and external--scattered were confirmed in the
+final window; applicable scattered--scattered was not. All numerical gates
+passed. Final full/active modes per particle were 484/231 and system dimension
+was 462.
+
+The case used `494.13323493499774 s` wall time and `311857152 bytes` peak RSS,
+inside the provisional 1800 s and 4 GiB limits. Aggregate Model E timing was
+`494.0773162767291 s` assembly/diagnostics, `0.01332716818433255 s` linear
+solve and `0.029365212889388204 s` force postprocessing.
+
+Five files under `campaigns/p1/pilot/` contain the raw ledger, failure,
+resource derivation, plot-ready resource data and performance table. Their
+hashes are frozen in `docs/P1_5_TIMED_PILOT.md` and
+`tests/test_p1_5_artifacts.py`. Two no-solver regenerations matched exactly.
+Focused checks passed **34 tests in 0.67 s**; the complete suite with warnings
+as errors passed **574 tests**, with the unchanged G7 as the sole xfail, in
+652.79 s.
+
+Neither P1 manifest changed, all 102 confirmatory cases remain disabled, and
+no path under `results/` or `papers/` changed. Pilot forces remain development
+resource evidence only. Decision: `GO_P1.6A_BLIND_FREEZE`; stop before P1.6
+for audit.

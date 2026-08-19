@@ -34,6 +34,13 @@ from scientific tables. Resource limits remain provisional. This freeze
 authorizes only the timed P1.5 pilot; the confirmatory campaign stays blocked,
 and no solve or response has been generated.
 
+P1.5 status (2026-08-19): the separately committed runner executed the single
+development pilot exactly once. Orders 2--21 ended `unconfirmed_at_21`, with
+`eligible=false`, 494.133 s wall time and 311857152-byte peak RSS. Resource
+limits, atomic serialization, hashes and two no-solver derivations passed.
+Pilot forces remain excluded from scientific tables, the confirmatory grid is
+still wholly disabled and the decision is `GO_P1.6A_BLIND_FREEZE`.
+
 ## Paper question and intended answer
 
 Question: when and why does the pairwise nodal Silva–Bruus interaction cease

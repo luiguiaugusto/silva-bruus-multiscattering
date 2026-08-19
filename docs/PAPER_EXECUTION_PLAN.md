@@ -1,8 +1,8 @@
 # Paper execution plan
 
-Status: **P1.4 complete; only the P1.5 resource pilot is authorized**.
-The 102-case confirmatory campaign remains blocked. No pilot, campaign or
-production response has been executed.
+Status: **P1.5 complete; `GO_P1.6A_BLIND_FREEZE`**.
+The one-case development resource pilot has run exactly once. The 102-case
+confirmatory campaign remains blocked and wholly disabled; P1.6 has not begun.
 
 P0 was merged through PR #1 at merge commit
 `926e639fe2d327eacd09a2542208500891399687`. P1.1 froze the 102 IDs and the
@@ -15,6 +15,9 @@ wholly disabled with hash
 Only the one-case `development` pilot is enabled, with hash
 `d8f56ce20f6f0821d84fd6f36e1f76c855f63f55d809ba9a7201ba52097a43bf`.
 Limits remain provisional and the pilot is excluded from scientific tables.
+P1.5 reached `L=21` as `unconfirmed_at_21`, used 494.133 s and 311857152 bytes
+of peak RSS, and passed the resource/serialization gate without producing an
+eligible scientific force.
 
 ## Dependency chain
 
@@ -82,11 +85,10 @@ Small tasks:
 4. **P1.4 blind manifest** — complete. Exact-byte hashes, the immutable public
    locks and the 102-case/twin audit pass. The confirmatory manifest is wholly
    disabled; only the separate one-case pilot is enabled. No solve occurred.
-5. **P1.5 timed pilot** — authorized as the next and only execution. Execute
-   the separate `development` rigid case at
-   \(ka=0.1,d/a=2.1,\theta=0\). `unconfirmed_at_21` is an acceptable resource
-   and controlled-failure outcome. Record timing, peak memory, attempts, final
-   orders and failure reason; its force cannot enter P1.6 scientific tables.
+5. **P1.5 timed pilot** — complete. The single `development` rigid case at
+   \(ka=0.1,d/a=2.1,\theta=0\) evaluated orders 2--21 once and ended
+   `unconfirmed_at_21`, `eligible=false`. Resource limits and deterministic
+   serialization passed; its force remains excluded from scientific tables.
 6. **P1.6 campaign and analysis** — execute once, retain all cases, run
    deterministic analysis twice and evaluate G1.
 
@@ -286,9 +288,9 @@ paper's claim scope.
 - preserve the mixed pre-P0 user worktree outside P1 staging;
 - do not treat T13–T14.1 as `confirmatory_new`.
 
-## Current P1.4 gate
+## Current P1.5 gate
 
-`GO_P1.5_PILOT`. Only the single `development` pilot is authorized. The
-102-case confirmatory campaign remains blocked and wholly disabled. P1.4
-authorizes no pilot execution in this commit, no campaign, no production force
-and no result artifact; execution must stop for audit before P1.5.
+`GO_P1.6A_BLIND_FREEZE`. The P1.5 resource measurement and controlled failure
+serialization are valid. The 102-case confirmatory campaign remains blocked
+and wholly disabled. No P1.6 freeze or execution is authorized by this commit;
+stop for audit.
