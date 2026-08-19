@@ -13,6 +13,13 @@ the separate one-case `development` pilot manifest are valid, planned and
 fully disabled; final hashes and enablement remain deferred to P1.4. This does
 not authorize a solve.
 
+P1.2 status (2026-08-13): `solve_model_be_nodal` now implements the
+independently converged isolated-dimer sum with deterministic pair records and
+all-or-nothing global eligibility. It reuses Model E, the frozen convergence
+helpers and centralized established numerical gates. Only injected fake
+solvers are used by P1.2-specific tests. The physical/common-order audits
+remain P1.3, and all manifests remain disabled.
+
 ## Paper question and intended answer
 
 Question: when and why does the pairwise nodal Silva–Bruus interaction cease
@@ -76,8 +83,11 @@ motivate design and appear as `exploratory`, `development`, or
   (`src/acoustic_ms/silva_bruus.py::nodal_pair_force_on_probe`).
 - Historical B keeps its old Rayleigh meaning
   (`src/acoustic_ms/comparison.py::compare_nodal_force_models`).
-- \(B_E\) is reserved for the future sum of independently converged isolated
-  Model-E dimer interaction forces. It does not yet exist.
+- \(B_E\) is the importable sum of independently converged isolated Model-E
+  dimer interaction forces
+  (`src/acoustic_ms/model_be.py::solve_model_be_nodal`). Its unit-level API
+  exists, but its physical validation remains assigned to P1.3 and it has
+  produced no campaign response.
 - C is global dipolar Model C
   (`src/acoustic_ms/force.py::solve_rayleigh_nodal_interaction_forces`).
 - D is the multipolar leading-Rayleigh bridge

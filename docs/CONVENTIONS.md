@@ -389,6 +389,62 @@ requested truncation; coefficients of order \(L_{\max}+1\) are never
 invented. Convergence requires two consecutive applicable changes not
 exceeding \(10^{-5}\), separately for each force channel.
 
+## P1.2 complete-dimer Model-E baseline
+
+The new editorial baseline is
+
+\[
+\mathbf F_i^{B_E}
+=
+\sum_{j\ne i}\mathbf F_i^{E,\{i,j\}},
+\]
+
+where each unordered pair \((i,j)\), \(i<j\), is solved as an isolated
+two-particle Model-E problem. Historical Model B remains the isolated
+Rayleigh \(L=1\) sum and \(B_L\) remains the order-matched leading-Rayleigh
+diagnostic; neither name nor implementation is changed.
+
+`solve_model_be_nodal` preserves the original particle indices and passes
+the two original Cartesian positions to Model E in the order \((i,j)\). Pair
+records are emitted in lexicographic \((i,j)\) order. The force contributed to
+\(B_E\) is exactly the pair's final Model-E `interaction_forces_xyz`, with
+its first row accumulated on particle \(i\) and its second row on particle
+\(j\). No coordinate rotation, sign reconstruction or action--reaction
+assumption is used by the aggregator.
+
+Each pair evaluates its own integer sequence
+\(L_{\max}=2,\ldots,21\). It cannot stop before \(L_{\max}=5\) and stops only
+after total, interaction, external--scattered and scattered--scattered force
+channels have each closed two consecutive applicable normalized RMS changes
+at or below \(10^{-5}\). A numerically null channel retains
+`applicable=false` and does not fabricate a relative error.
+
+At every evaluated order, `confirmed` describes only the final two changes:
+both must be applicable and at or below the tolerance simultaneously for all
+applicable channels. An earlier passing window does not remain confirmed if a
+later order varies again. `confirmation_lmax` separately retains the first
+historical passing window for auditability.
+
+The final pair result must also pass the established Model-E gates:
+`balanced_sqrt`, finite force/coefficient/diagnostic values, balanced
+condition number below 10, balanced backward error and the three
+closure/decomposition residuals below \(10^{-12}\), consistent mode
+dimension, and the scale-relative planar \(F_z\) tolerance. These gates are
+implemented once in `evaluate_model_e_numerical_diagnostics` and reused by
+\(B_E\).
+
+`ModelBEResult.pair_ledger` retains every attempted pair, its two individual
+dimer forces, attempted/evaluated/final/failed orders, channel histories,
+applicability, convergence, diagnostics and explicit failure stage/reason.
+A failure is local to its pair and later pairs are still audited. Global
+`eligible` is true only if every pair is eligible; otherwise
+`forces_xyz=None`, so no partial or imputed \(B_E\) vector can escape.
+
+P1.2 defines and unit-tests this orchestration contract with an injected fake
+solver. Common-order sensitivity, full physical dimer identities,
+rotation/reflection, action--reaction and asymptotic-limit evidence remain
+assigned to P1.3.
+
 ## T12 Model-E sentinel comparisons
 
 The T12 reference is the interaction force

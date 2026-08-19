@@ -285,3 +285,35 @@
 - P1.1 adds no `B_E` code, solver runner, force output or campaign response.
   All 103 cases across the two manifests remain disabled, hashes remain `TBD`
   until P1.4, and the gate is `HOLD_P1 — P1.2, P1.3 AND P1.4 REQUIRED`.
+
+
+## P1.2 decisions
+
+- P1.1 was finalized from PR #2 only after its head was confirmed at
+  `24ec933f366cb4950ad4050d83ce804d89d4eb43`. It was marked ready and merged
+  with merge commit `4a5b58408dc40302568758b2bdea54701beb4747`.
+- \(B_E\) is implemented by `solve_model_be_nodal` as the sum of the final
+  Model-E `interaction_forces_xyz` from every isolated unordered pair
+  \(i<j\), preserving original particle orientation and index association.
+- Pair order is lexicographic and deterministic. Each pair converges
+  independently over orders 2--21 and cannot stop before 5. At the current
+  order, `confirmed` requires that the two most recent changes be applicable
+  and pass simultaneously in every applicable channel; an older passing
+  window cannot survive a later variation. Numerically null channels retain
+  explicit non-applicability and remain exempt. `confirmation_lmax` preserves
+  only the first historical passing window for auditability.
+- The established Model-E finite, conditioning, residual, mode-dimension and
+  planar gates are centralized in
+  `evaluate_model_e_numerical_diagnostics` and reused; their scientific
+  thresholds are unchanged.
+- The ledger records individual dimer forces, attempted/evaluated/final/failed
+  orders, full channel histories, diagnostics and explicit failure reasons.
+  Later pairs are audited after a local failure, but the global force is
+  unavailable unless every pair is eligible. No partial force is imputed.
+- Historical Model B and \(B_L\) are unchanged. Manifests remain disabled and
+  no pilot, campaign, production calculation, `results/` or `papers/` output
+  is part of P1.2.
+- Unit tests use injected fake solvers. Full physical identities,
+  common-order sensitivity, rotation/reflection, action--reaction and
+  asymptotic limits remain assigned to P1.3. The implementation decision is
+  `GO_P1.3`; this does not authorize P1.4 or any execution.

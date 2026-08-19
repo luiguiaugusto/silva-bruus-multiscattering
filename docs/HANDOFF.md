@@ -2524,3 +2524,68 @@ nor campaign, generated no force and changed no path under `results/` or
 `papers/`. P1.2--P1.6 remain unopened. The focused manifest suite passed
 **26 tests in 0.52 s**; the complete suite passed **493 tests in 87.08 s** with
 warnings treated as errors.
+
+
+## P1.2 — independently converged complete-dimer API
+
+P1.1 was finalized from PR #2 after confirming its exact head
+`24ec933f366cb4950ad4050d83ce804d89d4eb43`. The PR was marked ready and
+merged into `main` as merge commit
+`4a5b58408dc40302568758b2bdea54701beb4747`. P1.2 was then developed from
+that updated `main` on `agent/p1-2-be-api` in an isolated clean worktree, so
+the pre-existing changes in the original checkout remained untouched.
+
+The new public entry point is:
+
+```python
+solve_model_be_nodal(
+    positions_xyz, k, radius, energy_density, f0, f1, *,
+    lmax_min=2, lmax_max=21, minimum_stop_lmax=5,
+    convergence_tolerance=1.0e-5,
+    solver=solve_model_e_nodal,
+) -> ModelBEResult
+```
+
+For every lexicographically ordered pair \(i<j\), the API sends the original
+two positions to Model E in that orientation and independently evaluates
+orders until all applicable force channels have two-step convergence, never
+before order 5. The final interaction-force rows are associated directly with
+particles \(i\) and \(j\); no action--reaction assumption or frame rotation is
+introduced.
+
+The P1.2 follow-up fixes the distinction between historical and current
+convergence. `confirmation_lmax` retains the first historical two-step pass,
+whereas `confirmed` is true only when the two most recent changes at the
+current order are both applicable and within tolerance. The solver stops only
+when all applicable channels are simultaneously confirmed in that final
+window. A nonmonotonic fake channel that first confirms at order 4, varies at
+order 5 and stays fixed thereafter is unconfirmed at the cap 6; with one more
+unchanged step it reconfirms and stops at order 7.
+
+`ModelBEResult` returns the global \(B_E\) vector only when all pairs are
+eligible. Its deterministic ledger retains each pair's individual dimer
+forces, attempted/evaluated/final/failed orders, channel histories,
+applicability, convergence, final numerical diagnostics and explicit failure
+stage/reason. Pair failures do not suppress later ledger entries, but no
+partial or imputed global force is exposed.
+
+The established Model-E gate is centralized in
+`evaluate_model_e_numerical_diagnostics` and reused without changing its
+thresholds. Position, physical parameter, order, tolerance, rigid sentinel,
+non-overlap and planarity checks run before pair evaluation. Historical Model
+B in `comparison.py` and \(B_L\) in `transferability.py` were not modified.
+
+The P1.2-specific suite uses only injected fake solvers and passed **33 tests
+in 0.57 s**. It covers vector accumulation, original orientation,
+lexicographic pair order, independent final orders, null-channel
+applicability, deterministic repetition, local and malformed-solver failures,
+all-or-nothing global eligibility, input validation, and every established
+numerical gate. The complete repository suite passed **526 tests in 97.16 s**
+with warnings treated as errors.
+
+No pilot, campaign or production calculation ran. All confirmatory and
+development cases remain disabled, hashes remain deferred to P1.4, and no
+path under `results/` or `papers/` changed. Full physical dimer identities,
+common-order sensitivity, rotation/reflection, action--reaction and
+asymptotic-limit tests remain P1.3. The handoff decision is `GO_P1.3`; it does
+not authorize P1.4 or campaign execution.
