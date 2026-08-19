@@ -2589,3 +2589,47 @@ path under `results/` or `papers/` changed. Full physical dimer identities,
 common-order sensitivity, rotation/reflection, action--reaction and
 asymptotic-limit tests remain P1.3. The handoff decision is `GO_P1.3`; it does
 not authorize P1.4 or campaign execution.
+
+
+## P1.3 finalized and P1.4 response-blind manifest freeze
+
+PR #4 was finalized after its rigid P1.3a pair was shown to be exactly the
+P1.5 pilot under a common translation. It was merged as
+`20ffb8726c2517ecacc580ed16223077e9b0ab08`. The unchanged convergence policy
+therefore predicts `unconfirmed_at_21` for the pilot; this is a controlled
+resource/failure-serialization outcome, not an extrapolated scientific force.
+
+P1.4 starts from that merge and introduces no solver import in its manifest
+module, no solve and no response. `manifest_sha256(exact_bytes)` replaces
+only the raw value of `provenance.manifest_sha256` with 64 ASCII zeroes and
+hashes all resulting UTF-8 bytes with SHA-256. `verify_manifest_sha256`
+checks the stored value and an optional external lock.
+`validate_manifest_file` applies the immutable public P1 lock, while
+`validate_executable_manifest_file` additionally requires the caller to
+name the expected campaign, requires `status=preregistered` and refuses a
+manifest with no enabled cases. Planned schema-1.0 manifests remain valid and
+non-executable.
+
+The response-blind locks are:
+
+- confirmatory:
+  `9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca`;
+- P1.5 pilot:
+  `d8f56ce20f6f0821d84fd6f36e1f76c855f63f55d809ba9a7201ba52097a43bf`.
+
+Both manifests are `preregistered` and retain
+`limits_status=provisional`. All 102 confirmatory IDs, their order, physical
+parameters, numerical policy and six rotational twin links are unchanged and
+disabled. The pilot has exactly one enabled case and authorizes only P1.5.
+The confirmatory campaign remains blocked.
+
+P1.5 must retain `unconfirmed_at_21` as an acceptable pilot outcome and
+record wall/timing components, peak memory, attempts, evaluated/final orders
+and failure reason. Eligibility and a confirmed force are not required for
+pilot success. Its force is excluded from scientific tables. The corresponding
+rigid confirmatory case remains in the campaign and, if inelegible, must be
+retained without imputation.
+
+No P1.5 pilot or P1.6 campaign was executed, and no file under `results/` or
+`papers/` was created or modified. The handoff decision is
+`GO_P1.5_PILOT`; stop before pilot execution for audit.

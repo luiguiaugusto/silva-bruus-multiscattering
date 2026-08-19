@@ -1,19 +1,20 @@
 # Paper execution plan
 
-Status: **P1.2 API complete; P1 disabled pending P1.3--P1.4**. No pilot,
-campaign or production solve is authorized by this file.
+Status: **P1.4 complete; only the P1.5 resource pilot is authorized**.
+The 102-case confirmatory campaign remains blocked. No pilot, campaign or
+production response has been executed.
 
 P0 was merged through PR #1 at merge commit
-`926e639fe2d327eacd09a2542208500891399687`. The P1.1 decision surface is
-recorded in `docs/P1_1_DIMER_DECISION_RECORD.md`. The `1.1.0` confirmatory
-manifest freezes 102 ordered IDs, while a separate `development` manifest
-freezes the one-case resource pilot. Every case remains disabled and both
-hashes remain `TBD` until P1.4.
+`926e639fe2d327eacd09a2542208500891399687`. P1.1 froze the 102 IDs and the
+separate pilot; P1.2 implemented `B_E`; P1.3 was finalized through PR #4 at
+merge commit `20ffb8726c2517ecacc580ed16223077e9b0ab08`.
 
-P1.1 was finalized through PR #2 at merge commit
-`4a5b58408dc40302568758b2bdea54701beb4747`. P1.2 adds only the importable
-\(B_E\) orchestration API, reusable Model-E numerical gates and fake-solver
-unit tests.
+P1.4 makes both manifests `preregistered`. The confirmatory manifest remains
+wholly disabled with hash
+`9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca`.
+Only the one-case `development` pilot is enabled, with hash
+`d8f56ce20f6f0821d84fd6f36e1f76c855f63f55d809ba9a7201ba52097a43bf`.
+Limits remain provisional and the pilot is excluded from scientific tables.
 
 ## Dependency chain
 
@@ -73,16 +74,19 @@ Small tasks:
    independently converges isolated Model-E pairs, retains a deterministic
    failure ledger and exposes a global vector only when all pairs are
    eligible; historical B and \(B_L\) are unchanged.
-3. **P1.3 formula/validation tests** — isolated dimer identity, permutation,
-   action–reaction where physically applicable, rotation/reflection, limiting
-   behavior, non-overlap and invalid inputs; include the deferred common-order
-   sensitivity audit for independently converged pairs.
-4. **P1.4 blind manifest** — generate final hashes, audit the frozen IDs and
-   perform any authorized disabled-to-enabled transition in a dedicated
-   response-blind commit.
-5. **P1.5 timed pilot** — execute only the separate `development` rigid case
-   at \(ka=0.1,d/a=2.1,\theta=0\); its force cannot enter P1.6 scientific
-   tables.
+3. **P1.3 formula/validation tests** — complete. The physical invariants,
+   hierarchical Eq. (30) decomposition and distinct-order common-order audit
+   are recorded in `docs/P1_3_PHYSICAL_VALIDATION.md`. The original G7 remains
+   a documented strict xfail because it compares non-equivalent observables;
+   the equivalent modal gates pass.
+4. **P1.4 blind manifest** — complete. Exact-byte hashes, the immutable public
+   locks and the 102-case/twin audit pass. The confirmatory manifest is wholly
+   disabled; only the separate one-case pilot is enabled. No solve occurred.
+5. **P1.5 timed pilot** — authorized as the next and only execution. Execute
+   the separate `development` rigid case at
+   \(ka=0.1,d/a=2.1,\theta=0\). `unconfirmed_at_21` is an acceptable resource
+   and controlled-failure outcome. Record timing, peak memory, attempts, final
+   orders and failure reason; its force cannot enter P1.6 scientific tables.
 6. **P1.6 campaign and analysis** — execute once, retain all cases, run
    deterministic analysis twice and evaluate G1.
 
@@ -282,8 +286,9 @@ paper's claim scope.
 - preserve the mixed pre-P0 user worktree outside P1 staging;
 - do not treat T13–T14.1 as `confirmatory_new`.
 
-## Current P1.2 gate
+## Current P1.4 gate
 
-`GO_P1.3 — P1.3 AND P1.4 REQUIRED BEFORE EXECUTION`. P1.3 through P1.6
-remain unopened. P1.2 authorizes no pilot, campaign, production force, result
-artifact, manifest enablement or final manifest hash.
+`GO_P1.5_PILOT`. Only the single `development` pilot is authorized. The
+102-case confirmatory campaign remains blocked and wholly disabled. P1.4
+authorizes no pilot execution in this commit, no campaign, no production force
+and no result artifact; execution must stop for audit before P1.5.

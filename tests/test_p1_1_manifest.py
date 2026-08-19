@@ -66,8 +66,8 @@ def test_confirmatory_manifest_freezes_exact_grid_ids_and_order() -> None:
 
     assert document["schema_version"] == "1.1.0"
     assert document["classification"] == "confirmatory_new"
-    assert document["status"] == "planned"
-    assert document["provenance"]["manifest_sha256"] == "TBD"
+    assert document["status"] == "preregistered"
+    assert document["provenance"]["manifest_sha256"] == "9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca"
     assert len(cases) == 102
     assert tuple(case["case_id"] for case in cases) == expected_ids
     assert tuple(case["case_order"] for case in cases) == tuple(range(1, 103))
@@ -209,18 +209,18 @@ def test_numerical_and_provisional_resource_policy_is_frozen_but_disabled() -> N
     }
 
 
-def test_resource_pilot_is_separate_disabled_development_evidence() -> None:
+def test_resource_pilot_is_separate_enabled_p1_5_development_evidence() -> None:
     campaign = validate_manifest_file(CAMPAIGN, kind="campaign")
     pilot = validate_manifest_file(PILOT, kind="campaign")
     case = pilot["cases"][0]
     parameters = case["parameters"]
 
     assert pilot["classification"] == "development"
-    assert pilot["status"] == "planned"
-    assert pilot["provenance"]["manifest_sha256"] == "TBD"
+    assert pilot["status"] == "preregistered"
+    assert pilot["provenance"]["manifest_sha256"] == "d8f56ce20f6f0821d84fd6f36e1f76c855f63f55d809ba9a7201ba52097a43bf"
     assert len(pilot["cases"]) == 1
     assert case["case_id"] == "p1_pilot_rigid_ka010_d0210_t000"
-    assert case["enabled"] is False
+    assert case["enabled"] is True
     assert parameters["material_model"] == "rigid"
     assert parameters["f1"] == 1.0
     assert parameters["f0_applicable"] is False

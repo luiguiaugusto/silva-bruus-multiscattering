@@ -8,17 +8,31 @@ resolved in a versioned protocol before the associated campaign starts.
 
 P1.1 status (2026-08-13): `docs/P1_1_DIMER_DECISION_RECORD.md` freezes the
 dimer decisions and 102 ordered confirmatory IDs. The compatible schema
-`1.1.0` stores physical sweep values per case. The confirmatory manifest and
-the separate one-case `development` pilot manifest are valid, planned and
-fully disabled; final hashes and enablement remain deferred to P1.4. This does
-not authorize a solve.
+`1.1.0` stores physical sweep values per case. At that checkpoint, the
+confirmatory manifest and the separate one-case `development` pilot manifest
+were valid, planned and fully disabled; final hashes and enablement were
+deferred to P1.4. P1.1 authorized no solve.
 
 P1.2 status (2026-08-13): `solve_model_be_nodal` now implements the
 independently converged isolated-dimer sum with deterministic pair records and
 all-or-nothing global eligibility. It reuses Model E, the frozen convergence
 helpers and centralized established numerical gates. Only injected fake
 solvers are used by P1.2-specific tests. The physical/common-order audits
-remain P1.3, and all manifests remain disabled.
+were deferred to P1.3; at the P1.2 checkpoint, all manifests remained
+disabled.
+
+P1.3 status (2026-08-19): physical and hierarchical validation is complete.
+PR #4 was merged as `20ffb8726c2517ecacc580ed16223077e9b0ab08`.
+The rigid `ka=0.1,d/a=2.1,theta=0` pair is exactly the P1.5 pilot under
+translation and is expected to be `unconfirmed_at_21`; this remains valid
+resource/failure evidence but not a scientific force.
+
+P1.4 status (2026-08-19): both exact-byte hashes are final. The 102-case
+confirmatory manifest is `preregistered` and wholly disabled. The separate
+one-case pilot is `preregistered`, exclusively enabled for P1.5 and excluded
+from scientific tables. Resource limits remain provisional. This freeze
+authorizes only the timed P1.5 pilot; the confirmatory campaign stays blocked,
+and no solve or response has been generated.
 
 ## Paper question and intended answer
 
@@ -208,10 +222,10 @@ Exact numerical thresholds are **TBD** unless already physical identities.
 
 Luigui and ChatGPT Work must decide:
 
-1. P1.1 is resolved: grid, orientations, materials, \(ka\), ordered IDs and
-   convergence policy are frozen but disabled until P1.4.
-2. P1 uses independently confirmed pair orders; the common-order sensitivity
-   audit is assigned to P1.3.
+1. P1.1--P1.4 are resolved: the grid, policy, hashes and enablement are frozen;
+   only the separate P1.5 pilot is enabled and the campaign remains blocked.
+2. P1 uses independently confirmed pair orders; P1.3 completed the
+   common-order sensitivity audit.
 3. P2 counts/families/subset reuse and feasibility of \(\Phi_E^{(5)}\).
 4. Which prior data may inform P3 and exact group/split construction.
 5. Predictor hierarchy, fit, safety factor, tolerances and coverage minima.

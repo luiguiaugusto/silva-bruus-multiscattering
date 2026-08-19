@@ -92,8 +92,9 @@ from .large_n_validation import (
     large_n_template, local_coupling_statistics, local_geometric_coupling,
 )
 from .paper_pipeline import (
-    ManifestValidationError, load_json_yaml, validate_manifest,
-    validate_manifest_file,
+    ManifestValidationError, P1_FROZEN_MANIFEST_SHA256, load_json_yaml,
+    manifest_file_sha256, manifest_sha256, validate_executable_manifest_file,
+    validate_manifest, validate_manifest_file, verify_manifest_sha256,
 )
 from .plot_style import (
     ACCESSIBLE_COLORS, MM_PER_INCH, ONE_COLUMN_MM, REDUNDANT_MARKERS,
@@ -299,9 +300,14 @@ __all__ = [
     "local_coupling_statistics",
     "local_geometric_coupling",
     "ManifestValidationError",
+    "P1_FROZEN_MANIFEST_SHA256",
     "load_json_yaml",
+    "manifest_file_sha256",
+    "manifest_sha256",
+    "validate_executable_manifest_file",
     "validate_manifest",
     "validate_manifest_file",
+    "verify_manifest_sha256",
     "ACCESSIBLE_COLORS",
     "MM_PER_INCH",
     "ONE_COLUMN_MM",

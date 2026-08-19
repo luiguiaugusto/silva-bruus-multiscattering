@@ -209,9 +209,21 @@ The example `campaigns/templates/figure_manifest.example.yaml` validates via
 ## Provenance and immutability
 
 `created_utc` is RFC-3339 UTC (`YYYY-MM-DDTHH:MM:SSZ`). `git_commit` is the
-40-character source commit. The manifest is hashed from exact bytes after
-response-blind fields freeze; `TBD` is allowed only while `status=planned`
-and cannot start a campaign.
+40-character source commit. Campaign-manifest hashes use SHA-256 over the exact
+UTF-8 file bytes after replacing **only** the raw value of
+`provenance.manifest_sha256` by 64 ASCII zeroes. Whitespace, line endings,
+ordering, the final newline and every other byte are preserved. This single
+normalization avoids an impossible self-referential digest; the stored value
+must equal the recalculated digest and, for frozen P1 manifests, the immutable
+public lock in `P1_FROZEN_MANIFEST_SHA256`.
+
+`manifest_sha256`, `manifest_file_sha256` and `verify_manifest_sha256` expose
+the calculation and verification. `validate_executable_manifest_file` also
+requires `status=preregistered`, the expected campaign identity, a valid public
+lock, no `TBD` anywhere and at least one enabled case. Therefore the frozen
+confirmatory manifest is valid but non-executable, while only the P1.5 pilot is
+authorized. A non-planned manifest containing `TBD`, including a hash of `TBD`,
+is rejected. Schema 1.0 planned examples remain compatible and non-executable.
 
 Each layer records upstream path and SHA-256. Final archives contain:
 
