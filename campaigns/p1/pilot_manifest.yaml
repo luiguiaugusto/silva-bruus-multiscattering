@@ -1,14 +1,14 @@
 {
   "schema_version": "1.1.0",
   "campaign_id": "p1_dimer_resource_pilot",
-  "title": "P1 rigid worst-cost resource pilot — separate development evidence",
+  "title": "P1 rigid worst-cost resource pilot — P1.5-only authorization",
   "classification": "development",
-  "status": "planned",
+  "status": "preregistered",
   "created_utc": "2026-08-13T15:00:00Z",
   "provenance": {
-    "git_commit": "feaab6b352996c1001ecaefea0afd978b46754e2",
-    "task": "P1.1 D14 pilot selection; execution remains disabled",
-    "manifest_sha256": "TBD"
+    "git_commit": "20ffb8726c2517ecacc580ed16223077e9b0ab08",
+    "task": "P1.4 response-blind freeze; authorizes only P1.5 resource pilot",
+    "manifest_sha256": "d8f56ce20f6f0821d84fd6f36e1f76c855f63f55d809ba9a7201ba52097a43bf"
   },
   "physical": {
     "radius_m": 1,
@@ -51,7 +51,7 @@
       "case_order": 1,
       "particle_count": 2,
       "family": "resource_pilot",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,

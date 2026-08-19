@@ -1,14 +1,14 @@
 {
   "schema_version": "1.1.0",
   "campaign_id": "p1_dimer_confirmatory",
-  "title": "P1 canonical dimer confirmatory grid — frozen IDs, disabled until P1.4",
+  "title": "P1 canonical dimer confirmatory grid — response-blind frozen and blocked",
   "classification": "confirmatory_new",
-  "status": "planned",
+  "status": "preregistered",
   "created_utc": "2026-08-13T15:00:00Z",
   "provenance": {
-    "git_commit": "feaab6b352996c1001ecaefea0afd978b46754e2",
-    "task": "P1.1 scientific decisions and ordered case IDs; hash and enablement deferred to P1.4",
-    "manifest_sha256": "TBD"
+    "git_commit": "20ffb8726c2517ecacc580ed16223077e9b0ab08",
+    "task": "P1.4 response-blind freeze; confirmatory execution remains blocked",
+    "manifest_sha256": "9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca"
   },
   "physical": {
     "radius_m": 1,

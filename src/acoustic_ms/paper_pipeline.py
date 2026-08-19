@@ -7,11 +7,14 @@ no runtime YAML or JSON-Schema dependency is introduced.
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
 import math
 from pathlib import Path
 import re
 import sys
+from types import MappingProxyType
 from typing import Any, Mapping
 
 
@@ -25,6 +28,23 @@ _CAMPAIGN_SCHEMA_BY_VERSION = {
 }
 _FIGURE_SCHEMA = "figure_manifest.schema.json"
 _MANIFEST_KINDS = ("campaign", "figure")
+_ZERO_MANIFEST_SHA256 = "0" * 64
+_MANIFEST_SHA256_PATTERN = re.compile(
+    rb'(?P<prefix>"manifest_sha256"[ \t\r\n]*:[ \t\r\n]*")'
+    rb"(?P<value>TBD|[0-9a-f]{64})"
+    rb'(?P<suffix>")'
+)
+
+P1_FROZEN_MANIFEST_SHA256 = MappingProxyType(
+    {
+        "p1_dimer_confirmatory": (
+            "9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca"
+        ),
+        "p1_dimer_resource_pilot": (
+            "d8f56ce20f6f0821d84fd6f36e1f76c855f63f55d809ba9a7201ba52097a43bf"
+        ),
+    }
+)
 
 
 def load_json_yaml(path: str | Path) -> dict[str, Any]:
@@ -40,6 +60,100 @@ def load_json_yaml(path: str | Path) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ManifestValidationError("manifest root must be an object")
     return value
+
+
+def _normalized_manifest_bytes(
+    exact_bytes: bytes,
+) -> tuple[bytes, str, dict[str, Any]]:
+    """Return exact bytes with only the embedded hash value normalized."""
+
+    if not isinstance(exact_bytes, bytes):
+        raise TypeError("exact_bytes must be bytes")
+    try:
+        decoded = exact_bytes.decode("utf-8")
+        document = json.loads(decoded)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ManifestValidationError(
+            f"manifest bytes must be exact UTF-8 JSON-compatible YAML: {exc}"
+        ) from exc
+    if not isinstance(document, dict):
+        raise ManifestValidationError("manifest root must be an object")
+    try:
+        stored = document["provenance"]["manifest_sha256"]
+    except (KeyError, TypeError) as exc:
+        raise ManifestValidationError(
+            "manifest provenance.manifest_sha256 is required for hashing"
+        ) from exc
+    if not isinstance(stored, str):
+        raise ManifestValidationError(
+            "manifest provenance.manifest_sha256 must be a string"
+        )
+
+    matches = list(_MANIFEST_SHA256_PATTERN.finditer(exact_bytes))
+    if len(matches) != 1:
+        raise ManifestValidationError(
+            "manifest must contain exactly one JSON manifest_sha256 field"
+        )
+    match = matches[0]
+    raw_value = match.group("value").decode("ascii")
+    if raw_value != stored:
+        raise ManifestValidationError(
+            "raw manifest_sha256 bytes do not match the parsed provenance value"
+        )
+    normalized = (
+        exact_bytes[: match.start("value")]
+        + _ZERO_MANIFEST_SHA256.encode("ascii")
+        + exact_bytes[match.end("value") :]
+    )
+    return normalized, stored, document
+
+
+def manifest_sha256(exact_bytes: bytes) -> str:
+    """Hash exact UTF-8 bytes after zeroing only the embedded hash value.
+
+    The 64 ASCII zeroes avoid self-reference. Every other byte, including
+    whitespace and the final newline, remains part of the SHA-256 input.
+    """
+
+    normalized, _, _ = _normalized_manifest_bytes(exact_bytes)
+    return hashlib.sha256(normalized).hexdigest()
+
+
+def manifest_file_sha256(path: str | Path) -> str:
+    """Return :func:`manifest_sha256` for the exact bytes of one file."""
+
+    manifest_path = Path(path)
+    try:
+        exact_bytes = manifest_path.read_bytes()
+    except OSError as exc:
+        raise ManifestValidationError(
+            f"cannot read manifest bytes from {manifest_path}: {exc}"
+        ) from exc
+    return manifest_sha256(exact_bytes)
+
+
+def verify_manifest_sha256(
+    exact_bytes: bytes, *, expected_sha256: str | None = None
+) -> str:
+    """Verify the stored self-hash and an optional external frozen digest."""
+
+    normalized, stored, _ = _normalized_manifest_bytes(exact_bytes)
+    if stored == "TBD":
+        raise ManifestValidationError(
+            "provenance.manifest_sha256: TBD cannot authorize execution"
+        )
+    digest = hashlib.sha256(normalized).hexdigest()
+    if not hmac.compare_digest(stored, digest):
+        raise ManifestValidationError(
+            "provenance.manifest_sha256: stored hash does not match exact bytes"
+        )
+    if expected_sha256 is not None and not hmac.compare_digest(
+        digest, expected_sha256
+    ):
+        raise ManifestValidationError(
+            "provenance.manifest_sha256: digest differs from frozen public lock"
+        )
+    return digest
 
 
 def _matches_type(value: object, expected: str) -> bool:
@@ -149,6 +263,19 @@ def validate_manifest(
         raise ManifestValidationError("manifest validation failed:\n- " + "\n- ".join(errors))
 
 
+def _tbd_paths(value: object, path: str = "$") -> list[str]:
+    paths: list[str] = []
+    if isinstance(value, str) and "TBD" in value:
+        paths.append(path)
+    elif isinstance(value, Mapping):
+        for key, item in value.items():
+            paths.extend(_tbd_paths(item, f"{path}.{key}"))
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            paths.extend(_tbd_paths(item, f"{path}[{index}]"))
+    return paths
+
+
 def _campaign_common_errors(manifest: Mapping[str, Any]) -> list[str]:
     """Return semantic errors shared by campaign schema versions."""
 
@@ -159,12 +286,10 @@ def _campaign_common_errors(manifest: Mapping[str, Any]) -> list[str]:
     case_ids = [case["case_id"] for case in manifest["cases"]]
     if len(case_ids) != len(set(case_ids)):
         errors.append("$.cases: case_id values must be unique")
-    if (
-        manifest["status"] != "planned"
-        and manifest["provenance"]["manifest_sha256"] == "TBD"
-    ):
-        errors.append(
-            "$.provenance.manifest_sha256: TBD is allowed only for planned status"
+    if manifest["status"] != "planned":
+        errors.extend(
+            f"{path}: TBD is allowed only for planned status"
+            for path in _tbd_paths(manifest)
         )
     return errors
 
@@ -321,6 +446,7 @@ def validate_manifest_file(
 ) -> dict[str, Any]:
     """Load and validate a campaign or figure manifest, returning its mapping."""
 
+    manifest_path = Path(manifest_path)
     if kind not in _MANIFEST_KINDS:
         raise ValueError(f"kind must be one of {list(_MANIFEST_KINDS)}")
     if schema_directory is None:
@@ -337,4 +463,48 @@ def validate_manifest_file(
         schema_name = _FIGURE_SCHEMA
     schema = load_json_yaml(Path(schema_directory) / schema_name)
     validate_manifest(manifest, schema)
+    if (
+        kind == "campaign"
+        and manifest["provenance"]["manifest_sha256"] != "TBD"
+    ):
+        try:
+            exact_bytes = manifest_path.read_bytes()
+        except OSError as exc:
+            raise ManifestValidationError(
+                f"cannot read manifest bytes from {manifest_path}: {exc}"
+            ) from exc
+        expected = P1_FROZEN_MANIFEST_SHA256.get(str(manifest["campaign_id"]))
+        verify_manifest_sha256(exact_bytes, expected_sha256=expected)
+    return manifest
+
+
+def validate_executable_manifest_file(
+    manifest_path: str | Path,
+    *,
+    expected_campaign_id: str,
+    schema_directory: str | Path | None = None,
+) -> dict[str, Any]:
+    """Validate an immutable preregistration before any execution.
+
+    Callers must name the expected campaign explicitly. A valid frozen hash is
+    necessary but not sufficient: at least one case must be enabled.
+    """
+
+    manifest = validate_manifest_file(
+        manifest_path,
+        kind="campaign",
+        schema_directory=schema_directory,
+    )
+    if manifest["campaign_id"] != expected_campaign_id:
+        raise ManifestValidationError(
+            "campaign_id does not match the explicitly authorized campaign"
+        )
+    if manifest["status"] != "preregistered":
+        raise ManifestValidationError(
+            "manifest status must be preregistered before execution"
+        )
+    if manifest["provenance"]["manifest_sha256"] == "TBD":
+        raise ManifestValidationError("TBD hash cannot authorize execution")
+    if not any(case["enabled"] for case in manifest["cases"]):
+        raise ManifestValidationError("manifest has no enabled cases")
     return manifest

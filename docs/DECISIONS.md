@@ -317,3 +317,39 @@
   common-order sensitivity, rotation/reflection, action--reaction and
   asymptotic limits remain assigned to P1.3. The implementation decision is
   `GO_P1.3`; this does not authorize P1.4 or any execution.
+
+
+## P1.3 and P1.4 decisions
+
+- P1.3 was finalized through PR #4 and merged into `main` as merge commit
+  `20ffb8726c2517ecacc580ed16223077e9b0ab08`. The original G7 remains a
+  strict expected failure with unchanged inputs, tolerance and result; the
+  P1.3a decomposition demonstrates that it compares non-equivalent force and
+  modal objects. Equivalent-space gates and the distinct-order fallback pass.
+- The ineligible rigid pair from P1.3a is exactly the P1.5 pilot up to common
+  translation: `ka=0.1`, rigid API sentinel `f0=0`, `f1=1`, `d/a=2.1`,
+  `theta=0`. Because `B_E` solves isolated pairs, the pilot is expected to
+  reach `L=21` without confirmation under the unchanged policy. This is not
+  extrapolation.
+- Pilot success is operational: it must serialize timing, peak memory,
+  attempts, evaluated/final orders and the controlled failure reason.
+  `unconfirmed_at_21` is acceptable resource evidence. Eligibility or a
+  confirmed force is not required, and no pilot force may enter scientific
+  tables.
+- P1.4 hashes exact UTF-8 manifest bytes after replacing only
+  `provenance.manifest_sha256` by 64 ASCII zeroes. All whitespace and every
+  other byte remain in the SHA-256 input. The stored digest and public lock
+  must both match.
+- The confirmatory manifest is `preregistered`, remains entirely disabled
+  and is locked at
+  `9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca`.
+  The campaign remains blocked.
+- The one-case development pilot is `preregistered`, is the only enabled P1
+  case authorized by this step and is locked at
+  `d8f56ce20f6f0821d84fd6f36e1f76c855f63f55d809ba9a7201ba52097a43bf`.
+  It authorizes only P1.5.
+- Resource limits remain `provisional`. The equivalent rigid confirmatory
+  case remains in the 102-case campaign; if later inelegible, it is retained
+  with its failure record and no imputation.
+- Decision: `GO_P1.5_PILOT`. P1.4 runs no solver, pilot, campaign, response,
+  `results/` write or `papers/` write.

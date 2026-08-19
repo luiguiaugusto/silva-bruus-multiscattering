@@ -38,3 +38,11 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
   deterministic pair ledger, all-or-nothing eligibility and injected-solver
   unit tests; historical B/\(B_L\), disabled manifests and result trees remain
   unchanged, and P1.3--P1.6 remain unopened.
+
+- [x] P1.3 -- physical validation and P1.3a hierarchical audit of `B_E`;
+  the original G7 is preserved as strict xfail because it compares
+  non-equivalent modal/force objects, while equivalent gates and the
+  distinct-common-order fallback pass.
+- [x] P1.4 -- exact-byte response-blind SHA-256 locks published for both P1
+  manifests; all 102 confirmatory cases remain disabled and only the separate
+  P1.5 resource-pilot case is enabled. No pilot, campaign or response ran.
