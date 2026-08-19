@@ -121,8 +121,130 @@ limitação ou `NO_GO`, não tratada ajustando a tolerância.
 
 ## Evidência observada
 
-`PENDING_FIRST_EXECUTION`
+### Proveniência e execução
 
-Esta seção receberá parâmetros efetivamente executados, ordens finais,
-resíduos/diagnósticos, erros absolutos e relativos, resultados dos gates e as
-limitações físicas. O preenchimento não modifica o protocolo congelado.
+O protocolo foi congelado no commit `7d4287f`, antes de qualquer chamada real
+ao solver nesta etapa. A primeira execução efetiva, em 2026-08-19, usou
+
+```text
+python -m pytest -W error -q -s tests/test_model_be_physical.py
+```
+
+com o `src/` desta worktree explicitamente à frente do editable install. Não
+houve desvio dos parâmetros da tabela congelada. O teste focado terminou em
+`8 passed, 1 failed` em `61.57 s`; a única falha foi o gate analítico G7.
+
+### Ordens e diagnósticos Model E
+
+Na tabela, `cond`, `eta_b`, `eta_i` e `eta_s` são, respectivamente, o número de
+condição balanceado, o erro backward, o fechamento do campo incidente efetivo
+e o fechamento de espalhamento. Para casos com mais de um par registra-se o
+pior valor (máximo) entre pares. O resíduo de decomposição da força e
+`max|F_z|` foram exatamente zero em todos os pares.
+
+| Caso | Ordens finais por ledger | `cond` máx. | `eta_b` máx. | `eta_i` máx. | `eta_s` máx. | Gate numérico |
+|---|---:|---:|---:|---:|---:|---|
+| `DEV-GEO` | 12 | 1.0355591301298075 | 1.700e-17 | 1.094e-39 | 8.278e-17 | PASS |
+| `DEV-GEO-R` | 12 | 1.0355591301298077 | 2.281e-17 | 1.187e-39 | 8.279e-17 | PASS |
+| `DEV-GEO-M` | 12 | 1.0355591301298082 | 7.603e-18 | 1.764e-39 | 8.279e-17 | PASS |
+| `DEV-EQ30-LOW` | 12 | 1.0355041594420360 | 1.317e-17 | 9.436e-43 | 8.219e-17 | PASS |
+| `DEV-NULL` | 5 | 1.0000000000000000 | 0 | 0 | 0 | PASS |
+| `DEV-WEAK-1` | 10 | 1.0135604710482970 | 1.250e-17 | 1.644e-30 | 1.679e-16 | PASS |
+| `DEV-WEAK-2` | 10 | 1.0033392946563517 | 2.455e-17 | 1.701e-30 | 8.887e-17 | PASS |
+| `DEV-WEAK-3` | 10 | 1.0008317593369032 | 2.113e-17 | 9.315e-30 | 8.189e-17 | PASS |
+| `DEV-N3` | 11/11/11 | 1.0317431167040123 | 2.157e-17 | 3.868e-32 | 1.635e-16 | PASS |
+| `DEV-N3-P` | 11/11/11 | 1.0317431167040123 | 2.157e-17 | 3.868e-32 | 1.635e-16 | PASS |
+
+No `DEV-GEO`, as primeiras confirmações históricas e as duas mudanças da
+janela final foram:
+
+| Canal | `confirmation_lmax` | mudanças finais (`L=11`, `L=12`) | Janela final |
+|---|---:|---:|---|
+| total | 9 | 6.9082255e-8; 1.2661805e-8 | PASS |
+| interação | 9 | 6.9082255e-8; 1.2661805e-8 | PASS |
+| externo--espalhado | 8 | 1.0198199e-8; 1.8187132e-9 | PASS |
+| espalhado--espalhado | 12 | 3.2512807e-6; 5.9864128e-7 | PASS |
+
+As duas últimas mudanças de todos os canais aplicáveis são aplicáveis e
+menores que `1e-5`. Em `DEV-NULL`, os quatro canais são não aplicáveis, não
+confirmados e exatamente nulos; a dispensa levou corretamente à parada em
+`L=5`.
+
+### Erros, tendências e gates
+
+| Gate | Evidência observada | Resultado |
+|---|---|---|
+| G1 elegibilidade/diagnósticos | Todos os 14 registros de par foram elegíveis; `cond<1.036`, resíduos internos muito abaixo de `1e-12`, decomposição e `F_z` nulos. | PASS |
+| G2 identidade N=2 | `Delta_abs=0`, `Delta_rel=0` contra Model E direto em `L=12`. | PASS |
+| G3 rotação | `Delta_abs=9.5771819e-17`, `Delta_rel=2.1214999e-15`. | PASS |
+| G3 reflexão | `Delta_abs=3.0046292e-17`, `Delta_rel=6.6557371e-16`. | PASS |
+| G3 permutação | `Delta_abs=6.9388939e-18`, `Delta_rel=1.0202757e-16`. | PASS |
+| G4 planaridade | resíduo `0`, com escala de força `4.5143448e-2 N`. | PASS |
+| G4 radialidade | resíduo `2.3658474e-17 N`; `T_num=2.2577e-11 N`. | PASS |
+| G4 ação--reação | resíduo `1.8683544e-17 N`; mesmo `T_num`. | PASS |
+| G5 canais nulos | força exatamente nula, quatro canais não aplicáveis, `L=5`. | PASS |
+| G6 janela final | valores por canal na tabela anterior; todos simultaneamente confirmados. | PASS |
+| G7 fórmula de quinta ordem | ver tabela e análise abaixo. | **FAIL** |
+| G8 contraste fraco | correções absoluta e relativa estritamente decrescentes. | PASS |
+| G9 ordem comum | ordem comum 11; escala `6.8009991e-2 N`, orçamento `6.8009991e-6 N`, `Delta_abs=Delta_rel=0`; os três diagnósticos passaram. | PASS |
+
+Comparação com `corrected_nodal_pair_forces`, sem reimplementação:
+
+| `ka` | erro absoluto (N) | `Delta_rel` | envelope congelado `(ka)^2` |
+|---:|---:|---:|---:|
+| 0.04 | 1.1116140914e-3 | 2.4624040583e-2 | 1.6e-3 |
+| 0.02 | 1.1169435307e-3 | 2.4774407641e-2 | 4.0e-4 |
+
+O erro baixo não diminuiu: a razão `erro_baixo/erro_alto` é aproximadamente
+`1.0061`, fora de `[0.15,0.35]`, e ambos excedem o envelope congelado. O gate
+não foi ajustado. A documentação histórica explica que a Eq. (30) corresponde
+à redução Rayleigh estrita de ordens ímpares, enquanto Model D planar geral —
+e, por extensão, o Model E completo usado aqui — retém canais permitidos
+adicionais. Assim, o desvio quase constante não identifica instabilidade de
+`B_E`; ele mostra que a hipótese `O((ka)^2)` congelada não é válida para a
+comparação entre esses dois espaços de modelo. A fórmula continua sendo um
+oráculo truncado útil somente em seu domínio declarado, não uma igualdade para
+o Model E completo.
+
+Para o limite de contraste fraco:
+
+| `f1` | `R(B_E-A)` (N) | `Delta_rel(B_E,A)` | escala (N) |
+|---:|---:|---:|---:|
+| 0.32 | 2.2431083962e-4 | 1.3506513677e-2 | 1.6607604669e-2 |
+| 0.08 | 2.4398956585e-6 | 2.3771490039e-3 | 1.0263957600e-3 |
+| 0.02 | 2.4433017457e-8 | 3.8178235304e-4 | 6.3997241523e-5 |
+
+Não foi imposto erro percentual final; somente a tendência estrita
+pré-registrada foi testada.
+
+### Limitações e decisão
+
+- As afirmações geométricas valem apenas para esferas idênticas, fluido sem
+  perdas, plano nodal, domínio de não sobreposição e os casos pequenos
+  declarados; não são um teorema para materiais distintos ou forças totais.
+- A auditoria de ordem comum foi executada como especificado, mas os três pares
+  de `DEV-N3` convergiram todos em `L=11`; por isso o erro comum foi exatamente
+  zero e o caso não exercitou ordens finais distintas.
+- A tendência de contraste fraco contém três pontos e não constitui ajuste de
+  lei de potência nem extrapolação quantitativa ao limite.
+- O gate analítico pré-registrado falhou e não pode ser reparado por ajuste
+  pós-resposta. Uma nova comparação teria de ser pré-registrada explicitamente
+  para o espaço estrito de ordens ímpares, ou então tratar a Eq. (30) apenas
+  como diagnóstico com erro de truncamento de canais claramente separado.
+
+Decisão desta P1.3: **`NO_GO_P1.4`** até auditoria científica do gate G7 e da
+limitação de ordem comum. Nenhuma atividade da P1.4 foi iniciada.
+
+### Verificação final
+
+- Focado final: `8 passed, 1 failed` em `64.83 s`; falha única em G7.
+- Controle histórico isolado após disponibilizar `.venv` na worktree: `1
+  passed` em `4.37 s`.
+- Suíte completa final com warnings como erros: `534 passed, 1 failed` em
+  `141.47 s`; falha única em G7.
+
+A primeira tentativa completa também encontrou a ausência puramente ambiental
+de `.venv` na worktree temporária (`533 passed, 2 failed`). Um symlink ignorado
+para o ambiente virtual existente removeu essa falha; a repetição isolada e a
+suíte final demonstram que ela não era regressão do repositório. Nenhum warning
+foi emitido e nenhum arquivo versionado em `results/` ou `papers/` mudou.
