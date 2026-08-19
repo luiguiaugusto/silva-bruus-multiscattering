@@ -232,3 +232,34 @@ def test_resource_pilot_is_separate_disabled_development_evidence() -> None:
     assert case["case_id"] not in {
         item["case_id"] for item in campaign["cases"]
     }
+
+
+def test_p1_3a_rigid_pair_is_exactly_the_translated_p1_5_pilot() -> None:
+    pilot = validate_manifest_file(PILOT, kind="campaign")
+    case = pilot["cases"][0]
+    parameters = case["parameters"]
+
+    p1_3a = {
+        "ka": 0.1,
+        "f0": 0.0,
+        "f1": 1.0,
+        "distance_ratio": 2.1,
+        "theta_rad": 0.0,
+    }
+    assert {field: parameters[field] for field in p1_3a} == p1_3a
+    assert parameters["material_model"] == "rigid"
+    assert parameters["f0_applicable"] is False
+
+    p1_3a_positions = ((0.0, 0.0, 0.0), (2.1, 0.0, 0.0))
+    pilot_positions = ((-1.05, 0.0, 0.0), (1.05, 0.0, 0.0))
+
+    def relative(points: tuple[tuple[float, ...], ...]) -> tuple[float, ...]:
+        return tuple(
+            points[1][axis] - points[0][axis]
+            for axis in range(3)
+        )
+
+    assert relative(p1_3a_positions) == relative(pilot_positions)
+    assert pilot["geometry"]["positions_source"] == (
+        "r1=(-1.05,0,0), r2=(1.05,0,0); fixed development pilot only"
+    )
