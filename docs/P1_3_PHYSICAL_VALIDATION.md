@@ -572,7 +572,17 @@ Decisão P1.3a: **`GO_P1.4_WITH_CONDITIONS`**. A discrepância de sinal,
 normalização, paridade e força foi completamente decomposta e o fallback de
 ordens distintas passou. A condição não crítica é que o caso rígido
 `ka=.1,d/a=2.1,f1=1` não confirma a janela final dentro de `L<=21`; ele não
-pode ser usado como evidência elegível nem extrapolado ao piloto. Nenhuma
+pode ser usado como evidência elegível. Esse par é exatamente o piloto P1.5:
+`ka=0.1`, `f0=0` como sentinela rígido, `f1=1`, `d/a=2.1` e `theta=0`.
+As posições P1.3a `(0,0,0)` e `(2.1,0,0)` e as posições centradas do manifesto
+`(-1.05,0,0)` e `(1.05,0,0)` diferem somente por translação.
+
+Isso não é extrapolação: `B_E` resolve cada par isoladamente, e uma translação
+comum não altera o problema do dímero. Sob a mesma política numérica, a P1.3a
+antecipa que o piloto congelado chegará a `L=21` sem confirmação. O piloto é
+preservado porque sua finalidade é medir tempo, pico de memória, custo da
+ordem máxima e serialização da falha controlada; elegibilidade ou força
+confirmada não é critério obrigatório para seu sucesso operacional. Nenhuma
 atividade da P1.4 foi iniciada.
 
 
@@ -585,3 +595,13 @@ atividade da P1.4 foi iniciada.
 - O único `xfail` é o G7 original preservado; nenhum warning foi emitido.
 - Nenhum arquivo versionado em `results/`, `papers/`, manifestos, Modelos
   B/`B_L` ou APIs de produção foi alterado.
+
+
+#### Correção final do PR #4
+
+- Teste estrutural P1.3a/P1.5, sem solver:
+  `1 passed, 6 deselected` em `0.51 s`.
+- Suíte completa com warnings como erros:
+  `547 passed, 1 xfailed` em `757.82 s`.
+- O G7, seus resultados e todos os parâmetros congelados permaneceram
+  inalterados.
