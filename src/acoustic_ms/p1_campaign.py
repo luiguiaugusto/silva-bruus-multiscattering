@@ -35,11 +35,11 @@ from .paper_pipeline import (
 from .silva_bruus import nodal_pair_forces
 
 
-CAMPAIGN_ID = "p1_dimer_confirmatory"
+CAMPAIGN_ID = "p1_dimer_confirmatory_r2"
 PILOT_ID = "p1_dimer_resource_pilot"
-MANIFEST_RELATIVE = Path("campaigns/p1/campaign_manifest.yaml")
+MANIFEST_RELATIVE = Path("campaigns/p1/campaign_manifest_r2.yaml")
 PILOT_MANIFEST_RELATIVE = Path("campaigns/p1/pilot_manifest.yaml")
-DEFAULT_STATE_RELATIVE = Path("campaigns/p1/.p1_6_checkpoint")
+DEFAULT_STATE_RELATIVE = Path("campaigns/p1/.p1_6b_r2_checkpoint")
 NUMERIC_ENVIRONMENT_KEYS = (
     "OPENBLAS_NUM_THREADS",
     "OMP_NUM_THREADS",
@@ -52,6 +52,14 @@ NUMERIC_ENVIRONMENT_KEYS = (
 
 class CampaignExecutionError(RuntimeError):
     """Raised when the P1.6 single-attempt contract would be violated."""
+
+
+class CampaignSerializationError(CampaignExecutionError):
+    """Raised when a checkpoint value is not losslessly JSON-native."""
+
+
+class CampaignInfrastructureError(RuntimeError):
+    """Raised after an unexpected R2 failure is durably marked invalid."""
 
 
 class CampaignCaseTimeout(TimeoutError):
@@ -214,17 +222,57 @@ def _utc_text(value: datetime) -> str:
     return value.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 
+def _json_native(value: object, *, path: str = "$") -> object:
+    """Return a recursively JSON-native value without lossy coercion."""
+
+    if isinstance(value, np.generic):
+        if not isinstance(value, (np.bool_, np.integer, np.floating)):
+            raise CampaignSerializationError(
+                f"{path} contains unsupported NumPy scalar "
+                f"{type(value).__module__}.{type(value).__qualname__}"
+            )
+        value = value.item()
+        if isinstance(value, np.generic):
+            raise CampaignSerializationError(
+                f"{path} did not convert to a native scalar with numpy.item()"
+            )
+    if value is None or isinstance(value, (str, bool, int, float)):
+        return value
+    if isinstance(value, Mapping):
+        normalized: dict[str, object] = {}
+        for key, item in value.items():
+            if not isinstance(key, str):
+                raise CampaignSerializationError(
+                    f"{path} contains a non-string JSON object key"
+                )
+            normalized[key] = _json_native(item, path=f"{path}.{key}")
+        return normalized
+    if isinstance(value, (list, tuple)):
+        return [
+            _json_native(item, path=f"{path}[{index}]")
+            for index, item in enumerate(value)
+        ]
+    raise CampaignSerializationError(
+        f"{path} contains unsupported JSON type "
+        f"{type(value).__module__}.{type(value).__qualname__}"
+    )
+
+
 def _json_bytes(value: object) -> bytes:
-    return (
-        json.dumps(
-            value,
+    normalized = _json_native(value)
+    try:
+        encoded = json.dumps(
+            normalized,
             sort_keys=True,
             separators=(",", ":"),
             ensure_ascii=True,
             allow_nan=False,
         )
-        + "\n"
-    ).encode("utf-8")
+    except (TypeError, ValueError) as exc:
+        raise CampaignSerializationError(
+            f"value cannot be serialized as strict JSON: {exc}"
+        ) from exc
+    return (encoded + "\n").encode("utf-8")
 
 
 def _atomic_json(path: Path, value: object) -> None:
@@ -587,6 +635,78 @@ def _run_summary(
     )
 
 
+_ALLOWED_CAMPAIGN_DECISIONS = {"GO_P2", "INCONCLUSIVE_P1", "NO_GO_P2"}
+_INVALID_CAMPAIGN_DECISION = "INVALID_P1.6B_R2_INFRASTRUCTURE"
+
+
+def finalize_p1_6_campaign(
+    root: str | Path,
+    decision: str,
+    *,
+    state_directory: str | Path | None = None,
+) -> CampaignRunSummary:
+    """Persist a validated G1 decision before any artifact publication."""
+
+    if decision not in _ALLOWED_CAMPAIGN_DECISIONS:
+        raise CampaignExecutionError(f"unsupported G1 campaign decision: {decision!r}")
+    configuration = load_p1_6_configuration(root, state_directory=state_directory)
+    ledger_path = configuration.state_directory / "campaign_ledger.json"
+    try:
+        ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise CampaignExecutionError(f"cannot finalize campaign ledger: {exc}") from exc
+    provenance = ledger.get("execution_provenance")
+    if not isinstance(provenance, Mapping):
+        raise CampaignExecutionError("campaign ledger lacks execution provenance")
+    _validate_ledger(configuration, ledger, provenance)
+    if not ledger.get("closed"):
+        raise CampaignExecutionError("an open campaign cannot receive a G1 decision")
+    completed_count = sum(
+        entry["state"] == "completed" for entry in ledger["cases"]
+    )
+    if completed_count == 0:
+        raise CampaignExecutionError(
+            "a campaign with zero completed cases cannot publish artifacts"
+        )
+    existing = ledger.get("campaign_decision")
+    if existing not in (None, decision):
+        raise CampaignExecutionError(
+            f"campaign decision is already frozen as {existing!r}"
+        )
+    ledger["campaign_decision"] = decision
+    _atomic_json(ledger_path, ledger)
+    return _run_summary(ledger, [])
+
+
+def invalidate_p1_6_campaign(
+    root: str | Path,
+    *,
+    failure_stage: str,
+    failure_reason: str,
+    state_directory: str | Path | None = None,
+) -> CampaignRunSummary:
+    """Durably classify an unexpected post-run infrastructure failure."""
+
+    if not failure_stage or not failure_reason:
+        raise ValueError("infrastructure failure stage and reason are required")
+    configuration = load_p1_6_configuration(root, state_directory=state_directory)
+    ledger_path = configuration.state_directory / "campaign_ledger.json"
+    try:
+        ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise CampaignExecutionError(f"cannot invalidate campaign ledger: {exc}") from exc
+    ledger["closed"] = True
+    ledger["stop_reason"] = "invalid_infrastructure"
+    ledger["campaign_decision"] = _INVALID_CAMPAIGN_DECISION
+    ledger["infrastructure_failure"] = {
+        "case_id": None,
+        "failure_stage": str(failure_stage),
+        "failure_reason": str(failure_reason),
+    }
+    _atomic_json(ledger_path, ledger)
+    return _run_summary(ledger, [])
+
+
 def _finite_number(value: object, name: str, *, minimum: float | None = None) -> float:
     if isinstance(value, bool):
         raise CampaignExecutionError(f"{name} must be a finite number")
@@ -658,7 +778,12 @@ def _normalize_outcome(
                 "confirmed": bool(channel.get("confirmed")),
                 "confirmation_lmax": channel.get("confirmation_lmax"),
             }
-        diagnostics = dict(order.get("diagnostics", {}))
+        diagnostics = _json_native(
+            dict(order.get("diagnostics", {})),
+            path=f"$.orders[{len(normalized_orders)}].diagnostics",
+        )
+        if not isinstance(diagnostics, dict):
+            raise CampaignSerializationError("diagnostics must normalize to an object")
         normalized_orders.append(
             {
                 "lmax": int(order["lmax"]),
@@ -859,19 +984,15 @@ def run_p1_6_campaign(
                 outcome["failure_reason"] = (
                     "wall_seconds_campaign_exhausted_during_attempt"
                 )
-        except Exception as exc:
+        except (CampaignGlobalTimeout, CampaignCaseTimeout, MemoryError) as exc:
             completed_utc = _utc_text(utc_now())
             measured_wall = max(0.0, monotonic() - case_wall_started)
             if isinstance(exc, CampaignGlobalTimeout):
                 failure_stage = "global_limit"
             elif isinstance(exc, CampaignCaseTimeout):
                 failure_stage = "timeout"
-            elif isinstance(exc, MemoryError):
-                failure_stage = "memory"
-            elif isinstance(exc, CampaignExecutionError):
-                failure_stage = "contract"
             else:
-                failure_stage = "interrupted"
+                failure_stage = "memory"
             entry.update(
                 {
                     "state": "interrupted",
@@ -902,7 +1023,7 @@ def run_p1_6_campaign(
             ledger["stop_reason"] = (
                 "global_wall_limit_exhausted"
                 if global_exhausted
-                else "case_failure_continued"
+                else "case_resource_failure_continued"
             )
             if global_exhausted:
                 _close_for_global_limit(ledger)
@@ -910,6 +1031,47 @@ def run_p1_6_campaign(
             if global_exhausted:
                 break
             continue
+        except Exception as exc:
+            completed_utc = _utc_text(utc_now())
+            measured_wall = max(0.0, monotonic() - case_wall_started)
+            if isinstance(exc, CampaignSerializationError):
+                failure_stage = "serialization"
+            elif isinstance(exc, CampaignExecutionError):
+                failure_stage = "contract"
+            else:
+                failure_stage = "infrastructure"
+            failure_reason = f"{type(exc).__name__}: {exc}"
+            entry.update(
+                {
+                    "state": "interrupted",
+                    "completed_utc": completed_utc,
+                    "failure_stage": failure_stage,
+                    "failure_reason": failure_reason,
+                }
+            )
+            entry["wall_seconds_debited"] = _debit_wall(
+                ledger,
+                measured_wall,
+                global_limit,
+            )
+            _atomic_json(
+                _checkpoint_path(configuration, int(entry["case_order"])),
+                {**entry, "outcome": None},
+            )
+            ledger["updated_utc"] = completed_utc
+            ledger["closed"] = True
+            ledger["stop_reason"] = "invalid_infrastructure"
+            ledger["campaign_decision"] = "INVALID_P1.6B_R2_INFRASTRUCTURE"
+            ledger["infrastructure_failure"] = {
+                "case_id": entry["case_id"],
+                "failure_stage": failure_stage,
+                "failure_reason": failure_reason,
+            }
+            _atomic_json(ledger_path, ledger)
+            raise CampaignInfrastructureError(
+                f"R2 stopped after unexpected {failure_stage} failure in "
+                f"{entry['case_id']}: {failure_reason}"
+            ) from exc
 
         completed_utc = _utc_text(utc_now())
         entry.update(

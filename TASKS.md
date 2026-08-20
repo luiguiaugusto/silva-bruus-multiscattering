@@ -69,5 +69,11 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
   or preexisting confirmatory CSVs before any executor. P1.6B must stage the
   ledger, 102 existing case checkpoints, five CSVs and all hashes without
   cleaning or regenerating observed checkpoints. Frozen bytes remain unchanged.
-- [ ] P1.6B -- execute the locked 102-case campaign exactly once and evaluate
-  G1. Not started by P1.6A/P1.6A.1/P1.6A.2.
+- [x] P1.6B -- invalid infrastructure execution preserved: 102 attempted,
+  zero completed, 102 interrupted and no scientific outcome; classified
+  `INVALID_P1.6B_INFRASTRUCTURE`.
+- [ ] P1.6B-R2 -- infrastructure-only replacement frozen under campaign ID
+  `p1_dimer_confirmatory_r2`, new checkpoint/output namespaces and lock
+  `a041e07ae93e9a858bad809427039bf593641ad1f9e341ed89b9d91f648f297d`.
+  Launch is authorized only after focused/full tests, clean pre-solve commit,
+  push and draft PR.

@@ -2728,3 +2728,23 @@ No path under `results/` or `papers/` changed. The P1.6A.2 focused suite passed
 **79 tests in 3.34 s**; the complete suite with warnings as errors passed
 **619 tests**, with the unchanged G7 as the sole xfail, in 772.48 s. Decision:
 `GO_P1.6B_EXECUTE` pending audit; stop before P1.6B.
+
+
+## P1.6B invalid execution and response-blind R2
+
+The detached P1.6B execution from source
+`ee4b4428b4a122063ab28459c48e43f51fd7bc60` is preserved as
+`INVALID_P1.6B_INFRASTRUCTURE`. All 102 cases reached the adapter, but JSON
+serialization failed before checkpointing each outcome because
+`planar_symmetry_pass` remained `numpy.bool_`. The ledger therefore contains
+102 one-time interrupted attempts, zero completed outcomes and no scientific
+data. The false READY arose from treating `closed=true` as sufficient despite
+`campaign_decision=null`.
+
+R2 is preregistered in `campaigns/p1/campaign_manifest_r2.yaml` with lock
+`a041e07ae93e9a858bad809427039bf593641ad1f9e341ed89b9d91f648f297d`.
+It uses `.p1_6b_r2_checkpoint/` and `campaigns/p1/p1_6b_r2/`. Every
+scientific field and all 102 ordered cases are identical to P1.6A. JSON scalars
+are normalized losslessly, unexpected infrastructure is fail-fast/nonzero, and
+publication/status require a persisted decision, valid counts and matching
+output hashes. There is no automatic retry or reuse of the invalid run.

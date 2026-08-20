@@ -62,7 +62,7 @@ def cli_repository(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(
         cli,
         "STATE",
-        root / "campaigns" / "p1" / ".p1_6_checkpoint",
+        root / "campaigns" / "p1" / ".p1_6b_r2_checkpoint",
     )
     for key, value in NUMERIC_ENVIRONMENT.items():
         monkeypatch.setenv(key, value)
@@ -74,7 +74,7 @@ def _write_started_ledger(root: Path) -> Path:
         root
         / "campaigns"
         / "p1"
-        / ".p1_6_checkpoint"
+        / ".p1_6b_r2_checkpoint"
         / "campaign_ledger.json"
     )
     ledger.parent.mkdir(parents=True)
@@ -105,10 +105,10 @@ def test_resume_accepts_only_the_exact_checkpoint_directory(cli_repository) -> N
         (
             "??",
             (
-                "campaigns/p1/.p1_6_checkpoint/campaign_ledger.json",
+                "campaigns/p1/.p1_6b_r2_checkpoint/campaign_ledger.json",
             ),
         ),
-        ("??", ("campaigns/p1/.p1_6_checkpoint/cases/001.json",)),
+        ("??", ("campaigns/p1/.p1_6b_r2_checkpoint/cases/001.json",)),
     )
 
 
@@ -189,7 +189,7 @@ def test_resume_rejects_tracked_modified_or_staged_file(
 def test_resume_rejects_preexisting_confirmatory_csv(cli_repository) -> None:
     cli, root = cli_repository
     _write_started_ledger(root)
-    output = root / "campaigns" / "p1" / "data_raw.csv"
+    output = root / "campaigns" / "p1" / "p1_6b_r2" / "data_raw.csv"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("response\n", encoding="utf-8")
 
@@ -226,4 +226,54 @@ def test_porcelain_z_parser_preserves_whitespace_in_path(cli_repository) -> None
 
 def test_checkpoint_directory_is_not_ignored() -> None:
     ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
-    assert ".p1_6_checkpoint" not in ignore
+    assert ".p1_6b_r2_checkpoint" not in ignore
+
+
+def test_closed_null_decision_never_publishes(
+    cli_repository,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    cli, _ = cli_repository
+    regenerations: list[bool] = []
+
+    def fake_run(repository, *, executor):
+        del repository, executor
+        return CampaignRunSummary(
+            attempted_this_run=tuple(f"case-{index}" for index in range(102)),
+            completed_count=0,
+            interrupted_count=102,
+            never_started_count=0,
+            accumulated_wall_seconds=1.0,
+            closed=True,
+            stop_reason="all_cases_attempted",
+            campaign_decision=None,
+        )
+
+    monkeypatch.setattr(cli, "_require_execution_environment", lambda: None)
+    monkeypatch.setattr(campaign_module, "run_p1_6_campaign", fake_run)
+    monkeypatch.setattr(
+        cli,
+        "_regenerate",
+        lambda *, publish: regenerations.append(publish),
+    )
+    monkeypatch.setattr(sys, "argv", [str(CLI_PATH), "--execute"])
+
+    with pytest.raises(RuntimeError, match="zero completed"):
+        cli.main()
+
+    assert regenerations == []
+
+
+def test_entrypoint_returns_nonzero_for_unexpected_failure(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    cli = _load_cli()
+
+    def fail() -> None:
+        raise RuntimeError("synthetic serialization failure")
+
+    monkeypatch.setattr(cli, "main", fail)
+
+    assert cli.entrypoint() == 2
+    assert "synthetic serialization failure" in capsys.readouterr().err

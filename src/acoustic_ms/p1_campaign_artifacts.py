@@ -21,13 +21,13 @@ from typing import Any, Iterable, Mapping, Sequence
 
 
 G1_BUDGET = 1.0e-12
-CAMPAIGN_ID = "p1_dimer_confirmatory"
+CAMPAIGN_ID = "p1_dimer_confirmatory_r2"
 ARTIFACT_PATHS = {
-    "data_raw.csv": "campaigns/p1/data_raw.csv",
-    "data_derived.csv": "campaigns/p1/data_derived.csv",
-    "data_plot.csv": "campaigns/p1/data_plot.csv",
-    "failures.csv": "campaigns/p1/failures.csv",
-    "performance.csv": "campaigns/p1/performance.csv",
+    "data_raw.csv": "campaigns/p1/p1_6b_r2/data_raw.csv",
+    "data_derived.csv": "campaigns/p1/p1_6b_r2/data_derived.csv",
+    "data_plot.csv": "campaigns/p1/p1_6b_r2/data_plot.csv",
+    "failures.csv": "campaigns/p1/p1_6b_r2/failures.csv",
+    "performance.csv": "campaigns/p1/p1_6b_r2/performance.csv",
 }
 CHANNELS = (
     "total",
@@ -837,7 +837,7 @@ def _atomic_write(path: Path, payload: bytes) -> None:
 def publish_campaign_artifacts(
     root: str | Path, artifacts: Mapping[str, bytes]
 ) -> dict[str, str]:
-    """Publish the frozen artifact set atomically per file, without overwrite."""
+    """Publish the frozen artifact set atomically as one directory."""
 
     repository = Path(root)
     if set(artifacts) != set(ARTIFACT_PATHS):
@@ -845,12 +845,31 @@ def publish_campaign_artifacts(
     destinations = {
         name: repository / relative for name, relative in ARTIFACT_PATHS.items()
     }
-    existing = [str(path) for path in destinations.values() if path.exists()]
-    if existing:
+    output_directories = {path.parent for path in destinations.values()}
+    if len(output_directories) != 1:
+        raise CampaignArtifactError(
+            "campaign outputs must share one directory for atomic publication"
+        )
+    output_directory = output_directories.pop()
+    if output_directory.exists():
         raise FileExistsError(
             "campaign outputs exist; overwrite and second publication are forbidden: "
-            + ", ".join(existing)
+            + str(output_directory)
         )
-    for name in sorted(destinations):
-        _atomic_write(destinations[name], artifacts[name])
+    output_directory.parent.mkdir(parents=True, exist_ok=True)
+    staging = Path(
+        tempfile.mkdtemp(
+            prefix=f".{output_directory.name}.",
+            dir=output_directory.parent,
+        )
+    )
+    try:
+        for name in sorted(destinations):
+            _atomic_write(staging / destinations[name].name, artifacts[name])
+        os.replace(staging, output_directory)
+    finally:
+        if staging.exists():
+            for path in staging.iterdir():
+                path.unlink()
+            staging.rmdir()
     return artifact_sha256(artifacts)

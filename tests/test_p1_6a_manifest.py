@@ -185,9 +185,9 @@ def test_configuration_validation_performs_no_campaign_solve_or_output() -> None
     assert len(configuration.cases) == 102
     assert configuration.manifest["resources"]["limits_status"] == "frozen"
     assert not any((ROOT / relative).exists() for relative in (
-        "campaigns/p1/data_raw.csv",
-        "campaigns/p1/data_derived.csv",
-        "campaigns/p1/data_plot.csv",
-        "campaigns/p1/failures.csv",
-        "campaigns/p1/performance.csv",
+        "campaigns/p1/p1_6b_r2/data_raw.csv",
+        "campaigns/p1/p1_6b_r2/data_derived.csv",
+        "campaigns/p1/p1_6b_r2/data_plot.csv",
+        "campaigns/p1/p1_6b_r2/failures.csv",
+        "campaigns/p1/p1_6b_r2/performance.csv",
     ))
