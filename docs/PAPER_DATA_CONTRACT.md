@@ -178,6 +178,21 @@ Every filter/transformation is already applied and repeated in the figure
 manifest. A panel must rebuild from `data_plot.csv` plus
 `figure_manifest.yaml` without reading an image or solver table.
 
+### P1.5 `performance.csv`
+
+The development-only P1.5 pilot adds one performance row per attempted order.
+It records campaign/case/solve identity, both frozen manifest hashes, source
+commit, exact command, environment, UTC start/end, worker/thread counts,
+limits, Model E phase timings, accumulated and total wall time, peak RSS, mode
+counts, system dimension, numerical diagnostics, convergence, eligibility,
+stop reason and the frozen P1.5 decision. Its rows are resource evidence and
+cannot enter scientific force tables.
+
+The five P1.5 files are published as a directory transaction. Existing output
+causes refusal before any solver call; partial hidden directories are removed
+on publication failure. Derived and plot tables regenerate byte-identically
+from raw, performance and failure bytes without invoking a solver.
+
 ### `fit_parameters.csv`
 
 One row per fit/fold/version:

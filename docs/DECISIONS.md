@@ -353,3 +353,21 @@
   with its failure record and no imputation.
 - Decision: `GO_P1.5_PILOT`. P1.4 runs no solver, pilot, campaign, response,
   `results/` write or `papers/` write.
+
+
+## P1.5 timed-pilot decision
+
+- P1.4 was merged through PR #5 as
+  `f89a291d08420b2ddc7270bedbb28f7112671ce8`. The response-blind P1.5 runner
+  was committed and pushed before the solve as
+  `a5a2a9c58f5e65b7986e24c7c64879246d946131`.
+- Exactly one real attempt used the frozen rigid case and orders 2--21. It
+  ended `unconfirmed_at_21`, `converged=false`, `eligible=false`; no retry or
+  retuning occurred. Scattered--scattered was the sole channel not confirmed
+  in the final two-change window.
+- Wall time `494.13323493499774 s` and peak RSS `311857152 bytes` pass the
+  provisional 1800 s and 4 GiB limits. All numerical diagnostics passed.
+- The five development artifacts were published atomically. Two no-solver
+  derived generations are byte-identical. Pilot forces remain excluded from
+  scientific tables, and all 102 confirmatory cases remain disabled.
+- Decision: `GO_P1.6A_BLIND_FREEZE`. P1.5 authorizes no P1.6 execution.

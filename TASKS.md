@@ -46,3 +46,8 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
 - [x] P1.4 -- exact-byte response-blind SHA-256 locks published for both P1
   manifests; all 102 confirmatory cases remain disabled and only the separate
   P1.5 resource-pilot case is enabled. No pilot, campaign or response ran.
+- [x] P1.5 -- one response-blind rigid resource pilot executed from the
+  separately pushed runner commit. Orders 2--21 ended
+  `unconfirmed_at_21`, `eligible=false`; 494.133 s and 311857152-byte peak RSS
+  pass the provisional limits, artifacts/derivations are deterministic and
+  excluded from scientific tables. Decision: `GO_P1.6A_BLIND_FREEZE`.
