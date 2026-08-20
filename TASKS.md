@@ -51,3 +51,11 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
   `unconfirmed_at_21`, `eligible=false`; 494.133 s and 311857152-byte peak RSS
   pass the provisional limits, artifacts/derivations are deterministic and
   excluded from scientific tables. Decision: `GO_P1.6A_BLIND_FREEZE`.
+- [x] P1.6A -- exact-byte confirmatory lock updated with all 102 cases enabled,
+  96 scientific primaries plus six excluded rotational audits, frozen
+  1-worker/1-thread/1800-s/4-GiB/64800-s limits, single-attempt checkpointed
+  runner, pure deterministic analysis and pre-response G1. No confirmatory
+  case ran and no confirmatory artifact was created. Decision:
+  `GO_P1.6B_EXECUTE` pending audit.
+- [ ] P1.6B -- execute the locked 102-case campaign exactly once and evaluate
+  G1. Not started by P1.6A.

@@ -67,11 +67,11 @@ def test_confirmatory_manifest_freezes_exact_grid_ids_and_order() -> None:
     assert document["schema_version"] == "1.1.0"
     assert document["classification"] == "confirmatory_new"
     assert document["status"] == "preregistered"
-    assert document["provenance"]["manifest_sha256"] == "9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca"
+    assert document["provenance"]["manifest_sha256"] == "3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe"
     assert len(cases) == 102
     assert tuple(case["case_id"] for case in cases) == expected_ids
     assert tuple(case["case_order"] for case in cases) == tuple(range(1, 103))
-    assert all(case["enabled"] is False for case in cases)
+    assert all(case["enabled"] is True for case in cases)
 
     primary = [
         case
@@ -182,7 +182,7 @@ def test_rigid_cases_mark_f0_as_api_sentinel_not_physical_contrast() -> None:
     assert all(parameters["f0_applicable"] is False for parameters in rigid)
 
 
-def test_numerical_and_provisional_resource_policy_is_frozen_but_disabled() -> None:
+def test_numerical_and_p1_6a_resource_policy_is_frozen_and_enabled() -> None:
     document = validate_manifest_file(CAMPAIGN, kind="campaign")
     numerical = document["numerical"]
     resources = document["resources"]
@@ -204,8 +204,8 @@ def test_numerical_and_provisional_resource_policy_is_frozen_but_disabled() -> N
         "blas_threads": 1,
         "peak_rss_bytes_per_case": 4 * 1024**3,
         "wall_seconds_per_case": 30 * 60,
-        "wall_seconds_campaign": 12 * 60 * 60,
-        "limits_status": "provisional",
+        "wall_seconds_campaign": 18 * 60 * 60,
+        "limits_status": "frozen",
     }
 
 

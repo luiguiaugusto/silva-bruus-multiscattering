@@ -193,6 +193,26 @@ causes refusal before any solver call; partial hidden directories are removed
 on publication failure. Derived and plot tables regenerate byte-identically
 from raw, performance and failure bytes without invoking a solver.
 
+### P1.6 checkpoint and deterministic tables
+
+P1.6 uses an atomic JSON campaign ledger plus one atomic JSON checkpoint per
+case. `attempt_count` is 0 or 1; stale `started` becomes permanently
+`interrupted`, and resume selects only `never_started`. Every completed
+checkpoint stores all attempted/evaluated orders, four channel vectors and
+convergence values, diagnostics, timing, peak RSS, A/B_E/E vectors,
+eligibility and reasons. B_E and E for a dimer reuse the same Model-E order
+solves.
+
+The pure P1.6 artifact module has no scientific imports and emits the four
+manifest paths plus `campaigns/p1/performance.csv`. Raw rows retain
+case/order/particle/model/channel forces, physical values, positions,
+resources, timing and JSON numerical diagnostics. Derived rows contain
+`be_minus_a_rms`, `be_e_identity_error`, explicit exclusions and the six
+`rotational_covariance_error` audits. Plot rows contain eligible primaries
+only; failures and performance retain every exclusion/attempt. Two builds
+from checkpoint bytes must match exactly, and existing outputs forbid
+publication. No P1.6 table exists at the P1.6A checkpoint.
+
 ### `fit_parameters.csv`
 
 One row per fit/fold/version:

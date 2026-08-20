@@ -41,6 +41,15 @@ limits, atomic serialization, hashes and two no-solver derivations passed.
 Pilot forces remain excluded from scientific tables, the confirmatory grid is
 still wholly disabled and the decision is `GO_P1.6A_BLIND_FREEZE`.
 
+P1.6A status (2026-08-20): PR #6 was merged as
+`0e4f643ef8161af57af41c6600944eaaf6f8719a`. The P1.4 disabled lock remains
+historical; the confirmatory manifest is now locked at
+`3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe`,
+with all 102 cases enabled and limits frozen at one worker/thread, 1800 s and
+4 GiB per case, and 64800 s total. No confirmatory case was executed.
+Checkpoint/retry policy, deterministic artifacts and G1 are frozen in
+`docs/P1_6A_BLIND_FREEZE.md`; the decision is `GO_P1.6B_EXECUTE` pending audit.
+
 ## Paper question and intended answer
 
 Question: when and why does the pairwise nodal Silva–Bruus interaction cease
@@ -229,8 +238,9 @@ Exact numerical thresholds are **TBD** unless already physical identities.
 
 Luigui and ChatGPT Work must decide:
 
-1. P1.1--P1.4 are resolved: the grid, policy, hashes and enablement are frozen;
-   only the separate P1.5 pilot is enabled and the campaign remains blocked.
+1. P1.1--P1.6A are resolved: the grid, policy, exact hashes, resources,
+   enablement, runner and G1 are frozen. The separate P1.5 pilot is historical;
+   all 102 confirmatory cases are enabled but remain unexecuted until P1.6B.
 2. P1 uses independently confirmed pair orders; P1.3 completed the
    common-order sensitivity audit.
 3. P2 counts/families/subset reuse and feasibility of \(\Phi_E^{(5)}\).

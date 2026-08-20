@@ -172,7 +172,7 @@ def test_ids_twins_enablement_and_scientific_exclusion_are_frozen() -> None:
         ] == "primary"
         for audit in audits
     )
-    assert not any(case["enabled"] for case in cases)
+    assert all(case["enabled"] for case in cases)
     assert [case["case_id"] for case in pilot["cases"] if case["enabled"]] == [
         "p1_pilot_rigid_ka010_d0210_t000"
     ]
@@ -180,11 +180,11 @@ def test_ids_twins_enablement_and_scientific_exclusion_are_frozen() -> None:
         "include_in_scientific_tables"
     ] is False
     assert pilot["cases"][0]["case_id"] not in ids
-    assert campaign["resources"]["limits_status"] == "provisional"
+    assert campaign["resources"]["limits_status"] == "frozen"
     assert pilot["resources"]["limits_status"] == "provisional"
 
 
-def test_execution_guard_authorizes_only_the_p1_5_pilot() -> None:
+def test_execution_guard_authorizes_both_preregistered_p1_manifests() -> None:
     pilot = validate_executable_manifest_file(
         PILOT,
         expected_campaign_id="p1_dimer_resource_pilot",
@@ -193,11 +193,11 @@ def test_execution_guard_authorizes_only_the_p1_5_pilot() -> None:
         "p1_pilot_rigid_ka010_d0210_t000"
     ]
 
-    with pytest.raises(ManifestValidationError, match="no enabled cases"):
-        validate_executable_manifest_file(
-            CAMPAIGN,
-            expected_campaign_id="p1_dimer_confirmatory",
-        )
+    campaign = validate_executable_manifest_file(
+        CAMPAIGN,
+        expected_campaign_id="p1_dimer_confirmatory",
+    )
+    assert len([case for case in campaign["cases"] if case["enabled"]]) == 102
     with pytest.raises(ManifestValidationError, match="status"):
         validate_executable_manifest_file(
             MULTICASE_EXAMPLE,

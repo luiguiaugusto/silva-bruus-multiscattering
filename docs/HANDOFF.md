@@ -2667,3 +2667,35 @@ Neither P1 manifest changed, all 102 confirmatory cases remain disabled, and
 no path under `results/` or `papers/` changed. Pilot forces remain development
 resource evidence only. Decision: `GO_P1.6A_BLIND_FREEZE`; stop before P1.6
 for audit.
+
+
+## P1.6A response-blind pre-campaign freeze
+
+PR #6 was audited at
+`e5f4efebbdd4e9983ef075f3fa038b875dd28bda`: exactly two commits, 17 files
+and the five published P1.5 artifact hashes. It was made ready and merged by
+merge commit `0e4f643ef8161af57af41c6600944eaaf6f8719a`.
+
+The isolated branch `agent/p1-6a-blind-freeze` enables all 102 confirmatory
+cases while preserving their IDs, order, physical/numerical parameters,
+classifications, paths and six twin links. The 96 primaries remain scientific;
+the six audits remain excluded. Resources are frozen at one worker, one BLAS
+thread, 1800 s and 4 GiB per case, and 64800 s globally. The new exact-byte
+lock is
+`3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe`;
+the P1.4 hash `9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca`
+is retained as historical. Pilot manifest and artifact bytes did not change.
+
+The runner records atomic pre/post ledgers, one attempt at most, no retry of
+an interruption, continuation after local failure, and local/global resource
+stops. It obtains A plus B_E/E without a duplicate dimer order solve. A pure
+no-solver module deterministically builds raw, derived, plot, failure and
+performance tables twice before publication. G1 requires all 102 attempts,
+eligible coverage of 12 strata and six audit–twin pairs, plus B_E=E and
+rotation errors at most `1e-12`; `|B_E-A|` is not a gate.
+
+P1.6A ran no confirmatory case and created no confirmatory artifact. No path
+under `results/` or `papers/` changed. The focused suite passed **51 tests in
+2.02 s**; the complete suite with warnings as errors passed **591 tests**, with
+the unchanged G7 as the sole xfail, in 667.88 s. Decision:
+`GO_P1.6B_EXECUTE` pending audit; stop before P1.6B.

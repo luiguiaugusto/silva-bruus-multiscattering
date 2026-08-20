@@ -147,7 +147,7 @@ def test_resource_derivatives_exclude_scientific_force_metrics() -> None:
     }
 
 
-def test_frozen_manifests_still_block_confirmatory_execution() -> None:
+def test_pilot_is_immutable_after_confirmatory_manifest_activation() -> None:
     pilot = validate_manifest_file(PILOT_MANIFEST, kind="campaign")
     confirmatory = validate_manifest_file(CONFIRMATORY_MANIFEST, kind="campaign")
 
@@ -155,7 +155,8 @@ def test_frozen_manifests_still_block_confirmatory_execution() -> None:
         "d8f56ce20f6f0821d84fd6f36e1f76c855f63f55d809ba9a7201ba52097a43bf"
     )
     assert confirmatory["provenance"]["manifest_sha256"] == (
-        "9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca"
+        "3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe"
     )
     assert len(confirmatory["cases"]) == 102
-    assert not any(case["enabled"] for case in confirmatory["cases"])
+    assert all(case["enabled"] for case in confirmatory["cases"])
+    assert confirmatory["resources"]["limits_status"] == "frozen"

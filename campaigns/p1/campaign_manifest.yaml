@@ -6,9 +6,9 @@
   "status": "preregistered",
   "created_utc": "2026-08-13T15:00:00Z",
   "provenance": {
-    "git_commit": "20ffb8726c2517ecacc580ed16223077e9b0ab08",
-    "task": "P1.4 response-blind freeze; confirmatory execution remains blocked",
-    "manifest_sha256": "9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca"
+    "git_commit": "0e4f643ef8161af57af41c6600944eaaf6f8719a",
+    "task": "P1.6A response-blind pre-campaign freeze; authorizes only P1.6B",
+    "manifest_sha256": "3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe"
   },
   "physical": {
     "radius_m": 1,
@@ -42,8 +42,8 @@
     "blas_threads": 1,
     "peak_rss_bytes_per_case": 4294967296,
     "wall_seconds_per_case": 1800,
-    "wall_seconds_campaign": 43200,
-    "limits_status": "provisional"
+    "wall_seconds_campaign": 64800,
+    "limits_status": "frozen"
   },
   "cases": [
     {
@@ -51,7 +51,7 @@
       "case_order": 1,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -72,7 +72,7 @@
       "case_order": 2,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -93,7 +93,7 @@
       "case_order": 3,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -114,7 +114,7 @@
       "case_order": 4,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -135,7 +135,7 @@
       "case_order": 5,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -156,7 +156,7 @@
       "case_order": 6,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -177,7 +177,7 @@
       "case_order": 7,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -198,7 +198,7 @@
       "case_order": 8,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -219,7 +219,7 @@
       "case_order": 9,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -240,7 +240,7 @@
       "case_order": 10,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -261,7 +261,7 @@
       "case_order": 11,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -282,7 +282,7 @@
       "case_order": 12,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -303,7 +303,7 @@
       "case_order": 13,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -324,7 +324,7 @@
       "case_order": 14,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -345,7 +345,7 @@
       "case_order": 15,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -366,7 +366,7 @@
       "case_order": 16,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -387,7 +387,7 @@
       "case_order": 17,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -408,7 +408,7 @@
       "case_order": 18,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -429,7 +429,7 @@
       "case_order": 19,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -450,7 +450,7 @@
       "case_order": 20,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -471,7 +471,7 @@
       "case_order": 21,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -492,7 +492,7 @@
       "case_order": 22,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -513,7 +513,7 @@
       "case_order": 23,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -534,7 +534,7 @@
       "case_order": 24,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -555,7 +555,7 @@
       "case_order": 25,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -576,7 +576,7 @@
       "case_order": 26,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -597,7 +597,7 @@
       "case_order": 27,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -618,7 +618,7 @@
       "case_order": 28,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -639,7 +639,7 @@
       "case_order": 29,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -660,7 +660,7 @@
       "case_order": 30,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -681,7 +681,7 @@
       "case_order": 31,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -702,7 +702,7 @@
       "case_order": 32,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -723,7 +723,7 @@
       "case_order": 33,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -744,7 +744,7 @@
       "case_order": 34,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -765,7 +765,7 @@
       "case_order": 35,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -786,7 +786,7 @@
       "case_order": 36,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -807,7 +807,7 @@
       "case_order": 37,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -828,7 +828,7 @@
       "case_order": 38,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -849,7 +849,7 @@
       "case_order": 39,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -870,7 +870,7 @@
       "case_order": 40,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -891,7 +891,7 @@
       "case_order": 41,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -912,7 +912,7 @@
       "case_order": 42,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -933,7 +933,7 @@
       "case_order": 43,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -954,7 +954,7 @@
       "case_order": 44,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -975,7 +975,7 @@
       "case_order": 45,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -996,7 +996,7 @@
       "case_order": 46,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -1017,7 +1017,7 @@
       "case_order": 47,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -1038,7 +1038,7 @@
       "case_order": 48,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -1059,7 +1059,7 @@
       "case_order": 49,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1080,7 +1080,7 @@
       "case_order": 50,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1101,7 +1101,7 @@
       "case_order": 51,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1122,7 +1122,7 @@
       "case_order": 52,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1143,7 +1143,7 @@
       "case_order": 53,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1164,7 +1164,7 @@
       "case_order": 54,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1185,7 +1185,7 @@
       "case_order": 55,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1206,7 +1206,7 @@
       "case_order": 56,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1227,7 +1227,7 @@
       "case_order": 57,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1248,7 +1248,7 @@
       "case_order": 58,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1269,7 +1269,7 @@
       "case_order": 59,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1290,7 +1290,7 @@
       "case_order": 60,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1311,7 +1311,7 @@
       "case_order": 61,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1332,7 +1332,7 @@
       "case_order": 62,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1353,7 +1353,7 @@
       "case_order": 63,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1374,7 +1374,7 @@
       "case_order": 64,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1395,7 +1395,7 @@
       "case_order": 65,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1416,7 +1416,7 @@
       "case_order": 66,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1437,7 +1437,7 @@
       "case_order": 67,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1458,7 +1458,7 @@
       "case_order": 68,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1479,7 +1479,7 @@
       "case_order": 69,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1500,7 +1500,7 @@
       "case_order": 70,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1521,7 +1521,7 @@
       "case_order": 71,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1542,7 +1542,7 @@
       "case_order": 72,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1563,7 +1563,7 @@
       "case_order": 73,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1584,7 +1584,7 @@
       "case_order": 74,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1605,7 +1605,7 @@
       "case_order": 75,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1626,7 +1626,7 @@
       "case_order": 76,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1647,7 +1647,7 @@
       "case_order": 77,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1668,7 +1668,7 @@
       "case_order": 78,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1689,7 +1689,7 @@
       "case_order": 79,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1710,7 +1710,7 @@
       "case_order": 80,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1731,7 +1731,7 @@
       "case_order": 81,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1752,7 +1752,7 @@
       "case_order": 82,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1773,7 +1773,7 @@
       "case_order": 83,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1794,7 +1794,7 @@
       "case_order": 84,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1815,7 +1815,7 @@
       "case_order": 85,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1836,7 +1836,7 @@
       "case_order": 86,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1857,7 +1857,7 @@
       "case_order": 87,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1878,7 +1878,7 @@
       "case_order": 88,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1899,7 +1899,7 @@
       "case_order": 89,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1920,7 +1920,7 @@
       "case_order": 90,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1941,7 +1941,7 @@
       "case_order": 91,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1962,7 +1962,7 @@
       "case_order": 92,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -1983,7 +1983,7 @@
       "case_order": 93,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -2004,7 +2004,7 @@
       "case_order": 94,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -2025,7 +2025,7 @@
       "case_order": 95,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -2046,7 +2046,7 @@
       "case_order": 96,
       "particle_count": 2,
       "family": "canonical_dimer",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -2067,7 +2067,7 @@
       "case_order": 97,
       "particle_count": 2,
       "family": "rotational_covariance_audit",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -2088,7 +2088,7 @@
       "case_order": 98,
       "particle_count": 2,
       "family": "rotational_covariance_audit",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -2109,7 +2109,7 @@
       "case_order": 99,
       "particle_count": 2,
       "family": "rotational_covariance_audit",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -2130,7 +2130,7 @@
       "case_order": 100,
       "particle_count": 2,
       "family": "rotational_covariance_audit",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
@@ -2151,7 +2151,7 @@
       "case_order": 101,
       "particle_count": 2,
       "family": "rotational_covariance_audit",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.05,
         "k_rad_m": 0.05,
@@ -2172,7 +2172,7 @@
       "case_order": 102,
       "particle_count": 2,
       "family": "rotational_covariance_audit",
-      "enabled": false,
+      "enabled": true,
       "parameters": {
         "ka": 0.1,
         "k_rad_m": 0.1,
