@@ -1,4 +1,4 @@
-# P1.6A / P1.6A.1 — response-blind pre-campaign freeze
+# P1.6A / P1.6A.1 / P1.6A.2 — response-blind pre-campaign freeze
 
 Date: 2026-08-20
 Status: **frozen; `GO_P1.6B_EXECUTE`; no confirmatory case executed**
@@ -35,6 +35,11 @@ P1.6A.1 is a response-blind implementation amendment on draft PR #7. It does
 not change the confirmatory manifest or either public lock. It freezes runtime
 provenance, conservative reservation accounting and the previously missing
 normalized scientific responses before any confirmatory solve.
+
+P1.6A.2 is a second response-blind implementation amendment on the same draft
+PR. It changes no manifest, response, physical quantity, metric, G1 rule or
+numerical policy. It only makes the CLI worktree preflight compatible with the
+versionable ledger/checkpoints that a legitimate resume must retain.
 
 ## Frozen campaign and resource budget
 
@@ -83,6 +88,18 @@ all never-started cases and reasons. Local failure otherwise does not stop
 later cases. A closed campaign, existing outputs, changed provenance/lock,
 duplicate attempt or output overwrite is rejected.
 
+The CLI reads `git status --porcelain=v1 -z --untracked-files=all` and parses
+the NUL-delimited records, including both paths of a rename/copy. If
+`campaign_ledger.json` does not yet exist, every reported worktree change is a
+hard refusal. If it exists, only files strictly below
+`campaigns/p1/.p1_6_checkpoint/` may be modified, staged or untracked. A
+similarly prefixed sibling is not allowed. Any code, manifest, documentation,
+`results/`, `papers/` or confirmatory CSV change is rejected. The checkpoint
+directory is intentionally not ignored: it is execution provenance, not
+scratch space. Branch, HEAD, manifest, argv and numeric-environment checks
+remain mandatory, and existing confirmatory outputs forbid resume before an
+executor can be called.
+
 `execute_model_e_case` constructs the frozen centered dimer, invokes
 `solve_model_be_nodal` once and collects each Model-E order once. For `N=2`,
 the final E interaction force is taken from that same pair ledger and reused
@@ -99,6 +116,15 @@ derived, plot, failure and performance CSV bytes. Two regenerations must be
 identical before publication, and publication refuses any existing target.
 Raw and performance rows use the actually executed commit; the manifest's
 historical `git_commit` remains separately serialized as `manifest_git_commit`.
+
+At the end of P1.6B, explicit staging must preserve
+`campaign_ledger.json`, all 102 individual case checkpoints that exist, the
+five confirmatory CSVs (`data_raw.csv`, `data_derived.csv`, `data_plot.csv`,
+`failures.csv`, `performance.csv`) and SHA-256 digests for every one of those
+files. After any response has been observed, checkpoints may not be cleaned,
+discarded or regenerated. Derived CSVs may be rebuilt only for the already
+frozen byte-identity audit; they never replace or rewrite observed checkpoint
+provenance.
 
 For eligible cases, derived data retain the secondary absolute response
 `be_minus_a_rms` and add
@@ -138,13 +164,16 @@ Contract, identity or covariance failure has precedence and yields
 exhaustion yields `INCONCLUSIVE_G1 / INCONCLUSIVE_P1`. Only all valid gates
 yield `PASS_G1 / GO_P2`.
 
-## P1.6A.1 decision
+## P1.6A.2 decision
 
 Manifest recomputation, provenance mutation guards, checkpoint/resume,
 conservative local/global accounting, epsilon equivalence/applicability,
 schemas, deterministic hashes and two no-solver regenerations pass with fake
-responses. The focused suite reports **66 passed in 2.92 s**; the complete
-suite with warnings as errors reports **606 passed, 1 xfailed in 659.14 s**.
-No confirmatory checkpoint or response file exists in this commit, and
-`results/` and `papers/` are unchanged. Decision:
+responses. The P1.6A.2 focused suite reports **79 passed in 3.34 s**; the
+complete suite with warnings as errors reports **619 passed, 1 xfailed in
+772.48 s**.
+P1.6A.2 additionally verifies the first-run/resume worktree boundary and
+preexisting-output refusal without a real solver. No confirmatory checkpoint
+or response file exists in this commit, and `results/` and `papers/` are
+unchanged. Decision:
 **`GO_P1.6B_EXECUTE`**, pending audit of this draft PR.

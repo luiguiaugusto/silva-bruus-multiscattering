@@ -15,6 +15,14 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / "campaigns" / "p1" / ".p1_6_checkpoint"
+CHECKPOINT_RELATIVE = Path("campaigns/p1/.p1_6_checkpoint")
+CONFIRMATORY_ARTIFACTS = (
+    Path("campaigns/p1/data_raw.csv"),
+    Path("campaigns/p1/data_derived.csv"),
+    Path("campaigns/p1/data_plot.csv"),
+    Path("campaigns/p1/failures.csv"),
+    Path("campaigns/p1/performance.csv"),
+)
 THREAD_ENVIRONMENT = (
     "OPENBLAS_NUM_THREADS",
     "OMP_NUM_THREADS",
@@ -33,6 +41,74 @@ def _git(*arguments: str) -> str:
         capture_output=True,
         text=True,
     ).stdout.strip()
+
+
+def _git_status_entries() -> tuple[tuple[str, tuple[str, ...]], ...]:
+    """Return unambiguously parsed porcelain-v1 status records."""
+
+    raw = subprocess.run(
+        ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    ).stdout
+    fields = raw.split(b"\0")
+    if fields[-1] != b"":
+        raise RuntimeError("git status porcelain-v1 -z output lacks its terminator")
+    entries: list[tuple[str, tuple[str, ...]]] = []
+    index = 0
+    while index < len(fields) - 1:
+        record = fields[index]
+        index += 1
+        if len(record) < 4 or record[2:3] != b" ":
+            raise RuntimeError("cannot parse git status porcelain-v1 -z output")
+        status = record[:2].decode("ascii")
+        paths = [os.fsdecode(record[3:])]
+        if "R" in status or "C" in status:
+            if index >= len(fields) - 1 or not fields[index]:
+                raise RuntimeError("renamed git status record lacks its source path")
+            paths.append(os.fsdecode(fields[index]))
+            index += 1
+        entries.append((status, tuple(paths)))
+    return tuple(entries)
+
+
+def _is_checkpoint_path(path: str) -> bool:
+    prefix = CHECKPOINT_RELATIVE.as_posix() + "/"
+    return path.startswith(prefix)
+
+
+def _require_worktree_state() -> None:
+    existing_outputs = [
+        relative.as_posix()
+        for relative in CONFIRMATORY_ARTIFACTS
+        if (ROOT / relative).exists()
+    ]
+    if existing_outputs:
+        raise RuntimeError(
+            "preexisting confirmatory output forbids P1.6 execution: "
+            f"{existing_outputs}"
+        )
+
+    entries = _git_status_entries()
+    ledger_exists = (STATE / "campaign_ledger.json").is_file()
+    if not ledger_exists and entries:
+        raise RuntimeError(
+            "first P1.6 execution requires an absolutely clean committed worktree"
+        )
+    if ledger_exists:
+        outside_checkpoint = [
+            path
+            for _, paths in entries
+            for path in paths
+            if not _is_checkpoint_path(path)
+        ]
+        if outside_checkpoint:
+            raise RuntimeError(
+                "P1.6 resume permits changes only inside the exact "
+                f"{CHECKPOINT_RELATIVE.as_posix()}/ directory; got "
+                f"{outside_checkpoint}"
+            )
 
 
 def _artifact_module():
@@ -99,8 +175,7 @@ def _require_execution_environment() -> None:
         raise RuntimeError(
             f"confirmatory execution is refused outside a P1.6B branch: {branch!r}"
         )
-    if _git("status", "--porcelain", "--untracked-files=all"):
-        raise RuntimeError("P1.6 execution requires a clean committed worktree")
+    _require_worktree_state()
 
 
 def main() -> None:

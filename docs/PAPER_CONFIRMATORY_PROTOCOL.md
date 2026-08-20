@@ -60,6 +60,14 @@ provenance. The primary scientific response is `epsilon_a_e`; `epsilon_be_e`
 and absolute `be_minus_a_rms` remain reported, with exact null-denominator
 applicability and no threshold in G1. P1.6A.1 runs no confirmatory case.
 
+P1.6A.2 remains response-blind and changes no manifest, physics, metric, G1 or
+numerical rule. Its CLI requires an entirely clean first execution and, on
+resume, accepts only versionable ledger/checkpoint status below the exact
+`.p1_6_checkpoint/` directory. Code, manifest, documents, scientific trees
+and preexisting confirmatory CSVs remain hard refusals. P1.6B must explicitly
+stage the ledger, 102 existing case checkpoints, five CSVs and their hashes;
+observed checkpoints may never be cleaned, discarded or regenerated.
+
 ## Paper question and intended answer
 
 Question: when and why does the pairwise nodal Silva–Bruus interaction cease
@@ -248,7 +256,7 @@ Exact numerical thresholds are **TBD** unless already physical identities.
 
 Luigui and ChatGPT Work must decide:
 
-1. P1.1--P1.6A.1 are resolved: the grid, policy, exact hashes, resources,
+1. P1.1--P1.6A.2 are resolved: the grid, policy, exact hashes, resources,
    enablement, runner and G1 are frozen. The separate P1.5 pilot is historical;
    all 102 confirmatory cases are enabled but remain unexecuted until P1.6B.
 2. P1 uses independently confirmed pair orders; P1.3 completed the

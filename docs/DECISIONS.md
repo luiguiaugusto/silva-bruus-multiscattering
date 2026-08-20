@@ -405,5 +405,13 @@
   `be_minus_a_rms` are also serialized. Applicability exactly follows
   `normalized_rms_error_xyz`; null denominators remain inapplicable without
   flooring, clipping or imputation. No response magnitude is a G1 gate.
+- P1.6A.2 preserves every frozen scientific and manifest byte while making the
+  CLI status boundary resumable. First execution requires a clean worktree;
+  resume accepts only NUL-parsed status paths strictly inside
+  `campaigns/p1/.p1_6_checkpoint/` and rejects preexisting confirmatory CSVs.
+  The checkpoint directory remains versionable. At P1.6B handoff, explicitly
+  stage the ledger, all 102 existing case checkpoints, five CSVs and hashes for
+  all files. Observed checkpoints may not be cleaned, discarded or regenerated.
 - Decision: `GO_P1.6B_EXECUTE`, conditional only on audit/merge of P1.6A.
-  P1.6A performs no confirmatory solve and creates no confirmatory response.
+  P1.6A/P1.6A.1/P1.6A.2 perform no confirmatory solve and create no
+  confirmatory response.

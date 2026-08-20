@@ -63,5 +63,11 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
   distinguish execution and manifest commits; `epsilon_a_e` is the main plot
   response while `epsilon_be_e` and absolute `be_minus_a_rms` remain explicit.
   Manifest/locks and all P1.5 bytes are unchanged; no confirmatory case ran.
+- [x] P1.6A.2 -- response-blind CLI worktree amendment on draft PR #7: first
+  execution requires a clean tree; resume admits only versionable files below
+  the exact `.p1_6_checkpoint/` directory and refuses external/staged changes
+  or preexisting confirmatory CSVs before any executor. P1.6B must stage the
+  ledger, 102 existing case checkpoints, five CSVs and all hashes without
+  cleaning or regenerating observed checkpoints. Frozen bytes remain unchanged.
 - [ ] P1.6B -- execute the locked 102-case campaign exactly once and evaluate
-  G1. Not started by P1.6A/P1.6A.1.
+  G1. Not started by P1.6A/P1.6A.1/P1.6A.2.

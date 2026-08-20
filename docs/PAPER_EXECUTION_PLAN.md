@@ -94,11 +94,12 @@ Small tasks:
    \(ka=0.1,d/a=2.1,\theta=0\) evaluated orders 2--21 once and ended
    `unconfirmed_at_21`, `eligible=false`. Resource limits and deterministic
    serialization passed; its force remains excluded from scientific tables.
-6. **P1.6A/P1.6A.1 blind pre-campaign freeze** — complete. All 102 cases are
-   enabled; resources, actual-execution provenance, conservative reservation
-   accounting, single-attempt runner, normalized responses, pure deterministic
-   analysis and G1 are frozen without a confirmatory solve. The amendment
-   changes no manifest byte or lock.
+6. **P1.6A/P1.6A.1/P1.6A.2 blind pre-campaign freeze** — complete. All 102
+   cases are enabled; resources, actual-execution provenance, conservative
+   reservation accounting, single-attempt runner, normalized responses, pure
+   deterministic analysis and G1 are frozen without a confirmatory solve. The
+   CLI amendment admits only the exact versionable checkpoint directory on
+   resume and changes no manifest byte or lock.
 7. **P1.6B campaign and analysis** — after audit, execute once, retain all
    cases, run deterministic analysis twice and evaluate G1.
 
@@ -298,10 +299,12 @@ paper's claim scope.
 - preserve the mixed pre-P0 user worktree outside P1 staging;
 - do not treat T13–T14.1 as `confirmatory_new`.
 
-## Current P1.6A.1 gate
+## Current P1.6A.2 gate
 
 `GO_P1.6B_EXECUTE`, pending audit. The manifest, resources, runner and G1 are
 frozen response-blind. Execution must bind HEAD/environment and conservatively
 debit every abandoned reservation; `epsilon_a_e` is the primary response but
-no magnitude enters G1. All 102 cases are enabled, but P1.6A/P1.6A.1 executed
-none and created no confirmatory artifact. Stop before P1.6B.
+no magnitude enters G1. First execution requires a clean worktree; resume
+accepts only the exact checkpoint directory. All 102 cases are enabled, but
+P1.6A/P1.6A.1/P1.6A.2 executed none and created no confirmatory artifact. Stop
+before P1.6B.

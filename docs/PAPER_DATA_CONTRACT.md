@@ -229,6 +229,14 @@ execution commit, while `manifest_git_commit` remains historical. Two builds
 from checkpoint bytes must match exactly, and existing outputs forbid
 publication. No P1.6 table exists at the P1.6A checkpoint.
 
+P1.6A.2 treats `.p1_6_checkpoint/` as versionable provenance. The first CLI
+execution requires a clean worktree; resume permits status entries only under
+that exact directory and rejects every preexisting confirmatory CSV. The
+directory must not be ignored. At P1.6B handoff, explicitly stage the campaign
+ledger, all 102 existing per-case checkpoints, all five confirmatory CSVs and
+SHA-256 for each file. Once responses exist, checkpoint bytes cannot be
+cleaned, discarded or regenerated.
+
 ### `fit_parameters.csv`
 
 One row per fit/fold/version:

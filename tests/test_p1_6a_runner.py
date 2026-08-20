@@ -226,15 +226,84 @@ def test_resume_rejects_head_hash_or_numeric_environment_change(
     )
     ledger, _ = load_campaign_checkpoint(state)
     assert ledger["execution_provenance"] == _provenance(root)
+    resumed_executor = FakeExecutor()
     with pytest.raises(CampaignExecutionError, match=message):
         run_p1_6_campaign(
             root,
-            executor=FakeExecutor(),
+            executor=resumed_executor,
             state_directory=state,
             utc_now=lambda: UTC,
             max_new_cases=1,
             execution_provenance=_provenance(root, **mutation),
         )
+    assert resumed_executor.case_ids == []
+
+
+def test_resume_rejects_real_head_change_before_executor(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _root(tmp_path, "real-head-change")
+    state = tmp_path / "state-real-head-change"
+    subprocess.run(["git", "init", "-b", "agent/p1-6b-execute"], cwd=root, check=True)
+    subprocess.run(["git", "config", "user.name", "P1.6A Test"], cwd=root, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "p1-6a@example.invalid"],
+        cwd=root,
+        check=True,
+    )
+    subprocess.run(["git", "add", "campaigns"], cwd=root, check=True)
+    subprocess.run(["git", "commit", "-m", "frozen manifests"], cwd=root, check=True)
+    for key in NUMERIC_ENVIRONMENT_KEYS:
+        monkeypatch.setenv(key, "0" if key == "PYTHONHASHSEED" else "1")
+
+    run_p1_6_campaign(
+        root,
+        executor=FakeExecutor(),
+        state_directory=state,
+        utc_now=lambda: UTC,
+        max_new_cases=1,
+    )
+    (root / "execution-marker.txt").write_text("new head\n", encoding="utf-8")
+    subprocess.run(["git", "add", "execution-marker.txt"], cwd=root, check=True)
+    subprocess.run(["git", "commit", "-m", "change head"], cwd=root, check=True)
+    resumed_executor = FakeExecutor()
+
+    with pytest.raises(CampaignExecutionError, match="execution HEAD differs"):
+        run_p1_6_campaign(
+            root,
+            executor=resumed_executor,
+            state_directory=state,
+            utc_now=lambda: UTC,
+            max_new_cases=1,
+        )
+    assert resumed_executor.case_ids == []
+
+
+def test_resume_rejects_preexisting_output_before_executor(tmp_path: Path) -> None:
+    root = _root(tmp_path, "resume-output")
+    state = tmp_path / "state-resume-output"
+    run_p1_6_campaign(
+        root,
+        executor=FakeExecutor(),
+        state_directory=state,
+        utc_now=lambda: UTC,
+        max_new_cases=1,
+        execution_provenance=_provenance(root),
+    )
+    output = root / "campaigns" / "p1" / "data_raw.csv"
+    output.write_text("preexisting response\n", encoding="utf-8")
+    resumed_executor = FakeExecutor()
+
+    with pytest.raises(FileExistsError, match="campaign output exists"):
+        run_p1_6_campaign(
+            root,
+            executor=resumed_executor,
+            state_directory=state,
+            utc_now=lambda: UTC,
+            max_new_cases=1,
+            execution_provenance=_provenance(root),
+        )
+    assert resumed_executor.case_ids == []
 
 
 def test_102_case_order_single_attempt_g1_and_no_solver_regeneration(
@@ -329,7 +398,7 @@ def test_102_case_order_single_attempt_g1_and_no_solver_regeneration(
     assert set(published.values())
     with pytest.raises(FileExistsError, match="second publication"):
         publish_campaign_artifacts(root, first)
-    with pytest.raises(CampaignExecutionError, match="second execution"):
+    with pytest.raises(FileExistsError, match="campaign output exists"):
         run_p1_6_campaign(
             root,
             executor=executor,

@@ -482,12 +482,12 @@ def _read_ledger(
     execution_provenance: Mapping[str, Any],
 ) -> tuple[dict[str, Any], bool]:
     ledger_path = configuration.state_directory / "campaign_ledger.json"
+    for relative in ARTIFACT_PATHS.values():
+        if (configuration.root / relative).exists():
+            raise FileExistsError(
+                "campaign output exists; overwrite or a second campaign is forbidden"
+            )
     if not ledger_path.exists():
-        for relative in ARTIFACT_PATHS.values():
-            if (configuration.root / relative).exists():
-                raise FileExistsError(
-                    "campaign output exists; overwrite or a second campaign is forbidden"
-                )
         ledger = _initial_ledger(configuration, now_utc, execution_provenance)
         _atomic_json(ledger_path, ledger)
         return ledger, False

@@ -2712,8 +2712,19 @@ The pure analysis retains absolute `be_minus_a_rms`, adds `epsilon_a_e` and
 Numerically null denominators are explicit and inapplicable, with no floor,
 clipping or imputation. None of these magnitudes changes G1.
 
-P1.6A/P1.6A.1 ran no confirmatory case and created no confirmatory artifact.
-No path under `results/` or `papers/` changed. The amended focused suite passed
-**66 tests in 2.92 s**; the complete suite with warnings as errors passed
-**606 tests**, with the unchanged G7 as the sole xfail, in 659.14 s. Decision:
+P1.6A.2 keeps every manifest, lock, physical response definition, G1 gate and
+numerical rule unchanged. The CLI now requires a clean worktree before the
+first case and uses NUL-delimited porcelain-v1 status on resume, accepting only
+ledger/checkpoint paths strictly inside `.p1_6_checkpoint/`. It rejects code,
+manifest, document, `results/`, `papers/`, staged/external/untracked files and
+preexisting confirmatory CSVs before an executor. The checkpoint directory is
+not ignored. P1.6B handoff must explicitly stage `campaign_ledger.json`, all
+102 existing case checkpoints, the five confirmatory CSVs and their SHA-256
+digests. No observed checkpoint may be cleaned, discarded or regenerated.
+
+P1.6A/P1.6A.1/P1.6A.2 ran no confirmatory case and created no confirmatory
+artifact.
+No path under `results/` or `papers/` changed. The P1.6A.2 focused suite passed
+**79 tests in 3.34 s**; the complete suite with warnings as errors passed
+**619 tests**, with the unchanged G7 as the sole xfail, in 772.48 s. Decision:
 `GO_P1.6B_EXECUTE` pending audit; stop before P1.6B.
