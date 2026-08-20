@@ -35,6 +35,7 @@ from .model_e import (
 )
 from .paper_pipeline import (
     P1_FROZEN_MANIFEST_SHA256,
+    P1_HISTORICAL_MANIFEST_SHA256,
     validate_executable_manifest_file,
     validate_manifest_file,
 )
@@ -216,7 +217,14 @@ def load_p1_5_configuration(root: str | Path) -> PilotConfiguration:
         pilot_path,
         expected_campaign_id=PILOT_CAMPAIGN_ID,
     )
-    confirmatory = validate_manifest_file(confirmatory_path, kind="campaign")
+    historical_confirmatory_sha256 = P1_HISTORICAL_MANIFEST_SHA256[
+        "p1_dimer_confirmatory_p1_4"
+    ]
+    confirmatory = validate_manifest_file(
+        confirmatory_path,
+        kind="campaign",
+        expected_sha256=historical_confirmatory_sha256,
+    )
     if confirmatory["campaign_id"] != CONFIRMATORY_CAMPAIGN_ID:
         raise PilotExecutionError("unexpected confirmatory campaign identity")
     if any(case["enabled"] for case in confirmatory["cases"]):
@@ -231,7 +239,7 @@ def load_p1_5_configuration(root: str | Path) -> PilotConfiguration:
     ]:
         raise PilotExecutionError("pilot manifest hash differs from the public lock")
     if confirmatory["provenance"]["manifest_sha256"] != (
-        P1_FROZEN_MANIFEST_SHA256[CONFIRMATORY_CAMPAIGN_ID]
+        historical_confirmatory_sha256
     ):
         raise PilotExecutionError(
             "confirmatory manifest hash differs from the public lock"
@@ -1103,8 +1111,16 @@ class _null_context:
 def verify_p1_5_derivations(root: str | Path) -> Mapping[str, str]:
     """Regenerate derived tables twice and verify every published byte."""
 
-    configuration = load_p1_5_configuration(root)
-    output = configuration.output_directory
+    repository = Path(root).resolve()
+    pilot = validate_manifest_file(
+        repository / PILOT_MANIFEST_RELATIVE,
+        kind="campaign",
+    )
+    if pilot["provenance"]["manifest_sha256"] != P1_FROZEN_MANIFEST_SHA256[
+        PILOT_CAMPAIGN_ID
+    ]:
+        raise PilotExecutionError("pilot manifest hash differs from the public lock")
+    output = repository / PILOT_OUTPUT_RELATIVE
     observed_names = {path.name for path in output.iterdir() if path.is_file()}
     if observed_names != set(_ARTIFACT_NAMES):
         raise PilotExecutionError("published P1.5 artifact set is incomplete")

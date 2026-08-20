@@ -371,3 +371,47 @@
   derived generations are byte-identical. Pilot forces remain excluded from
   scientific tables, and all 102 confirmatory cases remain disabled.
 - Decision: `GO_P1.6A_BLIND_FREEZE`. P1.5 authorizes no P1.6 execution.
+
+
+## P1.6A response-blind pre-campaign decision
+
+- PR #6 was verified at head
+  `e5f4efebbdd4e9983ef075f3fa038b875dd28bda` (two commits, 17 files and five
+  matching artifact hashes) and merged as
+  `0e4f643ef8161af57af41c6600944eaaf6f8719a`.
+- The P1.4 confirmatory hash
+  `9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca`
+  remains an explicit historical lock. The enabled P1.6A lock is
+  `3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe`.
+  Pilot manifest/artifact bytes are unchanged.
+- Exactly 102 cases are enabled in order: 96 primaries remain included and six
+  audits remain excluded. Physical parameters, convergence policy, paths,
+  classifications, IDs and twin links are byte-equivalent to P1.4 after
+  removing only the authorized provenance/resource/enablement fields.
+- Resources are frozen at one worker, one BLAS thread, 1800 s and 4 GiB per
+  case, plus 64800 s globally. Worst-case local ceilings sum to 183600 s;
+  the global stop is independently binding and cannot trigger retries.
+- G1 is frozen exactly as specified in `docs/P1_6A_BLIND_FREEZE.md`, including
+  the scale-safe `1e-12` identity/rotation budget. `|B_E-A|` is never a gate.
+- P1.6A.1 leaves every manifest byte and lock unchanged. It binds the initial
+  ledger to actual execution HEAD plus the allowlisted one-thread environment
+  and `PYTHONHASHSEED=0`; resume rejects provenance divergence without storing
+  unrelated environment values.
+- Every pre-solve `started` record reserves its floating effective wall limit.
+  Recovery without a terminal checkpoint permanently interrupts the case and
+  debits that reservation up to the remaining 64800-s balance. Exhaustion is
+  `INCONCLUSIVE_P1`, with never-started cases retained visibly.
+- The primary response is `epsilon_a_e`; `epsilon_be_e` and secondary absolute
+  `be_minus_a_rms` are also serialized. Applicability exactly follows
+  `normalized_rms_error_xyz`; null denominators remain inapplicable without
+  flooring, clipping or imputation. No response magnitude is a G1 gate.
+- P1.6A.2 preserves every frozen scientific and manifest byte while making the
+  CLI status boundary resumable. First execution requires a clean worktree;
+  resume accepts only NUL-parsed status paths strictly inside
+  `campaigns/p1/.p1_6_checkpoint/` and rejects preexisting confirmatory CSVs.
+  The checkpoint directory remains versionable. At P1.6B handoff, explicitly
+  stage the ledger, all 102 existing case checkpoints, five CSVs and hashes for
+  all files. Observed checkpoints may not be cleaned, discarded or regenerated.
+- Decision: `GO_P1.6B_EXECUTE`, conditional only on audit/merge of P1.6A.
+  P1.6A/P1.6A.1/P1.6A.2 perform no confirmatory solve and create no
+  confirmatory response.

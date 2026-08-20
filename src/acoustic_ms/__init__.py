@@ -92,7 +92,8 @@ from .large_n_validation import (
     large_n_template, local_coupling_statistics, local_geometric_coupling,
 )
 from .paper_pipeline import (
-    ManifestValidationError, P1_FROZEN_MANIFEST_SHA256, load_json_yaml,
+    ManifestValidationError, P1_FROZEN_MANIFEST_SHA256,
+    P1_HISTORICAL_MANIFEST_SHA256, load_json_yaml,
     manifest_file_sha256, manifest_sha256, validate_executable_manifest_file,
     validate_manifest, validate_manifest_file, verify_manifest_sha256,
 )
@@ -100,6 +101,19 @@ from .p1_pilot import (
     PilotConfiguration, PilotExecutionError, PilotExecutionSummary,
     derive_p1_5_artifacts, execute_p1_5_pilot, load_p1_5_configuration,
     verify_p1_5_derivations,
+)
+from .p1_campaign import (
+    CampaignCaseTimeout, CampaignConfiguration, CampaignExecutionError,
+    CampaignGlobalTimeout, NUMERIC_ENVIRONMENT_KEYS,
+    CampaignRunSummary, execute_model_e_case, execute_model_e_case_with_limits,
+    capture_p1_6_execution_provenance, load_p1_6_configuration,
+    run_p1_6_campaign,
+)
+from .p1_campaign_artifacts import (
+    CampaignArtifactError, G1Result, artifact_sha256,
+    build_campaign_artifacts, evaluate_g1, load_campaign_checkpoint,
+    load_checkpoint_records, normalized_rms_error_xyz_pure,
+    publish_campaign_artifacts,
 )
 from .plot_style import (
     ACCESSIBLE_COLORS, MM_PER_INCH, ONE_COLUMN_MM, REDUNDANT_MARKERS,
@@ -306,6 +320,7 @@ __all__ = [
     "local_geometric_coupling",
     "ManifestValidationError",
     "P1_FROZEN_MANIFEST_SHA256",
+    "P1_HISTORICAL_MANIFEST_SHA256",
     "load_json_yaml",
     "manifest_file_sha256",
     "manifest_sha256",
@@ -320,6 +335,26 @@ __all__ = [
     "execute_p1_5_pilot",
     "load_p1_5_configuration",
     "verify_p1_5_derivations",
+    "CampaignCaseTimeout",
+    "CampaignConfiguration",
+    "CampaignExecutionError",
+    "CampaignGlobalTimeout",
+    "NUMERIC_ENVIRONMENT_KEYS",
+    "CampaignRunSummary",
+    "capture_p1_6_execution_provenance",
+    "execute_model_e_case",
+    "execute_model_e_case_with_limits",
+    "load_p1_6_configuration",
+    "run_p1_6_campaign",
+    "CampaignArtifactError",
+    "G1Result",
+    "artifact_sha256",
+    "build_campaign_artifacts",
+    "evaluate_g1",
+    "load_campaign_checkpoint",
+    "load_checkpoint_records",
+    "normalized_rms_error_xyz_pure",
+    "publish_campaign_artifacts",
     "ACCESSIBLE_COLORS",
     "MM_PER_INCH",
     "ONE_COLUMN_MM",

@@ -193,6 +193,50 @@ causes refusal before any solver call; partial hidden directories are removed
 on publication failure. Derived and plot tables regenerate byte-identically
 from raw, performance and failure bytes without invoking a solver.
 
+### P1.6 checkpoint and deterministic tables
+
+P1.6 uses an atomic JSON campaign ledger plus one atomic JSON checkpoint per
+case. Before the first case, `execution_provenance` records the actual HEAD,
+branch, directory, interpreter/arguments, Python/platform and NumPy/SciPy
+versions, manifest hash, five thread variables and `PYTHONHASHSEED`; no other
+environment keys are allowed. Resume requires byte-equivalent provenance.
+`manifest_provenance` separately preserves the manifest's historical commit.
+
+`attempt_count` is 0 or 1. Each pre-solve `started` record contains its positive
+floating-point `effective_wall_seconds`; terminal records add
+`wall_seconds_debited`. A stale `started` becomes permanently `interrupted`,
+debits its reservation up to the remaining global balance, and resume selects
+only `never_started`. Every completed
+checkpoint stores all attempted/evaluated orders, four channel vectors and
+convergence values, diagnostics, timing, peak RSS, A/B_E/E vectors,
+eligibility and reasons. B_E and E for a dimer reuse the same Model-E order
+solves.
+
+The pure P1.6 artifact module has no scientific imports and emits the four
+manifest paths plus `campaigns/p1/performance.csv`. Raw rows retain
+case/order/particle/model/channel forces, physical values, positions,
+resources, timing and JSON numerical diagnostics. Derived rows contain
+the secondary absolute `be_minus_a_rms`, normalized `epsilon_a_e` and
+`epsilon_be_e`, `be_e_identity_error`, explicit applicability/reasons and the
+six `rotational_covariance_error` audits. Epsilon applicability is exactly the
+contract of `model_e_comparison.normalized_rms_error_xyz`; a numerically null
+E denominator returns the absolute residual with `applicable=false`, never a
+floor, clip or imputation. Plot rows use applicable `epsilon_a_e` as the main
+response, retain eligible primaries only and leave the plotted value empty when
+the metric is inapplicable. Failures and performance retain every
+exclusion/attempt. Raw and performance `git_commit` fields identify the actual
+execution commit, while `manifest_git_commit` remains historical. Two builds
+from checkpoint bytes must match exactly, and existing outputs forbid
+publication. No P1.6 table exists at the P1.6A checkpoint.
+
+P1.6A.2 treats `.p1_6_checkpoint/` as versionable provenance. The first CLI
+execution requires a clean worktree; resume permits status entries only under
+that exact directory and rejects every preexisting confirmatory CSV. The
+directory must not be ignored. At P1.6B handoff, explicitly stage the campaign
+ledger, all 102 existing per-case checkpoints, all five confirmatory CSVs and
+SHA-256 for each file. Once responses exist, checkpoint bytes cannot be
+cleaned, discarded or regenerated.
+
 ### `fit_parameters.csv`
 
 One row per fit/fold/version:

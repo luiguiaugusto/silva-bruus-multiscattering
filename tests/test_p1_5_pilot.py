@@ -22,7 +22,11 @@ from acoustic_ms.p1_pilot import (
     load_p1_5_configuration,
     verify_p1_5_derivations,
 )
-from acoustic_ms.paper_pipeline import P1_FROZEN_MANIFEST_SHA256
+from acoustic_ms.paper_pipeline import (
+    P1_FROZEN_MANIFEST_SHA256,
+    P1_HISTORICAL_MANIFEST_SHA256,
+    manifest_sha256,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -124,8 +128,40 @@ def _pilot_root(tmp_path: Path, name: str) -> Path:
     root = tmp_path / name
     destination = root / "campaigns" / "p1"
     destination.mkdir(parents=True)
-    for manifest in ("campaign_manifest.yaml", "pilot_manifest.yaml"):
-        shutil.copy2(ROOT / "campaigns" / "p1" / manifest, destination / manifest)
+    shutil.copy2(
+        ROOT / "campaigns" / "p1" / "pilot_manifest.yaml",
+        destination / "pilot_manifest.yaml",
+    )
+    normalized = (ROOT / "campaigns" / "p1" / "campaign_manifest.yaml").read_bytes()
+    normalized = normalized.replace(
+        b"0e4f643ef8161af57af41c6600944eaaf6f8719a",
+        b"20ffb8726c2517ecacc580ed16223077e9b0ab08",
+        1,
+    ).replace(
+        b"P1.6A response-blind pre-campaign freeze; authorizes only P1.6B",
+        b"P1.4 response-blind freeze; confirmatory execution remains blocked",
+        1,
+    ).replace(
+        b"3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe",
+        b"9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca",
+        1,
+    ).replace(
+        b'"wall_seconds_campaign": 64800',
+        b'"wall_seconds_campaign": 43200',
+        1,
+    ).replace(
+        b'"limits_status": "frozen"',
+        b'"limits_status": "provisional"',
+        1,
+    ).replace(
+        b'"enabled": true',
+        b'"enabled": false',
+    )
+    historical = P1_HISTORICAL_MANIFEST_SHA256[
+        "p1_dimer_confirmatory_p1_4"
+    ]
+    assert manifest_sha256(normalized) == historical
+    (destination / "campaign_manifest.yaml").write_bytes(normalized)
     return root
 
 

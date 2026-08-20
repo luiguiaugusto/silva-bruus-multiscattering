@@ -51,3 +51,23 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
   `unconfirmed_at_21`, `eligible=false`; 494.133 s and 311857152-byte peak RSS
   pass the provisional limits, artifacts/derivations are deterministic and
   excluded from scientific tables. Decision: `GO_P1.6A_BLIND_FREEZE`.
+- [x] P1.6A -- exact-byte confirmatory lock updated with all 102 cases enabled,
+  96 scientific primaries plus six excluded rotational audits, frozen
+  1-worker/1-thread/1800-s/4-GiB/64800-s limits, single-attempt checkpointed
+  runner, pure deterministic analysis and pre-response G1. No confirmatory
+  case ran and no confirmatory artifact was created. Decision:
+  `GO_P1.6B_EXECUTE` pending audit.
+- [x] P1.6A.1 -- response-blind runner amendment on the same draft PR: actual
+  execution provenance and allowlisted environment are immutable on resume;
+  abandoned floating wall reservations debit the global budget; raw/performance
+  distinguish execution and manifest commits; `epsilon_a_e` is the main plot
+  response while `epsilon_be_e` and absolute `be_minus_a_rms` remain explicit.
+  Manifest/locks and all P1.5 bytes are unchanged; no confirmatory case ran.
+- [x] P1.6A.2 -- response-blind CLI worktree amendment on draft PR #7: first
+  execution requires a clean tree; resume admits only versionable files below
+  the exact `.p1_6_checkpoint/` directory and refuses external/staged changes
+  or preexisting confirmatory CSVs before any executor. P1.6B must stage the
+  ledger, 102 existing case checkpoints, five CSVs and all hashes without
+  cleaning or regenerating observed checkpoints. Frozen bytes remain unchanged.
+- [ ] P1.6B -- execute the locked 102-case campaign exactly once and evaluate
+  G1. Not started by P1.6A/P1.6A.1/P1.6A.2.

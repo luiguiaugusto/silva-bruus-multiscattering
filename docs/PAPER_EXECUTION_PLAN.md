@@ -1,23 +1,28 @@
 # Paper execution plan
 
-Status: **P1.5 complete; `GO_P1.6A_BLIND_FREEZE`**.
-The one-case development resource pilot has run exactly once. The 102-case
-confirmatory campaign remains blocked and wholly disabled; P1.6 has not begun.
+Status: **P1.6A frozen; `GO_P1.6B_EXECUTE` pending audit**.
+The one-case development resource pilot has run exactly once. All 102
+confirmatory cases are now enabled under a new exact-byte lock, but no
+confirmatory case or response has run in P1.6A.
 
 P0 was merged through PR #1 at merge commit
 `926e639fe2d327eacd09a2542208500891399687`. P1.1 froze the 102 IDs and the
 separate pilot; P1.2 implemented `B_E`; P1.3 was finalized through PR #4 at
 merge commit `20ffb8726c2517ecacc580ed16223077e9b0ab08`.
 
-P1.4 makes both manifests `preregistered`. The confirmatory manifest remains
-wholly disabled with hash
+P1.4 made both manifests `preregistered`. Its disabled confirmatory hash is
+retained historically as
 `9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca`.
 Only the one-case `development` pilot is enabled, with hash
 `d8f56ce20f6f0821d84fd6f36e1f76c855f63f55d809ba9a7201ba52097a43bf`.
-Limits remain provisional and the pilot is excluded from scientific tables.
+The pilot limits remain provisional and it is excluded from scientific tables.
 P1.5 reached `L=21` as `unconfirmed_at_21`, used 494.133 s and 311857152 bytes
 of peak RSS, and passed the resource/serialization gate without producing an
 eligible scientific force.
+
+P1.6A freezes the enabled confirmatory manifest at
+`3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe`.
+Its limits are one worker/thread, 1800 s and 4 GiB per case, and 64800 s total.
 
 ## Dependency chain
 
@@ -89,8 +94,14 @@ Small tasks:
    \(ka=0.1,d/a=2.1,\theta=0\) evaluated orders 2--21 once and ended
    `unconfirmed_at_21`, `eligible=false`. Resource limits and deterministic
    serialization passed; its force remains excluded from scientific tables.
-6. **P1.6 campaign and analysis** — execute once, retain all cases, run
-   deterministic analysis twice and evaluate G1.
+6. **P1.6A/P1.6A.1/P1.6A.2 blind pre-campaign freeze** — complete. All 102
+   cases are enabled; resources, actual-execution provenance, conservative
+   reservation accounting, single-attempt runner, normalized responses, pure
+   deterministic analysis and G1 are frozen without a confirmatory solve. The
+   CLI amendment admits only the exact versionable checkpoint directory on
+   resume and changes no manifest byte or lock.
+7. **P1.6B campaign and analysis** — after audit, execute once, retain all
+   cases, run deterministic analysis twice and evaluate G1.
 
 Inputs: P0 schemas/contract, existing A
 (`src/acoustic_ms/silva_bruus.py::nodal_pair_force_on_probe`) and E
@@ -288,9 +299,12 @@ paper's claim scope.
 - preserve the mixed pre-P0 user worktree outside P1 staging;
 - do not treat T13–T14.1 as `confirmatory_new`.
 
-## Current P1.5 gate
+## Current P1.6A.2 gate
 
-`GO_P1.6A_BLIND_FREEZE`. The P1.5 resource measurement and controlled failure
-serialization are valid. The 102-case confirmatory campaign remains blocked
-and wholly disabled. No P1.6 freeze or execution is authorized by this commit;
-stop for audit.
+`GO_P1.6B_EXECUTE`, pending audit. The manifest, resources, runner and G1 are
+frozen response-blind. Execution must bind HEAD/environment and conservatively
+debit every abandoned reservation; `epsilon_a_e` is the primary response but
+no magnitude enters G1. First execution requires a clean worktree; resume
+accepts only the exact checkpoint directory. All 102 cases are enabled, but
+P1.6A/P1.6A.1/P1.6A.2 executed none and created no confirmatory artifact. Stop
+before P1.6B.

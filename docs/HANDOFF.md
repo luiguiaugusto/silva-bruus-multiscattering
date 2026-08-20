@@ -2667,3 +2667,64 @@ Neither P1 manifest changed, all 102 confirmatory cases remain disabled, and
 no path under `results/` or `papers/` changed. Pilot forces remain development
 resource evidence only. Decision: `GO_P1.6A_BLIND_FREEZE`; stop before P1.6
 for audit.
+
+
+## P1.6A response-blind pre-campaign freeze
+
+PR #6 was audited at
+`e5f4efebbdd4e9983ef075f3fa038b875dd28bda`: exactly two commits, 17 files
+and the five published P1.5 artifact hashes. It was made ready and merged by
+merge commit `0e4f643ef8161af57af41c6600944eaaf6f8719a`.
+
+The isolated branch `agent/p1-6a-blind-freeze` enables all 102 confirmatory
+cases while preserving their IDs, order, physical/numerical parameters,
+classifications, paths and six twin links. The 96 primaries remain scientific;
+the six audits remain excluded. Resources are frozen at one worker, one BLAS
+thread, 1800 s and 4 GiB per case, and 64800 s globally. The new exact-byte
+lock is
+`3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe`;
+the P1.4 hash `9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca`
+is retained as historical. Pilot manifest and artifact bytes did not change.
+
+The runner records atomic pre/post ledgers, one attempt at most, no retry of
+an interruption, continuation after local failure, and local/global resource
+stops. It obtains A plus B_E/E without a duplicate dimer order solve. A pure
+no-solver module deterministically builds raw, derived, plot, failure and
+performance tables twice before publication. G1 requires all 102 attempts,
+eligible coverage of 12 strata and six audit–twin pairs, plus B_E=E and
+rotation errors at most `1e-12`; `|B_E-A|` is not a gate.
+
+P1.6A.1 continues response-blind on draft PR #7 without changing a manifest
+byte or lock. The initial ledger now binds the actual execution HEAD, branch,
+directory, interpreter/argv, platform/library versions and only the frozen
+thread variables plus `PYTHONHASHSEED=0`; resume rejects divergence. Raw and
+performance rows use that actual HEAD and preserve the historical manifest
+commit separately. Before each solve, a floating effective wall allowance is
+reserved. Recovery of a nonterminal `started` case debits the reservation,
+forbids retry and caps the debit at the remaining global balance. Fractional
+remainders retain an active real timer, and post-normalization wall/RSS are
+checked again. Exhaustion closes as `INCONCLUSIVE_P1` with never-started cases
+visible.
+
+The pure analysis retains absolute `be_minus_a_rms`, adds `epsilon_a_e` and
+`epsilon_be_e` with applicability exactly equivalent to
+`normalized_rms_error_xyz`, and makes `epsilon_a_e` the plot response.
+Numerically null denominators are explicit and inapplicable, with no floor,
+clipping or imputation. None of these magnitudes changes G1.
+
+P1.6A.2 keeps every manifest, lock, physical response definition, G1 gate and
+numerical rule unchanged. The CLI now requires a clean worktree before the
+first case and uses NUL-delimited porcelain-v1 status on resume, accepting only
+ledger/checkpoint paths strictly inside `.p1_6_checkpoint/`. It rejects code,
+manifest, document, `results/`, `papers/`, staged/external/untracked files and
+preexisting confirmatory CSVs before an executor. The checkpoint directory is
+not ignored. P1.6B handoff must explicitly stage `campaign_ledger.json`, all
+102 existing case checkpoints, the five confirmatory CSVs and their SHA-256
+digests. No observed checkpoint may be cleaned, discarded or regenerated.
+
+P1.6A/P1.6A.1/P1.6A.2 ran no confirmatory case and created no confirmatory
+artifact.
+No path under `results/` or `papers/` changed. The P1.6A.2 focused suite passed
+**79 tests in 3.34 s**; the complete suite with warnings as errors passed
+**619 tests**, with the unchanged G7 as the sole xfail, in 772.48 s. Decision:
+`GO_P1.6B_EXECUTE` pending audit; stop before P1.6B.
