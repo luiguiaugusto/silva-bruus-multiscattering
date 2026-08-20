@@ -21,6 +21,7 @@ THREAD_ENVIRONMENT = (
     "MKL_NUM_THREADS",
     "NUMEXPR_NUM_THREADS",
     "VECLIB_MAXIMUM_THREADS",
+    "PYTHONHASHSEED",
 )
 
 
@@ -56,9 +57,14 @@ def _regenerate(*, publish: bool) -> dict[str, object]:
             encoding="utf-8"
         )
     )
-    records = artifacts_module.load_checkpoint_records(STATE)
-    first, first_gate = artifacts_module.build_campaign_artifacts(manifest, records)
-    second, second_gate = artifacts_module.build_campaign_artifacts(manifest, records)
+    ledger, records = artifacts_module.load_campaign_checkpoint(STATE)
+    provenance = ledger["execution_provenance"]
+    first, first_gate = artifacts_module.build_campaign_artifacts(
+        manifest, records, provenance
+    )
+    second, second_gate = artifacts_module.build_campaign_artifacts(
+        manifest, records, provenance
+    )
     if first != second or first_gate != second_gate:
         raise RuntimeError("two no-solver P1.6 regenerations differ byte-for-byte")
     hashes = artifacts_module.artifact_sha256(first)
@@ -75,13 +81,19 @@ def _regenerate(*, publish: bool) -> dict[str, object]:
 
 
 def _require_execution_environment() -> None:
+    expected = {
+        key: "0" if key == "PYTHONHASHSEED" else "1"
+        for key in THREAD_ENVIRONMENT
+    }
     invalid = {
         key: os.environ.get(key)
-        for key in THREAD_ENVIRONMENT
-        if os.environ.get(key) != "1"
+        for key, expected_value in expected.items()
+        if os.environ.get(key) != expected_value
     }
     if invalid:
-        raise RuntimeError(f"P1.6 requires one thread in every BLAS variable: {invalid}")
+        raise RuntimeError(
+            f"P1.6 requires the frozen numeric environment {expected}; got {invalid}"
+        )
     branch = _git("branch", "--show-current")
     if not branch.startswith("agent/p1-6b"):
         raise RuntimeError(

@@ -2694,8 +2694,26 @@ performance tables twice before publication. G1 requires all 102 attempts,
 eligible coverage of 12 strata and six audit–twin pairs, plus B_E=E and
 rotation errors at most `1e-12`; `|B_E-A|` is not a gate.
 
-P1.6A ran no confirmatory case and created no confirmatory artifact. No path
-under `results/` or `papers/` changed. The focused suite passed **51 tests in
-2.02 s**; the complete suite with warnings as errors passed **591 tests**, with
-the unchanged G7 as the sole xfail, in 667.88 s. Decision:
+P1.6A.1 continues response-blind on draft PR #7 without changing a manifest
+byte or lock. The initial ledger now binds the actual execution HEAD, branch,
+directory, interpreter/argv, platform/library versions and only the frozen
+thread variables plus `PYTHONHASHSEED=0`; resume rejects divergence. Raw and
+performance rows use that actual HEAD and preserve the historical manifest
+commit separately. Before each solve, a floating effective wall allowance is
+reserved. Recovery of a nonterminal `started` case debits the reservation,
+forbids retry and caps the debit at the remaining global balance. Fractional
+remainders retain an active real timer, and post-normalization wall/RSS are
+checked again. Exhaustion closes as `INCONCLUSIVE_P1` with never-started cases
+visible.
+
+The pure analysis retains absolute `be_minus_a_rms`, adds `epsilon_a_e` and
+`epsilon_be_e` with applicability exactly equivalent to
+`normalized_rms_error_xyz`, and makes `epsilon_a_e` the plot response.
+Numerically null denominators are explicit and inapplicable, with no floor,
+clipping or imputation. None of these magnitudes changes G1.
+
+P1.6A/P1.6A.1 ran no confirmatory case and created no confirmatory artifact.
+No path under `results/` or `papers/` changed. The amended focused suite passed
+**66 tests in 2.92 s**; the complete suite with warnings as errors passed
+**606 tests**, with the unchanged G7 as the sole xfail, in 659.14 s. Decision:
 `GO_P1.6B_EXECUTE` pending audit; stop before P1.6B.

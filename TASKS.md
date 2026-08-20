@@ -57,5 +57,11 @@ T03 provides the Rayleigh field solver; T04 adds the validated nodal two-particl
   runner, pure deterministic analysis and pre-response G1. No confirmatory
   case ran and no confirmatory artifact was created. Decision:
   `GO_P1.6B_EXECUTE` pending audit.
+- [x] P1.6A.1 -- response-blind runner amendment on the same draft PR: actual
+  execution provenance and allowlisted environment are immutable on resume;
+  abandoned floating wall reservations debit the global budget; raw/performance
+  distinguish execution and manifest commits; `epsilon_a_e` is the main plot
+  response while `epsilon_be_e` and absolute `be_minus_a_rms` remain explicit.
+  Manifest/locks and all P1.5 bytes are unchanged; no confirmatory case ran.
 - [ ] P1.6B -- execute the locked 102-case campaign exactly once and evaluate
-  G1. Not started by P1.6A.
+  G1. Not started by P1.6A/P1.6A.1.

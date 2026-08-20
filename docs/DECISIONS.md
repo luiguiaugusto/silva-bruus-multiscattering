@@ -393,5 +393,17 @@
   the global stop is independently binding and cannot trigger retries.
 - G1 is frozen exactly as specified in `docs/P1_6A_BLIND_FREEZE.md`, including
   the scale-safe `1e-12` identity/rotation budget. `|B_E-A|` is never a gate.
+- P1.6A.1 leaves every manifest byte and lock unchanged. It binds the initial
+  ledger to actual execution HEAD plus the allowlisted one-thread environment
+  and `PYTHONHASHSEED=0`; resume rejects provenance divergence without storing
+  unrelated environment values.
+- Every pre-solve `started` record reserves its floating effective wall limit.
+  Recovery without a terminal checkpoint permanently interrupts the case and
+  debits that reservation up to the remaining 64800-s balance. Exhaustion is
+  `INCONCLUSIVE_P1`, with never-started cases retained visibly.
+- The primary response is `epsilon_a_e`; `epsilon_be_e` and secondary absolute
+  `be_minus_a_rms` are also serialized. Applicability exactly follows
+  `normalized_rms_error_xyz`; null denominators remain inapplicable without
+  flooring, clipping or imputation. No response magnitude is a G1 gate.
 - Decision: `GO_P1.6B_EXECUTE`, conditional only on audit/merge of P1.6A.
   P1.6A performs no confirmatory solve and creates no confirmatory response.

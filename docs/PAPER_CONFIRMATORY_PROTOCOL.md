@@ -50,6 +50,16 @@ with all 102 cases enabled and limits frozen at one worker/thread, 1800 s and
 Checkpoint/retry policy, deterministic artifacts and G1 are frozen in
 `docs/P1_6A_BLIND_FREEZE.md`; the decision is `GO_P1.6B_EXECUTE` pending audit.
 
+P1.6A.1 amends only the response-blind implementation on draft PR #7. The
+manifest and both confirmatory locks are unchanged. Before the first attempt,
+the ledger must bind the actual execution HEAD and allowlisted numeric
+environment; resume rejects divergence. Each `started` case reserves its
+floating wall allowance, and an abandoned reservation is conservatively
+debited. Raw/performance distinguish execution HEAD from historical manifest
+provenance. The primary scientific response is `epsilon_a_e`; `epsilon_be_e`
+and absolute `be_minus_a_rms` remain reported, with exact null-denominator
+applicability and no threshold in G1. P1.6A.1 runs no confirmatory case.
+
 ## Paper question and intended answer
 
 Question: when and why does the pairwise nodal Silva–Bruus interaction cease
@@ -238,7 +248,7 @@ Exact numerical thresholds are **TBD** unless already physical identities.
 
 Luigui and ChatGPT Work must decide:
 
-1. P1.1--P1.6A are resolved: the grid, policy, exact hashes, resources,
+1. P1.1--P1.6A.1 are resolved: the grid, policy, exact hashes, resources,
    enablement, runner and G1 are frozen. The separate P1.5 pilot is historical;
    all 102 confirmatory cases are enabled but remain unexecuted until P1.6B.
 2. P1 uses independently confirmed pair orders; P1.3 completed the

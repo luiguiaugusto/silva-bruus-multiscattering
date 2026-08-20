@@ -104,13 +104,15 @@ from .p1_pilot import (
 )
 from .p1_campaign import (
     CampaignCaseTimeout, CampaignConfiguration, CampaignExecutionError,
-    CampaignGlobalTimeout,
+    CampaignGlobalTimeout, NUMERIC_ENVIRONMENT_KEYS,
     CampaignRunSummary, execute_model_e_case, execute_model_e_case_with_limits,
-    load_p1_6_configuration, run_p1_6_campaign,
+    capture_p1_6_execution_provenance, load_p1_6_configuration,
+    run_p1_6_campaign,
 )
 from .p1_campaign_artifacts import (
     CampaignArtifactError, G1Result, artifact_sha256,
-    build_campaign_artifacts, evaluate_g1, load_checkpoint_records,
+    build_campaign_artifacts, evaluate_g1, load_campaign_checkpoint,
+    load_checkpoint_records, normalized_rms_error_xyz_pure,
     publish_campaign_artifacts,
 )
 from .plot_style import (
@@ -337,7 +339,9 @@ __all__ = [
     "CampaignConfiguration",
     "CampaignExecutionError",
     "CampaignGlobalTimeout",
+    "NUMERIC_ENVIRONMENT_KEYS",
     "CampaignRunSummary",
+    "capture_p1_6_execution_provenance",
     "execute_model_e_case",
     "execute_model_e_case_with_limits",
     "load_p1_6_configuration",
@@ -347,7 +351,9 @@ __all__ = [
     "artifact_sha256",
     "build_campaign_artifacts",
     "evaluate_g1",
+    "load_campaign_checkpoint",
     "load_checkpoint_records",
+    "normalized_rms_error_xyz_pure",
     "publish_campaign_artifacts",
     "ACCESSIBLE_COLORS",
     "MM_PER_INCH",

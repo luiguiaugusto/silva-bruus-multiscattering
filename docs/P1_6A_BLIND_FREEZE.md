@@ -1,4 +1,4 @@
-# P1.6A — response-blind pre-campaign freeze
+# P1.6A / P1.6A.1 — response-blind pre-campaign freeze
 
 Date: 2026-08-20
 Status: **frozen; `GO_P1.6B_EXECUTE`; no confirmatory case executed**
@@ -31,6 +31,11 @@ flag. The normative machine checks are the public lock, `status`, 102
 `enabled=true` values, frozen resources and the explicit P1.6B branch guard.
 P1.6A itself performs no execution.
 
+P1.6A.1 is a response-blind implementation amendment on draft PR #7. It does
+not change the confirmatory manifest or either public lock. It freezes runtime
+provenance, conservative reservation accounting and the previously missing
+normalized scientific responses before any confirmatory solve.
+
 ## Frozen campaign and resource budget
 
 - cases/order: exactly 102 IDs at `case_order=1..102`;
@@ -57,11 +62,25 @@ retuning.
 ## Single-attempt runner contract
 
 `run_p1_6_campaign` consumes the locked manifest in order 1..102 and accepts
-an injected case executor. Before a call it atomically records `started`; after
-the call it atomically records `completed` or `interrupted`. Each case has
-`attempt_count` in `{0,1}`. On resume, a stale `started` case is permanently
-converted to `interrupted`; only `never_started` cases may run. Local failure
-does not stop later cases. A closed campaign, existing outputs, changed lock,
+an injected case executor. Before the first case, the ledger atomically records
+the actual `git rev-parse HEAD`, branch, working directory, `sys.executable`,
+`sys.argv`, Python/platform and NumPy/SciPy versions, manifest hash and only
+the six allowlisted numeric environment variables. Every BLAS/thread variable
+must equal `1` and `PYTHONHASHSEED` must equal `0`; no complete environment or
+secret is serialized. Resume rejects any provenance, HEAD, manifest hash or
+numeric-environment change.
+
+Before every call the ledger atomically records `started` and the positive
+floating-point `effective_wall_seconds` reservation; afterward it records
+`completed` or `interrupted` and `wall_seconds_debited`. Each case has
+`attempt_count` in `{0,1}`. On resume, a stale `started` case without a terminal
+checkpoint is permanently converted to `interrupted`, its reserved time is
+debited up to the remaining global balance, and it can never retry. Only
+`never_started` cases may run. A fractional remainder reaches `setitimer`
+without integer truncation. Measured wall/RSS are checked again after outcome
+normalization. At 64800 s the ledger closes as `INCONCLUSIVE_P1` while retaining
+all never-started cases and reasons. Local failure otherwise does not stop
+later cases. A closed campaign, existing outputs, changed provenance/lock,
 duplicate attempt or output overwrite is rejected.
 
 `execute_model_e_case` constructs the frozen centered dimer, invokes
@@ -78,6 +97,18 @@ reason. The pure module `p1_campaign_artifacts.py` imports neither NumPy,
 SciPy nor any `acoustic_ms` solver module. It deterministically produces raw,
 derived, plot, failure and performance CSV bytes. Two regenerations must be
 identical before publication, and publication refuses any existing target.
+Raw and performance rows use the actually executed commit; the manifest's
+historical `git_commit` remains separately serialized as `manifest_git_commit`.
+
+For eligible cases, derived data retain the secondary absolute response
+`be_minus_a_rms` and add
+`epsilon_a_e = RMS(A-E_interaction)/RMS(E_interaction)` plus the analogous
+`epsilon_be_e`. Their pure-stdlib calculation exactly mirrors
+`model_e_comparison.normalized_rms_error_xyz`, including its scale-dependent
+machine-precision applicability test and its absolute residual return when the
+reference denominator is numerically null. Such values remain explicit and
+`applicable=false`; there is no floor, clipping or imputation. Plot data use
+`epsilon_a_e` as the primary response and contain eligible primaries only.
 
 ## Gate G1 frozen before response
 
@@ -99,19 +130,21 @@ with budget `1e-12`. G1 is evaluated with these immutable rules:
 5. all six audit–twin rotations satisfy covariance within `1e-12`;
 6. only eligible primaries enter scientific/plot metrics; every exclusion is
    retained in the failure and performance tables;
-7. `|B_E-A|` is a scientific response, never a G1 acceptance threshold.
+7. `|B_E-A|`, `epsilon_a_e` and `epsilon_be_e` are scientific responses, never
+   G1 acceptance thresholds.
 
 Contract, identity or covariance failure has precedence and yields
 `FAIL_G1 / NO_GO_P2`. Missing attempts, stratum/audit coverage or resource
 exhaustion yields `INCONCLUSIVE_G1 / INCONCLUSIVE_P1`. Only all valid gates
 yield `PASS_G1 / GO_P2`.
 
-## P1.6A decision
+## P1.6A.1 decision
 
-Manifest recomputation, mutation guards, checkpoint/resume, one-attempt
-semantics, local/global limits, schemas, deterministic hashes and two
-no-solver regenerations pass with fake responses. The focused suite reports
-**51 passed in 2.02 s**; the complete suite with warnings as errors reports
-**591 passed, 1 xfailed in 667.88 s**. No confirmatory checkpoint
-or response file exists in this commit, and `results/` and `papers/` are
-unchanged. Decision: **`GO_P1.6B_EXECUTE`**, pending audit of this draft PR.
+Manifest recomputation, provenance mutation guards, checkpoint/resume,
+conservative local/global accounting, epsilon equivalence/applicability,
+schemas, deterministic hashes and two no-solver regenerations pass with fake
+responses. The focused suite reports **66 passed in 2.92 s**; the complete
+suite with warnings as errors reports **606 passed, 1 xfailed in 659.14 s**.
+No confirmatory checkpoint or response file exists in this commit, and
+`results/` and `papers/` are unchanged. Decision:
+**`GO_P1.6B_EXECUTE`**, pending audit of this draft PR.

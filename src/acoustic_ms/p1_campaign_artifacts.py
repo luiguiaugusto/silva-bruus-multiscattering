@@ -15,6 +15,7 @@ import json
 import math
 import os
 from pathlib import Path
+import sys
 import tempfile
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -91,6 +92,52 @@ def _csv_bytes(fields: Sequence[str], rows: Iterable[Mapping[str, object]]) -> b
 
 def _vector_norm(vector: Sequence[float]) -> float:
     return math.sqrt(sum(float(component) ** 2 for component in vector))
+
+
+def _rms_vector_magnitude_xyz(vectors: Sequence[Sequence[float]]) -> float:
+    values = [
+        tuple(float(component) for component in vector) for vector in vectors
+    ]
+    if not values or any(len(vector) != 3 for vector in values):
+        raise CampaignArtifactError("vectors must have nonempty shape (N, 3)")
+    if not all(
+        math.isfinite(component) for vector in values for component in vector
+    ):
+        raise CampaignArtifactError("vectors must contain only finite values")
+    return math.sqrt(
+        sum(sum(component * component for component in vector) for vector in values)
+        / len(values)
+    )
+
+
+def normalized_rms_error_xyz_pure(
+    reference: Sequence[Sequence[float]],
+    model: Sequence[Sequence[float]],
+) -> tuple[float, bool]:
+    """Match ``model_e_comparison.normalized_rms_error_xyz`` with stdlib."""
+
+    reference_values = [
+        tuple(float(component) for component in row) for row in reference
+    ]
+    model_values = [
+        tuple(float(component) for component in row) for row in model
+    ]
+    if len(reference_values) != len(model_values):
+        raise CampaignArtifactError("reference and model must have matching shapes")
+    reference_rms = _rms_vector_magnitude_xyz(reference_values)
+    model_rms = _rms_vector_magnitude_xyz(model_values)
+    differences = [
+        tuple(
+            model_component - reference_component
+            for model_component, reference_component in zip(model_row, reference_row)
+        )
+        for reference_row, model_row in zip(reference_values, model_values)
+    ]
+    absolute = _rms_vector_magnitude_xyz(differences)
+    tolerance = 128.0 * sys.float_info.epsilon * max(reference_rms, model_rms)
+    if reference_rms <= tolerance:
+        return absolute, False
+    return absolute / reference_rms, True
 
 
 def _vector_error(
@@ -316,8 +363,10 @@ def evaluate_g1(
     )
 
 
-def load_checkpoint_records(state_directory: str | Path) -> tuple[dict[str, Any], ...]:
-    """Load ordered case checkpoints without importing a solver."""
+def load_campaign_checkpoint(
+    state_directory: str | Path,
+) -> tuple[dict[str, Any], tuple[dict[str, Any], ...]]:
+    """Load the campaign ledger and ordered checkpoints without a solver."""
 
     directory = Path(state_directory)
     ledger_path = directory / "campaign_ledger.json"
@@ -335,11 +384,19 @@ def load_checkpoint_records(state_directory: str | Path) -> tuple[dict[str, Any]
             record["parameters"] = entry["parameters"]
             record["outcome"] = None
         records.append(record)
-    return tuple(records)
+    return ledger, tuple(records)
+
+
+def load_checkpoint_records(state_directory: str | Path) -> tuple[dict[str, Any], ...]:
+    """Load ordered case checkpoints without importing a solver."""
+
+    _, records = load_campaign_checkpoint(state_directory)
+    return records
 
 
 _RAW_FIELDS = (
     "schema_version", "campaign_id", "manifest_sha256", "git_commit",
+    "manifest_git_commit",
     "case_order", "case_id", "classification", "evidence_role",
     "include_in_scientific_tables", "attempt_state", "attempt_count",
     "started_utc", "completed_utc", "radius_m", "k_rad_m", "ka",
@@ -362,7 +419,7 @@ _DERIVED_FIELDS = (
 _PLOT_FIELDS = (
     "schema_version", "campaign_id", "case_order", "case_id", "series_id",
     "point_order", "x_name", "x_value", "x_unit", "y_name", "y_value",
-    "y_unit", "eligible", "annotation",
+    "y_unit", "eligible", "applicable", "reason", "annotation",
 )
 _FAILURE_FIELDS = (
     "schema_version", "campaign_id", "manifest_sha256", "case_order",
@@ -370,10 +427,12 @@ _FAILURE_FIELDS = (
     "failure_stage", "failure_reason", "include_in_scientific_tables",
 )
 _PERFORMANCE_FIELDS = (
-    "schema_version", "campaign_id", "manifest_sha256", "case_order",
+    "schema_version", "campaign_id", "manifest_sha256", "git_commit",
+    "manifest_git_commit", "case_order",
     "case_id", "attempt_state", "attempt_count", "started_utc",
     "completed_utc", "attempted_lmax", "evaluated_lmax", "final_lmax",
-    "case_wall_seconds", "peak_rss_bytes", "model_e_solve_count",
+    "effective_wall_seconds", "wall_seconds_debited", "case_wall_seconds",
+    "peak_rss_bytes", "model_e_solve_count",
     "wall_seconds_per_case", "peak_rss_bytes_per_case",
     "wall_seconds_campaign", "worker_count", "blas_threads",
     "final_diagnostics_json",
@@ -405,9 +464,17 @@ def _positions(
 def build_campaign_artifacts(
     manifest: Mapping[str, Any],
     records: Sequence[Mapping[str, Any]],
+    execution_provenance: Mapping[str, Any],
 ) -> tuple[dict[str, bytes], G1Result]:
     """Build all five deterministic P1.6 tables from checkpoint records."""
 
+    if execution_provenance.get("manifest_sha256") != manifest["provenance"][
+        "manifest_sha256"
+    ]:
+        raise CampaignArtifactError("execution and manifest hashes differ")
+    execution_commit = execution_provenance.get("git_commit")
+    if not isinstance(execution_commit, str) or len(execution_commit) != 40:
+        raise CampaignArtifactError("execution provenance requires a full git commit")
     ordered = sorted(records, key=lambda record: int(record["case_order"]))
     g1 = evaluate_g1(manifest, ordered)
     raw_rows: list[dict[str, object]] = []
@@ -423,7 +490,8 @@ def build_campaign_artifacts(
         eligible = _eligible(record)
         common = {
             **base,
-            "git_commit": manifest["provenance"]["git_commit"],
+            "git_commit": execution_commit,
+            "manifest_git_commit": manifest["provenance"]["git_commit"],
             "classification": manifest["classification"],
             "evidence_role": parameters["evidence_role"],
             "include_in_scientific_tables": bool(
@@ -528,17 +596,27 @@ def build_campaign_artifacts(
                     )
 
         be_minus_a: float | None = None
+        epsilon_a_e: float | None = None
+        epsilon_a_e_applicable = False
+        epsilon_be_e: float | None = None
+        epsilon_be_e_applicable = False
         identity = _identity_error(record)
         if eligible:
             be = outcome["model_be_forces_xyz"]
+            model_e = outcome["model_e_forces_xyz"]
             model_a = outcome["model_a_forces_xyz"]
             differences = [
                 [float(x) - float(y) for x, y in zip(left, right)]
                 for left, right in zip(be, model_a)
             ]
-            be_minus_a = math.sqrt(
-                sum(_vector_norm(vector) ** 2 for vector in differences)
-                / len(differences)
+            be_minus_a = _rms_vector_magnitude_xyz(differences)
+            epsilon_a_e, epsilon_a_e_applicable = normalized_rms_error_xyz_pure(
+                model_e,
+                model_a,
+            )
+            epsilon_be_e, epsilon_be_e_applicable = normalized_rms_error_xyz_pure(
+                model_e,
+                be,
             )
         for metric, value, unit, applicable, reason in (
             (
@@ -547,6 +625,36 @@ def build_campaign_artifacts(
                 "a2e0",
                 eligible,
                 "scientific_magnitude_not_a_gate" if eligible else "case_ineligible",
+            ),
+            (
+                "epsilon_a_e",
+                epsilon_a_e,
+                "1",
+                epsilon_a_e_applicable,
+                (
+                    "scientific_relative_metric_not_a_gate"
+                    if epsilon_a_e_applicable
+                    else (
+                        "reference_rms_numerically_zero;value_is_absolute_rms"
+                        if eligible
+                        else "case_ineligible"
+                    )
+                ),
+            ),
+            (
+                "epsilon_be_e",
+                epsilon_be_e,
+                "1",
+                epsilon_be_e_applicable,
+                (
+                    "scientific_relative_metric_not_a_gate"
+                    if epsilon_be_e_applicable
+                    else (
+                        "reference_rms_numerically_zero;value_is_absolute_rms"
+                        if eligible
+                        else "case_ineligible"
+                    )
+                ),
             ),
             (
                 "be_e_identity_error",
@@ -587,10 +695,16 @@ def build_campaign_artifacts(
                     "x_name": "distance_ratio",
                     "x_value": float(parameters["distance_ratio"]),
                     "x_unit": "1",
-                    "y_name": "be_minus_a_rms",
-                    "y_value": be_minus_a,
-                    "y_unit": "a2e0",
+                    "y_name": "epsilon_a_e",
+                    "y_value": epsilon_a_e if epsilon_a_e_applicable else None,
+                    "y_unit": "1",
                     "eligible": True,
+                    "applicable": epsilon_a_e_applicable,
+                    "reason": (
+                        "scientific_relative_metric_not_a_gate"
+                        if epsilon_a_e_applicable
+                        else "reference_rms_numerically_zero"
+                    ),
                     "annotation": "eligible_primary_only",
                 }
             )
@@ -611,6 +725,8 @@ def build_campaign_artifacts(
         performance_rows.append(
             {
                 **base,
+                "git_commit": execution_commit,
+                "manifest_git_commit": manifest["provenance"]["git_commit"],
                 "attempt_state": record["state"],
                 "attempt_count": int(record.get("attempt_count", 0)),
                 "started_utc": record.get("started_utc"),
@@ -622,6 +738,8 @@ def build_campaign_artifacts(
                     str(value) for value in outcome.get("evaluated_lmax", [])
                 ),
                 "final_lmax": outcome.get("final_lmax"),
+                "effective_wall_seconds": record.get("effective_wall_seconds"),
+                "wall_seconds_debited": record.get("wall_seconds_debited"),
                 "case_wall_seconds": outcome.get("wall_seconds"),
                 "peak_rss_bytes": outcome.get("peak_rss_bytes"),
                 "model_e_solve_count": outcome.get("model_e_solve_count"),

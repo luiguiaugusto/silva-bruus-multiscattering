@@ -8,12 +8,16 @@ import json
 import math
 import os
 from pathlib import Path
+import platform
 import resource
+import subprocess
+import sys
 import tempfile
 import time
 from typing import Any, Callable, Mapping
 
 import numpy as np
+import scipy
 
 from .model_be import solve_model_be_nodal
 from .model_e import (
@@ -36,6 +40,14 @@ PILOT_ID = "p1_dimer_resource_pilot"
 MANIFEST_RELATIVE = Path("campaigns/p1/campaign_manifest.yaml")
 PILOT_MANIFEST_RELATIVE = Path("campaigns/p1/pilot_manifest.yaml")
 DEFAULT_STATE_RELATIVE = Path("campaigns/p1/.p1_6_checkpoint")
+NUMERIC_ENVIRONMENT_KEYS = (
+    "OPENBLAS_NUM_THREADS",
+    "OMP_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "NUMEXPR_NUM_THREADS",
+    "VECLIB_MAXIMUM_THREADS",
+    "PYTHONHASHSEED",
+)
 
 
 class CampaignExecutionError(RuntimeError):
@@ -71,9 +83,129 @@ class CampaignRunSummary:
     accumulated_wall_seconds: float
     closed: bool
     stop_reason: str
+    campaign_decision: str | None
 
 
-CaseExecutor = Callable[[Mapping[str, Any], Mapping[str, Any]], Mapping[str, Any]]
+CaseExecutor = Callable[
+    [Mapping[str, Any], Mapping[str, Any]],
+    Mapping[str, Any],
+]
+
+
+def _git_text(root: Path, *arguments: str) -> str:
+    try:
+        return subprocess.run(
+            ["git", *arguments],
+            cwd=root,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise CampaignExecutionError(
+            f"cannot capture execution git provenance: {exc}"
+        ) from exc
+
+
+def _validate_execution_provenance(
+    value: Mapping[str, Any], *, manifest_sha256: str
+) -> dict[str, Any]:
+    required = {
+        "schema_version",
+        "git_commit",
+        "manifest_sha256",
+        "branch",
+        "directory",
+        "sys_executable",
+        "sys_argv",
+        "python_version",
+        "platform",
+        "numpy_version",
+        "scipy_version",
+        "numeric_environment",
+    }
+    if set(value) != required:
+        raise CampaignExecutionError("execution provenance fields differ from P1.6A.1")
+    if value["schema_version"] != "1.0.0":
+        raise CampaignExecutionError("unsupported execution provenance schema")
+    commit = str(value["git_commit"])
+    if len(commit) != 40 or any(
+        character not in "0123456789abcdef" for character in commit
+    ):
+        raise CampaignExecutionError("execution git_commit must be a full lowercase SHA-1")
+    if value["manifest_sha256"] != manifest_sha256:
+        raise CampaignExecutionError("execution provenance manifest hash mismatch")
+    environment = value["numeric_environment"]
+    if not isinstance(environment, Mapping) or set(environment) != set(
+        NUMERIC_ENVIRONMENT_KEYS
+    ):
+        raise CampaignExecutionError(
+            "execution provenance may contain only the frozen numeric environment"
+        )
+    expected_environment = {
+        key: "0" if key == "PYTHONHASHSEED" else "1"
+        for key in NUMERIC_ENVIRONMENT_KEYS
+    }
+    if dict(environment) != expected_environment:
+        raise CampaignExecutionError(
+            f"P1.6 requires the frozen numeric environment: {expected_environment}"
+        )
+    if not isinstance(value["sys_argv"], (list, tuple)) or not all(
+        isinstance(argument, str) for argument in value["sys_argv"]
+    ):
+        raise CampaignExecutionError("execution sys_argv must contain only strings")
+    for field in (
+        "branch",
+        "directory",
+        "sys_executable",
+        "python_version",
+        "platform",
+        "numpy_version",
+        "scipy_version",
+    ):
+        if not isinstance(value[field], str) or not value[field]:
+            raise CampaignExecutionError(f"execution provenance {field} is required")
+    normalized = dict(value)
+    normalized["sys_argv"] = list(value["sys_argv"])
+    normalized["numeric_environment"] = {
+        key: str(environment[key]) for key in NUMERIC_ENVIRONMENT_KEYS
+    }
+    _json_bytes(normalized)
+    return normalized
+
+
+def capture_p1_6_execution_provenance(
+    root: str | Path,
+    *,
+    manifest_sha256: str,
+    environ: Mapping[str, str] | None = None,
+    argv: tuple[str, ...] | list[str] | None = None,
+) -> dict[str, Any]:
+    """Capture the allowlisted P1.6 runtime provenance before the first case."""
+
+    repository = Path(root).resolve()
+    environment = os.environ if environ is None else environ
+    numeric_environment = {
+        key: environment.get(key, "") for key in NUMERIC_ENVIRONMENT_KEYS
+    }
+    provenance = {
+        "schema_version": "1.0.0",
+        "git_commit": _git_text(repository, "rev-parse", "HEAD"),
+        "manifest_sha256": manifest_sha256,
+        "branch": _git_text(repository, "branch", "--show-current"),
+        "directory": str(Path.cwd().resolve()),
+        "sys_executable": sys.executable,
+        "sys_argv": list(sys.argv if argv is None else argv),
+        "python_version": platform.python_version(),
+        "platform": platform.platform(),
+        "numpy_version": np.__version__,
+        "scipy_version": scipy.__version__,
+        "numeric_environment": numeric_environment,
+    }
+    return _validate_execution_provenance(
+        provenance,
+        manifest_sha256=manifest_sha256,
+    )
 
 
 def _utc_text(value: datetime) -> str:
@@ -217,17 +349,24 @@ def load_p1_6_configuration(
     )
 
 
-def _initial_ledger(configuration: CampaignConfiguration, created_utc: str) -> dict[str, Any]:
+def _initial_ledger(
+    configuration: CampaignConfiguration,
+    created_utc: str,
+    execution_provenance: Mapping[str, Any],
+) -> dict[str, Any]:
     manifest = configuration.manifest
     return {
         "schema_version": "1.0.0",
         "campaign_id": manifest["campaign_id"],
         "manifest_sha256": manifest["provenance"]["manifest_sha256"],
+        "manifest_provenance": manifest["provenance"],
+        "execution_provenance": dict(execution_provenance),
         "created_utc": created_utc,
         "updated_utc": created_utc,
         "accumulated_wall_seconds": 0.0,
         "closed": False,
         "stop_reason": "not_started",
+        "campaign_decision": None,
         "cases": [
             {
                 "case_order": int(case["case_order"]),
@@ -239,6 +378,8 @@ def _initial_ledger(configuration: CampaignConfiguration, created_utc: str) -> d
                 "completed_utc": None,
                 "failure_stage": None,
                 "failure_reason": None,
+                "effective_wall_seconds": None,
+                "wall_seconds_debited": 0.0,
             }
             for case in configuration.cases
         ],
@@ -246,7 +387,9 @@ def _initial_ledger(configuration: CampaignConfiguration, created_utc: str) -> d
 
 
 def _validate_ledger(
-    configuration: CampaignConfiguration, ledger: Mapping[str, Any]
+    configuration: CampaignConfiguration,
+    ledger: Mapping[str, Any],
+    execution_provenance: Mapping[str, Any],
 ) -> None:
     if ledger.get("campaign_id") != CAMPAIGN_ID:
         raise CampaignExecutionError("checkpoint campaign identity mismatch")
@@ -254,6 +397,23 @@ def _validate_ledger(
         "manifest_sha256"
     ]:
         raise CampaignExecutionError("checkpoint manifest hash mismatch")
+    stored_provenance = ledger.get("execution_provenance")
+    if not isinstance(stored_provenance, Mapping):
+        raise CampaignExecutionError("checkpoint lacks execution provenance")
+    if stored_provenance.get("git_commit") != execution_provenance["git_commit"]:
+        raise CampaignExecutionError("execution HEAD differs from initial ledger")
+    if stored_provenance.get("manifest_sha256") != execution_provenance[
+        "manifest_sha256"
+    ]:
+        raise CampaignExecutionError("execution manifest hash differs from initial ledger")
+    if stored_provenance.get("numeric_environment") != execution_provenance[
+        "numeric_environment"
+    ]:
+        raise CampaignExecutionError(
+            "execution numeric environment differs from initial ledger"
+        )
+    if dict(stored_provenance) != dict(execution_provenance):
+        raise CampaignExecutionError("execution provenance differs from initial ledger")
     entries = ledger.get("cases")
     if not isinstance(entries, list) or len(entries) != 102:
         raise CampaignExecutionError("checkpoint must retain all 102 cases")
@@ -274,9 +434,53 @@ def _validate_ledger(
             raise CampaignExecutionError("never-started case has an attempt")
         if state != "never_started" and count != 1:
             raise CampaignExecutionError("started case must retain one attempt")
+        reservation = entry.get("effective_wall_seconds")
+        if state == "never_started" and reservation is not None:
+            raise CampaignExecutionError("never-started case cannot reserve wall time")
+        if state != "never_started" and (
+            isinstance(reservation, bool)
+            or not isinstance(reservation, (int, float))
+            or not math.isfinite(float(reservation))
+            or float(reservation) <= 0.0
+        ):
+            raise CampaignExecutionError("started case must retain a positive wall reserve")
+        debited = entry.get("wall_seconds_debited")
+        if (
+            isinstance(debited, bool)
+            or not isinstance(debited, (int, float))
+            or not math.isfinite(float(debited))
+            or float(debited) < 0.0
+        ):
+            raise CampaignExecutionError("case wall debit must be finite and non-negative")
 
 
-def _read_ledger(configuration: CampaignConfiguration, now_utc: str) -> dict[str, Any]:
+def _debit_wall(
+    ledger: dict[str, Any], amount: float, global_limit: float
+) -> float:
+    current = float(ledger["accumulated_wall_seconds"])
+    remaining = max(0.0, global_limit - current)
+    debit = min(max(0.0, float(amount)), remaining)
+    ledger["accumulated_wall_seconds"] = current + debit
+    return debit
+
+
+def _close_for_global_limit(ledger: dict[str, Any]) -> None:
+    ledger["closed"] = True
+    ledger["stop_reason"] = "global_wall_limit_exhausted"
+    ledger["campaign_decision"] = "INCONCLUSIVE_P1"
+    for remaining in ledger["cases"]:
+        if remaining["state"] == "never_started":
+            remaining["failure_stage"] = "global_limit"
+            remaining["failure_reason"] = (
+                "wall_seconds_campaign_exhausted_before_attempt"
+            )
+
+
+def _read_ledger(
+    configuration: CampaignConfiguration,
+    now_utc: str,
+    execution_provenance: Mapping[str, Any],
+) -> tuple[dict[str, Any], bool]:
     ledger_path = configuration.state_directory / "campaign_ledger.json"
     if not ledger_path.exists():
         for relative in ARTIFACT_PATHS.values():
@@ -284,15 +488,18 @@ def _read_ledger(configuration: CampaignConfiguration, now_utc: str) -> dict[str
                 raise FileExistsError(
                     "campaign output exists; overwrite or a second campaign is forbidden"
                 )
-        ledger = _initial_ledger(configuration, now_utc)
+        ledger = _initial_ledger(configuration, now_utc, execution_provenance)
         _atomic_json(ledger_path, ledger)
-        return ledger
+        return ledger, False
     try:
         ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise CampaignExecutionError(f"cannot load campaign checkpoint: {exc}") from exc
-    _validate_ledger(configuration, ledger)
+    _validate_ledger(configuration, ledger, execution_provenance)
     recovered = False
+    global_limit = float(
+        configuration.manifest["resources"]["wall_seconds_campaign"]
+    )
     for entry in ledger["cases"]:
         if entry["state"] == "started":
             checkpoint_path = _checkpoint_path(
@@ -315,27 +522,35 @@ def _read_ledger(configuration: CampaignConfiguration, now_utc: str) -> dict[str
                     "completed_utc",
                     "failure_stage",
                     "failure_reason",
+                    "effective_wall_seconds",
+                    "wall_seconds_debited",
                 ):
                     entry[field] = checkpoint.get(field)
-                if checkpoint.get("state") == "completed" and isinstance(
-                    checkpoint.get("outcome"), Mapping
-                ):
-                    ledger["accumulated_wall_seconds"] = float(
-                        ledger["accumulated_wall_seconds"]
-                    ) + float(checkpoint["outcome"].get("wall_seconds", 0.0))
-                elif checkpoint.get("failure_stage") == "timeout":
-                    ledger["accumulated_wall_seconds"] = float(
-                        ledger["accumulated_wall_seconds"]
-                    ) + float(
-                        configuration.manifest["resources"][
-                            "wall_seconds_per_case"
-                        ]
-                    )
+                recovered_debit = checkpoint.get("wall_seconds_debited")
+                if not isinstance(recovered_debit, (int, float)):
+                    if checkpoint.get("state") == "completed" and isinstance(
+                        checkpoint.get("outcome"), Mapping
+                    ):
+                        recovered_debit = float(
+                            checkpoint["outcome"].get("wall_seconds", 0.0)
+                        )
+                    else:
+                        recovered_debit = float(entry["effective_wall_seconds"])
+                entry["wall_seconds_debited"] = _debit_wall(
+                    ledger,
+                    float(recovered_debit),
+                    global_limit,
+                )
             else:
                 entry["state"] = "interrupted"
                 entry["completed_utc"] = now_utc
                 entry["failure_stage"] = "interrupted"
                 entry["failure_reason"] = "previous_process_interrupted_after_start"
+                entry["wall_seconds_debited"] = _debit_wall(
+                    ledger,
+                    float(entry["effective_wall_seconds"]),
+                    global_limit,
+                )
                 _atomic_json(
                     checkpoint_path,
                     {**entry, "outcome": None},
@@ -344,21 +559,32 @@ def _read_ledger(configuration: CampaignConfiguration, now_utc: str) -> dict[str
     if recovered:
         ledger["updated_utc"] = now_utc
         ledger["stop_reason"] = "resumed_after_interruption"
-        global_limit = float(
-            configuration.manifest["resources"]["wall_seconds_campaign"]
-        )
         if float(ledger["accumulated_wall_seconds"]) >= global_limit:
             ledger["accumulated_wall_seconds"] = global_limit
-            ledger["closed"] = True
-            ledger["stop_reason"] = "global_wall_limit_exhausted"
-            for remaining in ledger["cases"]:
-                if remaining["state"] == "never_started":
-                    remaining["failure_stage"] = "global_limit"
-                    remaining["failure_reason"] = (
-                        "wall_seconds_campaign_exhausted_before_attempt"
-                    )
+            _close_for_global_limit(ledger)
         _atomic_json(ledger_path, ledger)
-    return ledger
+    return ledger, recovered
+
+
+def _run_summary(
+    ledger: Mapping[str, Any], attempted_this_run: list[str]
+) -> CampaignRunSummary:
+    return CampaignRunSummary(
+        attempted_this_run=tuple(attempted_this_run),
+        completed_count=sum(
+            entry["state"] == "completed" for entry in ledger["cases"]
+        ),
+        interrupted_count=sum(
+            entry["state"] == "interrupted" for entry in ledger["cases"]
+        ),
+        never_started_count=sum(
+            entry["state"] == "never_started" for entry in ledger["cases"]
+        ),
+        accumulated_wall_seconds=float(ledger["accumulated_wall_seconds"]),
+        closed=bool(ledger["closed"]),
+        stop_reason=str(ledger["stop_reason"]),
+        campaign_decision=ledger.get("campaign_decision"),
+    )
 
 
 def _finite_number(value: object, name: str, *, minimum: float | None = None) -> float:
@@ -512,11 +738,14 @@ def run_p1_6_campaign(
     utc_now: Callable[[], datetime] = lambda: datetime.now(timezone.utc),
     monotonic: Callable[[], float] = time.monotonic,
     max_new_cases: int | None = None,
+    execution_provenance: Mapping[str, Any] | None = None,
 ) -> CampaignRunSummary:
     """Attempt each enabled case once, checkpointing before and after it.
 
     ``max_new_cases`` exists only to make interruption/resumption tests cheap;
-    the production CLI never exposes it.
+    the production CLI never exposes it. ``execution_provenance`` likewise
+    supports isolated fake-only tests; the production CLI always captures git
+    and environment provenance directly.
     """
 
     if not callable(executor):
@@ -524,10 +753,26 @@ def run_p1_6_campaign(
     if max_new_cases is not None and max_new_cases < 1:
         raise ValueError("max_new_cases must be positive")
     configuration = load_p1_6_configuration(root, state_directory=state_directory)
+    manifest_sha256 = str(
+        configuration.manifest["provenance"]["manifest_sha256"]
+    )
+    provenance = (
+        capture_p1_6_execution_provenance(
+            configuration.root,
+            manifest_sha256=manifest_sha256,
+        )
+        if execution_provenance is None
+        else _validate_execution_provenance(
+            execution_provenance,
+            manifest_sha256=manifest_sha256,
+        )
+    )
     now = _utc_text(utc_now())
-    ledger = _read_ledger(configuration, now)
-    _validate_ledger(configuration, ledger)
+    ledger, recovered = _read_ledger(configuration, now, provenance)
+    _validate_ledger(configuration, ledger, provenance)
     never_started = [entry for entry in ledger["cases"] if entry["state"] == "never_started"]
+    if ledger["closed"] and recovered:
+        return _run_summary(ledger, [])
     if ledger["closed"] or not never_started:
         raise CampaignExecutionError(
             "campaign is closed; overwrite, retry and second execution are forbidden"
@@ -543,14 +788,7 @@ def run_p1_6_campaign(
             ledger["stop_reason"] = "invocation_case_limit"
             break
         if float(ledger["accumulated_wall_seconds"]) >= global_limit:
-            ledger["closed"] = True
-            ledger["stop_reason"] = "global_wall_limit_exhausted"
-            for remaining in ledger["cases"]:
-                if remaining["state"] == "never_started":
-                    remaining["failure_stage"] = "global_limit"
-                    remaining["failure_reason"] = (
-                        "wall_seconds_campaign_exhausted_before_attempt"
-                    )
+            _close_for_global_limit(ledger)
             break
         global_remaining = global_limit - float(
             ledger["accumulated_wall_seconds"]
@@ -559,6 +797,9 @@ def run_p1_6_campaign(
             float(configuration.manifest["resources"]["wall_seconds_per_case"]),
             global_remaining,
         )
+        if effective_wall <= 0.0:
+            _close_for_global_limit(ledger)
+            break
         runtime_manifest = {
             **configuration.manifest,
             "resources": {
@@ -576,6 +817,8 @@ def run_p1_6_campaign(
                 "completed_utc": None,
                 "failure_stage": None,
                 "failure_reason": None,
+                "effective_wall_seconds": effective_wall,
+                "wall_seconds_debited": 0.0,
             }
         )
         ledger["updated_utc"] = started_utc
@@ -591,11 +834,25 @@ def run_p1_6_campaign(
         try:
             raw_outcome = executor(case, runtime_manifest)
             outcome = _normalize_outcome(raw_outcome, configuration.manifest)
-            outcome["wall_seconds"] = max(
+            measured_wall = max(
                 float(outcome["wall_seconds"]),
                 max(0.0, monotonic() - case_wall_started),
             )
-            global_exhausted = outcome["wall_seconds"] > global_remaining
+            outcome["wall_seconds"] = measured_wall
+            local_limit = float(
+                configuration.manifest["resources"]["wall_seconds_per_case"]
+            )
+            if measured_wall > local_limit:
+                outcome["eligible"] = False
+                outcome["failure_stage"] = "timeout"
+                outcome["failure_reason"] = "wall_seconds_per_case_exceeded"
+            if outcome["peak_rss_bytes"] > int(
+                configuration.manifest["resources"]["peak_rss_bytes_per_case"]
+            ):
+                outcome["eligible"] = False
+                outcome["failure_stage"] = "memory"
+                outcome["failure_reason"] = "peak_rss_bytes_per_case_exceeded"
+            global_exhausted = measured_wall >= global_remaining
             if global_exhausted:
                 outcome["eligible"] = False
                 outcome["failure_stage"] = "global_limit"
@@ -623,18 +880,20 @@ def run_p1_6_campaign(
                     "failure_reason": f"{type(exc).__name__}: {exc}",
                 }
             )
-            if failure_stage == "global_limit":
-                ledger["accumulated_wall_seconds"] = global_limit
-            elif failure_stage == "timeout":
-                ledger["accumulated_wall_seconds"] = float(
-                    ledger["accumulated_wall_seconds"]
-                ) + float(
-                    configuration.manifest["resources"]["wall_seconds_per_case"]
-                )
-            else:
-                ledger["accumulated_wall_seconds"] = float(
-                    ledger["accumulated_wall_seconds"]
-                ) + measured_wall
+            debit_request = (
+                effective_wall
+                if failure_stage in {"global_limit", "timeout"}
+                else measured_wall
+            )
+            entry["wall_seconds_debited"] = _debit_wall(
+                ledger,
+                debit_request,
+                global_limit,
+            )
+            global_exhausted = (
+                failure_stage == "global_limit"
+                or float(ledger["accumulated_wall_seconds"]) >= global_limit
+            )
             _atomic_json(
                 _checkpoint_path(configuration, int(entry["case_order"])),
                 {**entry, "outcome": None},
@@ -642,19 +901,13 @@ def run_p1_6_campaign(
             ledger["updated_utc"] = completed_utc
             ledger["stop_reason"] = (
                 "global_wall_limit_exhausted"
-                if failure_stage == "global_limit"
+                if global_exhausted
                 else "case_failure_continued"
             )
-            if failure_stage == "global_limit":
-                ledger["closed"] = True
-                for remaining in ledger["cases"]:
-                    if remaining["state"] == "never_started":
-                        remaining["failure_stage"] = "global_limit"
-                        remaining["failure_reason"] = (
-                            "wall_seconds_campaign_exhausted_before_attempt"
-                        )
+            if global_exhausted:
+                _close_for_global_limit(ledger)
             _atomic_json(ledger_path, ledger)
-            if failure_stage == "global_limit":
+            if global_exhausted:
                 break
             continue
 
@@ -667,10 +920,10 @@ def run_p1_6_campaign(
                 "failure_reason": outcome["failure_reason"],
             }
         )
-        ledger["accumulated_wall_seconds"] = min(
+        entry["wall_seconds_debited"] = _debit_wall(
+            ledger,
+            float(outcome["wall_seconds"]),
             global_limit,
-            float(ledger["accumulated_wall_seconds"])
-            + float(outcome["wall_seconds"]),
         )
         _atomic_json(
             _checkpoint_path(configuration, int(entry["case_order"])),
@@ -683,32 +936,18 @@ def run_p1_6_campaign(
             else "case_completed"
         )
         if global_exhausted:
-            ledger["closed"] = True
-            for remaining in ledger["cases"]:
-                if remaining["state"] == "never_started":
-                    remaining["failure_stage"] = "global_limit"
-                    remaining["failure_reason"] = (
-                        "wall_seconds_campaign_exhausted_before_attempt"
-                    )
+            _close_for_global_limit(ledger)
         _atomic_json(ledger_path, ledger)
         if global_exhausted:
             break
 
     terminal = all(entry["state"] != "never_started" for entry in ledger["cases"])
-    if terminal:
+    if terminal and not ledger["closed"]:
         ledger["closed"] = True
         ledger["stop_reason"] = "all_cases_attempted"
     ledger["updated_utc"] = _utc_text(utc_now())
     _atomic_json(ledger_path, ledger)
-    return CampaignRunSummary(
-        attempted_this_run=tuple(attempted_this_run),
-        completed_count=sum(entry["state"] == "completed" for entry in ledger["cases"]),
-        interrupted_count=sum(entry["state"] == "interrupted" for entry in ledger["cases"]),
-        never_started_count=sum(entry["state"] == "never_started" for entry in ledger["cases"]),
-        accumulated_wall_seconds=float(ledger["accumulated_wall_seconds"]),
-        closed=bool(ledger["closed"]),
-        stop_reason=str(ledger["stop_reason"]),
-    )
+    return _run_summary(ledger, attempted_this_run)
 
 
 def _peak_rss_bytes() -> int:
@@ -865,15 +1104,18 @@ def execute_model_e_case_with_limits(
     """Apply the frozen P1.5-tested wall/RLIMIT_AS guard to one P1.6 case."""
 
     resources = manifest["resources"]
+    effective_wall = float(resources["wall_seconds_per_case"])
+    if not math.isfinite(effective_wall) or effective_wall <= 0.0:
+        raise CampaignGlobalTimeout("no positive campaign wall budget remains")
     state = _ResourceState()
     try:
         with _resource_limits(
-            int(resources["wall_seconds_per_case"]),
+            effective_wall,
             int(resources["peak_rss_bytes_per_case"]),
             state,
         ):
             return executor(case, manifest)
     except _PilotWallTimeout as exc:
-        if float(resources["wall_seconds_per_case"]) < 1800.0:
+        if effective_wall < 1800.0:
             raise CampaignGlobalTimeout(str(exc)) from exc
         raise CampaignCaseTimeout(str(exc)) from exc
