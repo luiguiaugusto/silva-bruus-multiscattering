@@ -271,3 +271,14 @@ Luigui and ChatGPT Work must decide:
 
 Until these are resolved and the status changes in a dedicated commit, this
 protocol remains **DRAFT — NOT FROZEN**.
+
+
+## P1.6B-R2 replacement boundary
+
+The original P1.6B execution is excluded as
+`INVALID_P1.6B_INFRASTRUCTURE`; it produced no recoverable force or scientific
+metric. R2 is an infrastructure-only replacement with a new campaign ID,
+checkpoint namespace, output namespace and response-blind lock. The 102 cases,
+physics, convergence policy, resource ceilings, metrics and G1 are unchanged.
+No transient value or timing from the invalid execution informed this
+preregistration.

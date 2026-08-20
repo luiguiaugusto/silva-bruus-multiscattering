@@ -17,10 +17,13 @@ import numpy as np
 import pytest
 
 import acoustic_ms.p1_campaign as p1_campaign_module
+import acoustic_ms.p1_campaign_artifacts as p1_campaign_artifacts_module
 
 from acoustic_ms.p1_campaign import (
     CampaignCaseTimeout,
     CampaignExecutionError,
+    CampaignInfrastructureError,
+    CampaignSerializationError,
     NUMERIC_ENVIRONMENT_KEYS,
     capture_p1_6_execution_provenance,
     execute_model_e_case,
@@ -28,6 +31,7 @@ from acoustic_ms.p1_campaign import (
     run_p1_6_campaign,
 )
 from acoustic_ms.p1_campaign_artifacts import (
+    ARTIFACT_PATHS,
     G1_BUDGET,
     build_campaign_artifacts,
     evaluate_g1,
@@ -42,7 +46,7 @@ from acoustic_ms.model_e_comparison import normalized_rms_error_xyz
 ROOT = Path(__file__).resolve().parents[1]
 UTC = datetime(2026, 8, 20, 12, 0, tzinfo=timezone.utc)
 EXECUTION_COMMIT = "b" * 40
-MANIFEST_SHA256 = "3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe"
+MANIFEST_SHA256 = "a041e07ae93e9a858bad809427039bf593641ad1f9e341ed89b9d91f648f297d"
 
 
 def _provenance(root: Path, **changes: object) -> dict[str, object]:
@@ -71,7 +75,7 @@ def _root(tmp_path: Path, name: str) -> Path:
     root = tmp_path / name
     destination = root / "campaigns" / "p1"
     destination.mkdir(parents=True)
-    for manifest in ("campaign_manifest.yaml", "pilot_manifest.yaml"):
+    for manifest in ("campaign_manifest_r2.yaml", "pilot_manifest.yaml"):
         shutil.copy2(ROOT / "campaigns" / "p1" / manifest, destination / manifest)
     return root
 
@@ -290,7 +294,8 @@ def test_resume_rejects_preexisting_output_before_executor(tmp_path: Path) -> No
         max_new_cases=1,
         execution_provenance=_provenance(root),
     )
-    output = root / "campaigns" / "p1" / "data_raw.csv"
+    output = root / "campaigns" / "p1" / "p1_6b_r2" / "data_raw.csv"
+    output.parent.mkdir(parents=True)
     output.write_text("preexisting response\n", encoding="utf-8")
     resumed_executor = FakeExecutor()
 
@@ -321,7 +326,7 @@ def test_102_case_order_single_attempt_g1_and_no_solver_regeneration(
     )
     ledger, records = load_campaign_checkpoint(state)
     manifest = json.loads(
-        (root / "campaigns" / "p1" / "campaign_manifest.yaml").read_text()
+        (root / "campaigns" / "p1" / "campaign_manifest_r2.yaml").read_text()
     )
     calls_before = list(executor.case_ids)
     first, first_gate = build_campaign_artifacts(
@@ -406,6 +411,39 @@ def test_102_case_order_single_attempt_g1_and_no_solver_regeneration(
             utc_now=lambda: UTC,
             execution_provenance=_provenance(root),
         )
+
+
+def test_artifact_set_is_not_visible_when_staging_write_fails(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "publication-failure"
+    artifacts = {
+        name: f"{name}\n".encode("utf-8")
+        for name in ARTIFACT_PATHS
+    }
+    original = p1_campaign_artifacts_module._atomic_write
+    calls = 0
+
+    def fail_on_second_write(path: Path, payload: bytes) -> None:
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            raise OSError("injected staging failure")
+        original(path, payload)
+
+    monkeypatch.setattr(
+        p1_campaign_artifacts_module,
+        "_atomic_write",
+        fail_on_second_write,
+    )
+
+    with pytest.raises(OSError, match="injected staging failure"):
+        publish_campaign_artifacts(root, artifacts)
+
+    output_directory = root / "campaigns" / "p1" / "p1_6b_r2"
+    assert not output_directory.exists()
+    assert not list(output_directory.parent.glob(".p1_6b_r2.*"))
 
 
 def test_interrupted_case_is_never_retried_and_resume_uses_next_case(
@@ -678,7 +716,7 @@ def test_returned_local_limits_and_global_limit_are_controlled(
     global_records = load_checkpoint_records(global_state)
     global_gate = evaluate_g1(
         json.loads(
-            (root / "campaigns" / "p1" / "campaign_manifest.yaml").read_text()
+            (root / "campaigns" / "p1" / "campaign_manifest_r2.yaml").read_text()
         ),
         global_records,
     )
@@ -711,7 +749,7 @@ def test_g1_identity_symmetry_and_coverage_classifications(tmp_path: Path) -> No
     )
     records = list(load_checkpoint_records(state))
     manifest = json.loads(
-        (root / "campaigns" / "p1" / "campaign_manifest.yaml").read_text()
+        (root / "campaigns" / "p1" / "campaign_manifest_r2.yaml").read_text()
     )
     broken_identity = json.loads(json.dumps(records))
     broken_identity[0]["outcome"]["model_be_forces_xyz"][0][0] += 4.0e-12
@@ -828,7 +866,7 @@ def test_zero_reference_is_explicitly_inapplicable_in_derived_and_plot(
         execution_provenance=_provenance(root),
     )
     manifest = json.loads(
-        (root / "campaigns" / "p1" / "campaign_manifest.yaml").read_text()
+        (root / "campaigns" / "p1" / "campaign_manifest_r2.yaml").read_text()
     )
     records = load_checkpoint_records(state)
     first, _ = build_campaign_artifacts(manifest, records, _provenance(root))
@@ -908,7 +946,7 @@ class FakeModelESolver:
 
 def test_real_adapter_with_fake_solver_reuses_each_dimer_order_once() -> None:
     manifest = json.loads(
-        (ROOT / "campaigns" / "p1" / "campaign_manifest.yaml").read_text()
+        (ROOT / "campaigns" / "p1" / "campaign_manifest_r2.yaml").read_text()
     )
     case = manifest["cases"][0]
     solver = FakeModelESolver()
@@ -929,3 +967,164 @@ def test_real_adapter_with_fake_solver_reuses_each_dimer_order_once() -> None:
     assert tuple(outcome["orders"][0]["channels"]) == (
         "total", "interaction", "external_scattered", "scattered_scattered"
     )
+    normalized = p1_campaign_module._normalize_outcome(outcome, manifest)
+    encoded = p1_campaign_module._json_bytes(normalized)
+    decoded = json.loads(encoded)
+    planar = decoded["orders"][0]["diagnostics"]["planar_symmetry_pass"]
+
+    assert isinstance(planar, bool)
+    assert planar is True
+
+
+
+@pytest.mark.parametrize(
+    ("value", "expected", "expected_type"),
+    (
+        (np.bool_(True), True, bool),
+        (np.int64(7), 7, int),
+        (np.float64(1.25), 1.25, float),
+    ),
+)
+def test_json_boundary_converts_supported_numpy_scalars(
+    value: np.generic,
+    expected: object,
+    expected_type: type[object],
+) -> None:
+    decoded = json.loads(p1_campaign_module._json_bytes({"value": value}))
+
+    assert decoded["value"] == expected
+    assert type(decoded["value"]) is expected_type
+
+
+@pytest.mark.parametrize("value", (np.complex128(1.0 + 2.0j), object()))
+def test_json_boundary_rejects_complex_and_unknown_types(value: object) -> None:
+    with pytest.raises(CampaignSerializationError, match=r"\$\.value.*unsupported"):
+        p1_campaign_module._json_bytes({"value": value})
+
+
+def test_real_adapter_to_checkpoint_and_artifact_regeneration_without_real_solver(
+    tmp_path: Path,
+) -> None:
+    root = _root(tmp_path, "real-adapter-end-to-end")
+    state = tmp_path / "state-real-adapter-end-to-end"
+    solver = FakeModelESolver()
+
+    def executor(case, manifest):
+        return execute_model_e_case(
+            case,
+            manifest,
+            solver=solver,
+            clock=TickClock(),
+            rss_reader=lambda: 128 * 1024**2,
+        )
+
+    summary = run_p1_6_campaign(
+        root,
+        executor=executor,
+        state_directory=state,
+        utc_now=lambda: UTC,
+        max_new_cases=1,
+        execution_provenance=_provenance(root),
+    )
+    ledger, records = load_campaign_checkpoint(state)
+    manifest = json.loads(
+        (root / "campaigns" / "p1" / "campaign_manifest_r2.yaml").read_text()
+    )
+    checkpoint = json.loads((state / "cases" / "001.json").read_text())
+    first, first_gate = build_campaign_artifacts(
+        manifest,
+        records,
+        ledger["execution_provenance"],
+    )
+    second, second_gate = build_campaign_artifacts(
+        manifest,
+        records,
+        ledger["execution_provenance"],
+    )
+
+    assert summary.completed_count == 1
+    assert solver.orders == [2, 3, 4, 5]
+    assert checkpoint["state"] == "completed"
+    assert checkpoint["outcome"]["model_e_solve_count"] == 4
+    assert isinstance(
+        checkpoint["outcome"]["orders"][0]["diagnostics"][
+            "planar_symmetry_pass"
+        ],
+        bool,
+    )
+    assert first == second
+    assert first_gate == second_gate
+    assert first["data_raw.csv"]
+    assert first["performance.csv"]
+
+
+def test_unexpected_serialization_failure_stops_immediately_and_publishes_nothing(
+    tmp_path: Path,
+) -> None:
+    root = _root(tmp_path, "fatal-serialization")
+    state = tmp_path / "state-fatal-serialization"
+    calls: list[int] = []
+
+    def executor(case, manifest):
+        del manifest
+        calls.append(int(case["case_order"]))
+        outcome = _outcome(case)
+        outcome["orders"][0]["diagnostics"]["bad"] = object()
+        return outcome
+
+    with pytest.raises(CampaignInfrastructureError, match="serialization"):
+        run_p1_6_campaign(
+            root,
+            executor=executor,
+            state_directory=state,
+            utc_now=lambda: UTC,
+            execution_provenance=_provenance(root),
+        )
+
+    ledger, records = load_campaign_checkpoint(state)
+    assert calls == [1]
+    assert ledger["closed"] is True
+    assert ledger["stop_reason"] == "invalid_infrastructure"
+    assert ledger["campaign_decision"] == "INVALID_P1.6B_R2_INFRASTRUCTURE"
+    assert records[0]["state"] == "interrupted"
+    assert records[0]["failure_stage"] == "serialization"
+    assert records[0]["outcome"] is None
+    assert all(record["state"] == "never_started" for record in records[1:])
+    assert not any((root / relative).exists() for relative in ARTIFACT_PATHS.values())
+
+
+@pytest.mark.parametrize(
+    ("exception", "expected_stage"),
+    (
+        (CampaignExecutionError("synthetic contract failure"), "contract"),
+        (RuntimeError("synthetic infrastructure failure"), "infrastructure"),
+    ),
+)
+def test_unexpected_contract_and_infrastructure_failures_are_fatal(
+    tmp_path: Path,
+    exception: Exception,
+    expected_stage: str,
+) -> None:
+    root = _root(tmp_path, f"fatal-{expected_stage}")
+    state = tmp_path / f"state-fatal-{expected_stage}"
+    calls: list[int] = []
+
+    def executor(case, manifest):
+        del manifest
+        calls.append(int(case["case_order"]))
+        raise exception
+
+    with pytest.raises(CampaignInfrastructureError, match=expected_stage):
+        run_p1_6_campaign(
+            root,
+            executor=executor,
+            state_directory=state,
+            utc_now=lambda: UTC,
+            execution_provenance=_provenance(root),
+        )
+
+    ledger, records = load_campaign_checkpoint(state)
+    assert calls == [1]
+    assert ledger["campaign_decision"] == "INVALID_P1.6B_R2_INFRASTRUCTURE"
+    assert records[0]["failure_stage"] == expected_stage
+    assert all(record["state"] == "never_started" for record in records[1:])

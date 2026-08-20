@@ -113,7 +113,7 @@ def evaluate_model_e_numerical_diagnostics(
         fz_tolerance = (
             planar_tolerance_factor * np.finfo(float).eps * maximum_force_rms
         )
-        planar = max_abs_fz <= fz_tolerance
+        planar = bool(max_abs_fz <= fz_tolerance)
     else:
         max_abs_fz = float("inf")
         fz_tolerance = 0.0

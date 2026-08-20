@@ -9,19 +9,20 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import traceback
 import subprocess
 import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
-STATE = ROOT / "campaigns" / "p1" / ".p1_6_checkpoint"
-CHECKPOINT_RELATIVE = Path("campaigns/p1/.p1_6_checkpoint")
+STATE = ROOT / "campaigns" / "p1" / ".p1_6b_r2_checkpoint"
+CHECKPOINT_RELATIVE = Path("campaigns/p1/.p1_6b_r2_checkpoint")
 CONFIRMATORY_ARTIFACTS = (
-    Path("campaigns/p1/data_raw.csv"),
-    Path("campaigns/p1/data_derived.csv"),
-    Path("campaigns/p1/data_plot.csv"),
-    Path("campaigns/p1/failures.csv"),
-    Path("campaigns/p1/performance.csv"),
+    Path("campaigns/p1/p1_6b_r2/data_raw.csv"),
+    Path("campaigns/p1/p1_6b_r2/data_derived.csv"),
+    Path("campaigns/p1/p1_6b_r2/data_plot.csv"),
+    Path("campaigns/p1/p1_6b_r2/failures.csv"),
+    Path("campaigns/p1/p1_6b_r2/performance.csv"),
 )
 THREAD_ENVIRONMENT = (
     "OPENBLAS_NUM_THREADS",
@@ -129,7 +130,7 @@ def _artifact_module():
 def _regenerate(*, publish: bool) -> dict[str, object]:
     artifacts_module = _artifact_module()
     manifest = json.loads(
-        (ROOT / "campaigns" / "p1" / "campaign_manifest.yaml").read_text(
+        (ROOT / "campaigns" / "p1" / "campaign_manifest_r2.yaml").read_text(
             encoding="utf-8"
         )
     )
@@ -193,6 +194,8 @@ def main() -> None:
     sys.path.insert(0, str(ROOT / "src"))
     from acoustic_ms.p1_campaign import (  # noqa: PLC0415
         execute_model_e_case_with_limits,
+        finalize_p1_6_campaign,
+        invalidate_p1_6_campaign,
         run_p1_6_campaign,
     )
 
@@ -202,9 +205,38 @@ def main() -> None:
     )
     payload: dict[str, object] = {"run": asdict(summary)}
     if summary.closed:
-        payload["artifacts"] = _regenerate(publish=True)
+        if summary.completed_count == 0:
+            raise RuntimeError(
+                "a closed campaign with zero completed cases cannot publish"
+            )
+        try:
+            preview = _regenerate(publish=False)
+            decision = str(preview["g1"]["decision"])
+            summary = finalize_p1_6_campaign(ROOT, decision)
+            payload["run"] = asdict(summary)
+            if summary.campaign_decision is None:
+                raise RuntimeError("campaign decision remained null before publication")
+            payload["artifacts"] = _regenerate(publish=True)
+        except Exception as exc:
+            invalidate_p1_6_campaign(
+                ROOT,
+                failure_stage="artifact_publication",
+                failure_reason=f"{type(exc).__name__}: {exc}",
+            )
+            raise
     print(json.dumps(payload, indent=2, sort_keys=True))
 
 
+def entrypoint() -> int:
+    """Return a nonzero process status for every uncaught execution failure."""
+
+    try:
+        main()
+    except Exception:
+        traceback.print_exc()
+        return 2
+    return 0
+
+
 if __name__ == "__main__":
-    main()
+    raise SystemExit(entrypoint())

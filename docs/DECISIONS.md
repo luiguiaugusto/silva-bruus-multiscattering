@@ -415,3 +415,21 @@
 - Decision: `GO_P1.6B_EXECUTE`, conditional only on audit/merge of P1.6A.
   P1.6A/P1.6A.1/P1.6A.2 perform no confirmatory solve and create no
   confirmatory response.
+
+
+## P1.6B incident and R2 infrastructure decision
+
+- The first P1.6B execution is `INVALID_P1.6B_INFRASTRUCTURE`: 102 attempts,
+  zero completed outcomes, 102 interruptions and no recoverable scientific
+  data. Its immutable evidence and hashes are recorded in
+  `docs/P1_6B_INCIDENT.md`.
+- R2 changes no scientific decision. It preserves the full ordered case list,
+  physics, numerical policy, resources, metrics and G1 while changing only
+  infrastructure serialization, fail-fast closure, campaign identity and
+  checkpoint/output namespaces.
+- The R2 public lock is
+  `a041e07ae93e9a858bad809427039bf593641ad1f9e341ed89b9d91f648f297d`.
+  P1.6A, P1.4 and P1.5 locks remain historical.
+- Unexpected serialization, contract or infrastructure errors are fatal and
+  classify the run as `INVALID_P1.6B_R2_INFRASTRUCTURE`; timeout, memory,
+  global exhaustion and scientific ineligibility retain their frozen meanings.

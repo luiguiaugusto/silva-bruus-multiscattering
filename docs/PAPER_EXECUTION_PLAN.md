@@ -308,3 +308,13 @@ no magnitude enters G1. First execution requires a clean worktree; resume
 accepts only the exact checkpoint directory. All 102 cases are enabled, but
 P1.6A/P1.6A.1/P1.6A.2 executed none and created no confirmatory artifact. Stop
 before P1.6B.
+
+
+## Current P1.6B-R2 gate
+
+The first P1.6B run is preserved and excluded as
+`INVALID_P1.6B_INFRASTRUCTURE`. R2 may launch only from its clean pre-solve
+commit after the focused and complete warning-as-error suites pass. It uses
+`p1_dimer_confirmatory_r2`, `.p1_6b_r2_checkpoint/`, isolated R2 outputs and
+lock `a041e07ae93e9a858bad809427039bf593641ad1f9e341ed89b9d91f648f297d`.
+Scientific cases, policy, resources, responses and G1 remain exactly frozen.

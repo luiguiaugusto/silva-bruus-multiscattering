@@ -40,6 +40,9 @@ P1_FROZEN_MANIFEST_SHA256 = MappingProxyType(
         "p1_dimer_confirmatory": (
             "3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe"
         ),
+        "p1_dimer_confirmatory_r2": (
+            "a041e07ae93e9a858bad809427039bf593641ad1f9e341ed89b9d91f648f297d"
+        ),
         "p1_dimer_resource_pilot": (
             "d8f56ce20f6f0821d84fd6f36e1f76c855f63f55d809ba9a7201ba52097a43bf"
         ),
@@ -49,6 +52,9 @@ P1_HISTORICAL_MANIFEST_SHA256 = MappingProxyType(
     {
         "p1_dimer_confirmatory_p1_4": (
             "9d360de6e61d901cff3f84c477f367773251103db12386dbb8156bd1ec2addca"
+        ),
+        "p1_dimer_confirmatory_p1_6a": (
+            "3a63fd66501f8a7ec967ba26fbb8a46f8219fcd65ef1aca4c3ae999803ace6fe"
         ),
     }
 )
